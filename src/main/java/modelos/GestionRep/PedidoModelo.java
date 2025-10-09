@@ -1,4 +1,4 @@
-package modelos;
+package modelos.GestionRep;
 
 public class PedidoModelo {
 

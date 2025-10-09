@@ -1,4 +1,4 @@
-package vistas;
+package vistas.Personal;
 
 public class LoginVista {
 

@@ -1,4 +1,4 @@
-package modelos;
+package modelos.Notificacion;
 
 public class TareasModelo {
 
