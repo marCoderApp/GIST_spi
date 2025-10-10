@@ -11,12 +11,17 @@ public class TareasModelo {
 	private String tipo;
 	private String estado;
 	
-	public TareasModelo(String tareaId, String titulo, String descripcion, LocalDateTime fechaCreacion, String tipo) {
-		this.tareaId = tareaId;
+	public TareasModelo(String titulo, String descripcion, LocalDateTime fechaCreacion, String tipo) {
+		this.tareaId = generarTareaId();
 		this.titulo = titulo;
 		this.descripcion = descripcion;
 		this.fechaCreacion = fechaCreacion;
 		this.tipo = tipo;
+	}
+	
+	public String generarTareaId() {
+		// Lógica para generar un ID único para la tarea
+		return "TAREA-" + System.currentTimeMillis();
 	}
 	
 	public void listarTareas() {

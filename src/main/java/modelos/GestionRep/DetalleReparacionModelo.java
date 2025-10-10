@@ -11,6 +11,19 @@ public class DetalleReparacionModelo {
 	private String ordenId;
 	private boolean ordenAsociada;
 	
+	public DetalleReparacionModelo(String detalleRepId, String repuestos, String tecnicoId, LocalDateTime fecha,
+			String ordenId, boolean ordenAsociada) {
+		this.detalleRepId = generarDetalleRepId();
+		this.repuestos = repuestos;
+		this.tecnicoId = tecnicoId;
+		this.fecha = fecha;
+		this.ordenId = ordenId;
+		this.ordenAsociada = ordenAsociada;
+	}
+	
+	public String generarDetalleRepId() {
+		return "DR" + System.currentTimeMillis();
+	}
 	
 	public Boolean guardarDetalles(DetalleReparacionModelo datos) {
 		return true;

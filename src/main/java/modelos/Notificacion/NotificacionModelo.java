@@ -11,15 +11,20 @@ public class NotificacionModelo {
 	private LocalDateTime fechaCreacion;
 	private LocalDateTime fechaObjetivo;
 	
-	public NotificacionModelo(String notificacionId, String titulo, String descripcion, String tareaId,
+	public NotificacionModelo(String titulo, String descripcion, String tareaId,
 			LocalDateTime fechaCreacion, LocalDateTime fechaObjetivo) {
-		this.notificacionId = notificacionId;
+		this.notificacionId = generarNotificacionId();
 		this.titulo = titulo;
 		this.descripcion = descripcion;
 		this.tareaId = tareaId;
 		this.fechaCreacion = fechaCreacion;
 		this.fechaObjetivo = fechaObjetivo;
 	}
+	
+	public String generarNotificacionId() {
+		return "NOTIF-" + System.currentTimeMillis();
+	}
+	
 	
 	public String listarNotificacion() {
 		return "NotificacionModelo [notificacionId=" + notificacionId + ", titulo=" + titulo + ", descripcion="
