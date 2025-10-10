@@ -1,5 +1,82 @@
 package modelos.GestionRep;
 
+import java.time.LocalDateTime;
+
 public class DetalleReparacionModelo {
+	
+	private String detalleRepId;
+	private String repuestos; 
+	private String tecnicoId;
+	private LocalDateTime fecha;
+	private String ordenId;
+	private boolean ordenAsociada;
+	
+	
+	public Boolean guardarDetalles(DetalleReparacionModelo datos) {
+		return true;
+	}
+	
+	public void eliminarDetalle(String detalleRepId) {
+		
+	}
+	
+	public void modificarDetalle(String detalleRepId) {
+		
+	}
+	
+
+	// Getters
+	public String getDetalleRepId() {
+	    return detalleRepId;
+	}
+
+	public String getRepuestos() {
+	    return repuestos;
+	}
+
+	public String getTecnicoId() {
+	    return tecnicoId;
+	}
+
+	public LocalDateTime getFecha() {
+	    return fecha;
+	}
+
+	public String getOrdenId() {
+	    return ordenId;
+	}
+
+	public boolean isOrdenAsociada() {
+	    return ordenAsociada;
+	}
+
+	// Setters
+	public void setDetalleRepId(String detalleRepId) {
+	    this.detalleRepId = detalleRepId;
+	}
+
+	public void setRepuestos(String repuestos) {
+	    this.repuestos = repuestos;
+	}
+
+	public void setTecnicoId(String tecnicoId) {
+	    this.tecnicoId = tecnicoId;
+	}
+
+	public void setFecha(LocalDateTime fecha) {
+	    this.fecha = fecha;
+	}
+
+	public void setOrdenId(String ordenId) {
+	    this.ordenId = ordenId;
+	}
+
+	public void setOrdenAsociada(boolean ordenAsociada) {
+	    this.ordenAsociada = ordenAsociada;
+	}
+
+	
+	
+	
 
 }
