@@ -7,12 +7,18 @@ public class AdminModelo {
 	private String apellido;
 	private int turno;
 	
-	public AdminModelo(String id, String nombre, String apellido, int turno) {
-		this.id = id;
+	public AdminModelo(String nombre, String apellido, int turno) {
+		this.id = generarId();
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.turno = turno;
 	}
+	
+	public String generarId() {
+		// Lógica para generar un ID único para el administrador
+		return "ADM" + System.currentTimeMillis();
+	}
+	
 	
 	public AdminModelo buscarAdmin(String id) {
 		// Lógica para buscar un administrador en la base de datos

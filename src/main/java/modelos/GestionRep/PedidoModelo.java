@@ -10,6 +10,18 @@ public class PedidoModelo {
 	private String repuestos;
 	private String adminId;
 	
+	public PedidoModelo(String ordenId, LocalDateTime fecha, String repuestos, String adminId) {
+		this.pedidoId = generarPedidoId();
+		this.ordenId = ordenId;
+		this.fecha = fecha;
+		this.repuestos = repuestos;
+		this.adminId = adminId;
+	}
+	
+	public String generarPedidoId() {
+		return "PED" + System.currentTimeMillis();
+	}
+	
 	public Boolean guardarPedido(PedidoModelo datos) {
 		return true;
 	}

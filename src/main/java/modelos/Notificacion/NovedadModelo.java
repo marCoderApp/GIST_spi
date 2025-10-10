@@ -10,13 +10,18 @@ public class NovedadModelo {
 	private LocalDateTime fechaCreacion;
 	private String ordenId;
 	
-	public NovedadModelo(String novedadId, String titulo, String descripcion, LocalDateTime fechaCreacion,
+	public NovedadModelo(String titulo, String descripcion, LocalDateTime fechaCreacion,
 			String ordenId) {
-		this.novedadId = novedadId;
+		this.novedadId = generarNovedadId();
 		this.titulo = titulo;
 		this.descripcion = descripcion;
 		this.fechaCreacion = fechaCreacion;
 		this.ordenId = ordenId;
+	}
+	
+	public String generarNovedadId() {
+		// Lógica para generar un ID único para la novedad
+		return "NOVEDAD-" + System.currentTimeMillis();
 	}
 	
 	public void crearTareaAPartirDeNovedad() {

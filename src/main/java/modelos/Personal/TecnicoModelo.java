@@ -14,15 +14,19 @@ public class TecnicoModelo {
 	private int tareasCompletadas;
 	private int tareasPendientes;
 	
-	public TecnicoModelo(String tecnicoId, String nombre, String apellido, String especialidad,
+	public TecnicoModelo(String nombre, String apellido, String especialidad,
 			List<TareasModelo> tareasAsignadas, int tareasCompletadas, int tareasPendientes) {
-		this.tecnicoId = tecnicoId;
+		this.tecnicoId = generarTecnicoId();
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.especialidad = especialidad;
 		this.tareasAsignadas = tareasAsignadas;
 		this.tareasCompletadas = tareasCompletadas;
 		this.tareasPendientes = tareasPendientes;
+	}
+	
+	public String generarTecnicoId() {
+		return "TEC" + System.currentTimeMillis();
 	}
 	
      //Getters and Setters

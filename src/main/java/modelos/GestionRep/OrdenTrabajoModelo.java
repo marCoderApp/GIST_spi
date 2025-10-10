@@ -20,7 +20,7 @@ public class OrdenTrabajoModelo {
 	private String presupuesto_id;
 	
 	public OrdenTrabajoModelo(
-			String ordenId, String cliente_id,
+			String cliente_id,
 			List<MaquinaModelo> maquinas, 
 			String descripcion_falla,
 			String detalleRepId,

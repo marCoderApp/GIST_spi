@@ -11,6 +11,19 @@ public class ClienteModelo {
 	private String telefono;
 	private String dni;
 	private String numeroTel;
+
+	public ClienteModelo(String nombre, String empresa, String telefono, String dni, String numeroTel) {
+		this.clienteId = generarClienteId();
+		this.nombre = nombre;
+		this.empresa = empresa;
+		this.telefono = telefono;
+		this.dni = dni;
+		this.numeroTel = numeroTel;
+	}
+	
+	public String generarClienteId() {
+		return "CL" + System.currentTimeMillis();
+	}
 	
 	public Boolean guardarCliente(ClienteModelo datos) {
 		return true;
@@ -29,7 +42,7 @@ public class ClienteModelo {
 	}
 	
 	public ClienteModelo obtenerCliente(String clienteId) {
-		return new ClienteModelo();
+		return new ClienteModelo(clienteId, clienteId, clienteId, clienteId, clienteId);
 	}
 	
 	public List<ClienteModelo> listarClientes() {

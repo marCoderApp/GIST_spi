@@ -11,7 +11,7 @@ public class MaquinaModelo {
 	
 	// Constructors
 	
-	public MaquinaModelo(String maquinaId, String tipo, String marca, String modelo, String color, String ordenId) {
+	public MaquinaModelo(String tipo, String marca, String modelo, String color, String ordenId) {
 		this.maquinaId = generarMaquinaId();
 		this.tipo = tipo;
 		this.marca = marca;

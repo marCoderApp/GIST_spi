@@ -13,7 +13,7 @@ public class PresupuestoModelo {
 	private float total;
 	private String estado;
 
-	public PresupuestoModelo(String presupuestoId,
+	public PresupuestoModelo(
 			String ordenId,
 			LocalDateTime fechaCreacion,
 			String adminId,
@@ -23,7 +23,7 @@ public class PresupuestoModelo {
 			String estado
 			) {
 		
-		this.presupuestoId = presupuestoId;
+		this.presupuestoId = generarPresupuestoId();
 		this.ordenId = ordenId;
 		this.adminId = adminId;
 		this.fechaCreacion = fechaCreacion;
@@ -31,6 +31,10 @@ public class PresupuestoModelo {
 		this.fechaEstimada = fechaEstimada;
 		this.total = total;
 		this.estado = estado;		
+	}
+	
+	public String generarPresupuestoId() {
+		return "PRESU-" + Math.random();
 	}
 	
 	public String getPresupuestoId() {
