@@ -2,12 +2,50 @@ package com.mfernandez.spi.gist;
 
 import java.util.Scanner;
 
+import controladores.PersonalControl;
+import modelos.GestionRep.Credenciales;
+
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
+		PersonalControl personalControl = new PersonalControl(null, false, false, null);
+		Credenciales credenciales = new Credenciales(null, null);
 		
 		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("╔═══════════════════════════════════════╗");
+		System.out.println("║           BIENVENIDO A GIST           ║");
+		System.out.println("╚═══════════════════════════════════════╝");
+
+		// INICIO DE SESIÓN
+		
+		System.out.println("Por favor, ingresa tus credenciales para iniciar sesión.");
+		System.out.print("Usuario: ");
+		String usuario = scanner.nextLine();
+		System.out.print("Contraseña: ");
+		String contraseña = scanner.nextLine();
+		
+		
+		//VALIDACION DE CREDENCIALES
+		credenciales.setUsuario(usuario);
+		credenciales.setContrasena(contraseña);
+		
+	
+		if (personalControl.validarCredenciales(credenciales)) {
+			System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario + "!");
+			mostrarMenu();
+		} else {
+			System.out.println("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+		}
+		
+		scanner.close();
+      
+    }
+	
+	private static void mostrarMenu() {
+Scanner scanner = new Scanner(System.in);
+		
         boolean salir = false;
 
         while (!salir) {
@@ -77,10 +115,7 @@ public class Main {
             }
         }
         scanner.close();
-    }
-	
-	
-
 	}
+}
 
 
