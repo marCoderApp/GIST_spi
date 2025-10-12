@@ -147,6 +147,7 @@ public class OrdenTrabajoModelo {
     public Boolean agregarMaquinaAlista(MaquinaModelo maquina) {
     	return true;
     }
+
     
     }
     
