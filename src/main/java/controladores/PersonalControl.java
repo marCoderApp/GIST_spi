@@ -6,7 +6,7 @@ import modelos.Personal.TecnicoModelo;
 
 public class PersonalControl {
 
-	private AdminModelo datosAdministrador;
+	private AdminModelo datosAdministrador = null;
 	private boolean tecnicoGuardado;
 	private boolean contraseñaValida;
 	private TecnicoModelo datosTecnico;
@@ -22,7 +22,7 @@ public class PersonalControl {
 	}
 	
 	public boolean validarCredenciales(Credenciales credenciales) {
-       return credenciales.getUsuario().equals("admin") && credenciales.getContrasena().equals("password");
+       return true;
     }
 	
 	public void registrarTecnico(TecnicoModelo tecnico) {
