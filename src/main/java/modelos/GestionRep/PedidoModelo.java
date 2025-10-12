@@ -9,6 +9,7 @@ public class PedidoModelo {
 	private LocalDateTime fecha;
 	private String repuestos;
 	private String adminId;
+	private String estado = "Pendiente"; // Pendiente, Enviado, Recibido
 	
 	public PedidoModelo(String ordenId, LocalDateTime fecha, String repuestos, String adminId) {
 		this.pedidoId = generarPedidoId();
@@ -81,6 +82,14 @@ public class PedidoModelo {
 	
 	public void setAdminId(String adminId) {
 		this.adminId = adminId;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}		
 	
 }
