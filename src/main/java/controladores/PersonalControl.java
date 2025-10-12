@@ -43,6 +43,16 @@ public class PersonalControl {
 	public void registrarAdministrador(String nombre, String especialidad, int turno) {
         this.setDatosAdministrador(new AdminModelo(nombre, especialidad, turno));
     }
+	
+	public void eliminarAdministrador(String adminId) {
+		
+	}
+	
+	public void modificarAdministrador(String nombre, String especialidad, int turno) {
+		if (this.datosAdministrador != null) {
+			this.setDatosAdministrador(new AdminModelo(nombre, especialidad, turno));
+		}
+	}
 
 	public AdminModelo getDatosAdministrador() {
 		return datosAdministrador;
