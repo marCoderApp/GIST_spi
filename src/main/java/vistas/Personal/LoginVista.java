@@ -1,5 +1,8 @@
 package vistas.Personal;
 
+import java.util.Scanner;
+
+import controladores.PersonalControl;
 import modelos.GestionRep.Credenciales;
 
 public class LoginVista {
@@ -20,14 +23,34 @@ public class LoginVista {
 		this.recordarUsuario = false;
 	}
 	
-	public Credenciales ingresarCredenciales(Credenciales credenciales) {
-		return credenciales;
-	}
 	
-	public boolean confirmarAcceso(boolean acceso) {
+	
+	public boolean ingresarCredenciales(Credenciales credenciales) {
+		Scanner scanner = new Scanner(System.in);
+		PersonalControl personalControl = new PersonalControl(null, false, false, null);
+		
+		System.out.println("Por favor, ingresa tus credenciales para iniciar sesión.");
+		System.out.print("Usuario: ");
+		String usuario = scanner.nextLine();
+		System.out.print("Contraseña: ");
+		String contraseña = scanner.nextLine();
+		
+		
+		//VALIDACION DE CREDENCIALES
+		credenciales.setUsuario(usuario);
+		credenciales.setContrasena(contraseña);
+		
+		boolean acceso = personalControl.validarCredenciales(credenciales);
+	
+		if (acceso) {
+			System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario + "!");
+		} else {
+			System.out.println("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+		}
 		return acceso;
 	}
 	
+
 	//Getters and Setters
 	
 	public String getUsuario() {
