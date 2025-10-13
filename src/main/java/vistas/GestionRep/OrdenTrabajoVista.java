@@ -62,8 +62,14 @@ public class OrdenTrabajoVista {
 	}
 	
 	public void navegar() {
-
+		abrirFormularioOrdenTrabajo();
 	}
+	
+	public void abrirFormularioOrdenTrabajo() {
+		seleccionarOrden(null);
+	}
+	
+	
 	
 	public void seleccionarOrden(String ordenId) {
 	}   
@@ -147,5 +153,16 @@ public class OrdenTrabajoVista {
 	
 	public void setMensajeError(String mensajeError) {
 		this.mensajeError = mensajeError;
+	}
+
+	public void mostrarFormularioRegistro() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mostrarMenuOrdenesTrabajo() {
+		// TODO Auto-generated method stub
+		System.out.println("Menú de Órdenes de Trabajo");
+		
 	}
 }

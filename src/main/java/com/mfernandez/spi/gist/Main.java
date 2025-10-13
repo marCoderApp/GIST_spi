@@ -1,6 +1,9 @@
 package com.mfernandez.spi.gist;
 
 import java.util.Scanner;
+import vistas.GestionRep.*;
+import vistas.Personal.*;
+import vistas.Notificacion.*;
 
 import controladores.PersonalControl;
 import modelos.GestionRep.Credenciales;
@@ -44,6 +47,10 @@ public class Main {
     }
 	
 	private static void mostrarMenu() {
+		
+        OrdenTrabajoVista ordenVista = new OrdenTrabajoVista(null, null, null, null, null, null, null, null, null);
+
+		
 Scanner scanner = new Scanner(System.in);
 		
         boolean salir = false;
@@ -70,40 +77,55 @@ Scanner scanner = new Scanner(System.in);
             switch (opcion) {
                 case 1:
                     System.out.println("=== Nueva Orden de trabajo ===");
-                    // Lógica para la Opción 1
+                       // Lógica para la Opción 1
+                    ordenVista.mostrarFormularioRegistro();
                     break;
                 case 2:
                     System.out.println("=== Lista de Órdenes de trabajo ===");
                     // Lógica para la Opción 2
+					ordenVista.mostrarLista(null);
                     break;
                 case 3:
                     System.out.println("=== Marcar Orden como Retirada ===");
                     System.out.print("Ingresa el código de orden: ");
                     // Lógica para la Opción 3
+                    ordenVista.navegar();
                     break;
                 case 4:
                     System.out.println("=== Menú Gestionar Clientes ===");
                     // Lógica para la Opción 3
+                    ClientesVista clientesVista = new ClientesVista();
+                    clientesVista.mostrarMenuClientes();
                     break;
                 case 5:
                     System.out.println("===Menú Gestionar Técnicos ===");
                     // Lógica para la Opción 3
+                    TecnicoVista tecnicoVista = new TecnicoVista(null);
+                    tecnicoVista.mostrarMenuTecnicos();
                     break;
                 case 6:
                     System.out.println("Novedades");
-                    salir = true;
+                    // Lógica para la Opción 3
+                    NovedadesVista novedadesVista = new NovedadesVista(null, null, null, null, null);
+                    novedadesVista.mostrarMenuNovedades();
+                    
                     break;
                 case 7:
                     System.out.println("Presupuestos");
                     // Lógica para la Opción 3
+                    PresupuestosVista presupuestoVista = new PresupuestosVista(null, null, null);
+                    presupuestoVista.mostrarMenuPresupuestos();
                     break;
                 case 8:
                     System.out.println("Pedidos");
                     // Lógica para la Opción 3
+                    PedidosVista pedidosVista = new PedidosVista(null, null, null, null, opcion);
+                    pedidosVista.mostrarMenuPedidos();
                     break;
                 case 9:
                     System.out.println("Ordenes de trabajo");
                     // Lógica para la Opción 3
+                    ordenVista.mostrarMenuOrdenesTrabajo();
                     break;
                 case 10:
                     System.out.println("SALIR");

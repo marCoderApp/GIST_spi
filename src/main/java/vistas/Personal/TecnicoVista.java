@@ -34,6 +34,15 @@ public class TecnicoVista {
 	public void setListaTecnicos(List<TecnicoModelo> listaTecnicos) {
 		this.listaTecnicos = listaTecnicos;
 	}
+
+	public void mostrarMenuTecnicos() {
+		
+		System.out.println("=== Gestión de Técnicos ===");
+		System.out.println("1. Listar Técnicos");
+		System.out.println("2. Crear Técnico");
+		System.out.println("3. Salir");
+		
+	}
 	
 	
 	

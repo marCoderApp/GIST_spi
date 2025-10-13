@@ -22,6 +22,16 @@ public class ClientesVista {
 		this.cantidadTotalOrdenes = 0;
 	}
 	
+	public void mostrarMenuClientes() {
+		// TODO Auto-generated method stub
+		System.out.println("=== Gestión de Clientes ===");
+		System.out.println("1. Listar Clientes");
+		System.out.println("2. Seleccionar Cliente");
+		System.out.println("3. Crear Pedido");
+		System.out.println("4. Filtrar Órdenes por Código");
+		System.out.println("5. Salir");
+	}
+	
 	public PedidoModelo opcionCrearPedido() {
 		return new PedidoModelo(clienteId, null, clienteId, clienteId);
 	}

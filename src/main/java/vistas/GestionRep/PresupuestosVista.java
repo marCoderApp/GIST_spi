@@ -56,6 +56,13 @@ public class PresupuestosVista {
 	public void setFiltroCodigoOrden(String filtroCodigoOrden) {
 		this.filtroCodigoOrden = filtroCodigoOrden;
 	}
+
+
+	public void mostrarMenuPresupuestos() {
+	
+		System.out.println("Menú de Presupuestos");
+		
+	}
 	
 
 }
