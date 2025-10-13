@@ -12,8 +12,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		PersonalControl personalControl = new PersonalControl(null, false, false, null);
 		Credenciales credenciales = new Credenciales(null, null);
+		LoginVista loginVista = new LoginVista(null, null, null, null, 0, false);
 		
 		Scanner scanner = new Scanner(System.in);
 		
@@ -22,21 +22,8 @@ public class Main {
 		System.out.println("╚═══════════════════════════════════════╝");
 
 		// INICIO DE SESIÓN
-		
-		System.out.println("Por favor, ingresa tus credenciales para iniciar sesión.");
-		System.out.print("Usuario: ");
-		String usuario = scanner.nextLine();
-		System.out.print("Contraseña: ");
-		String contraseña = scanner.nextLine();
-		
-		
-		//VALIDACION DE CREDENCIALES
-		credenciales.setUsuario(usuario);
-		credenciales.setContrasena(contraseña);
-		
 	
-		if (personalControl.validarCredenciales(credenciales)) {
-			System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario + "!");
+		if (loginVista.ingresarCredenciales(credenciales)) {
 			mostrarMenu();
 		} else {
 			System.out.println("Credenciales inválidas. Por favor, inténtalo de nuevo.");
