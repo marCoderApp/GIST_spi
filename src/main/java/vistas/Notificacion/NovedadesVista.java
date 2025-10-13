@@ -75,6 +75,17 @@ public class NovedadesVista {
 	public void setOrdenesAsociadas(List<OrdenTrabajoModelo> ordenesAsociadas) {
 		this.ordenesAsociadas = ordenesAsociadas;
 	}
+
+	public void mostrarMenuNovedades() {
+		
+		System.out.println("=== Menú Gestionar Novedades ===");
+		System.out.println("1. Crear Novedad");
+		System.out.println("2. Ver Novedades");
+		System.out.println("3. Crear Tarea a partir de Novedad");
+		System.out.println("4. Volver al menú principal");
+		System.out.print("Seleccioná una opción: ");
+		
+	}
 	
 	
 }

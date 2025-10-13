@@ -83,5 +83,10 @@ public class PedidosVista {
 	public void setCantidadTotal(int cantidadTotal) {
 		this.cantidadTotal = cantidadTotal;
 	}
+
+	public void mostrarMenuPedidos() {
+		// TODO Auto-generated method stub
+		System.out.println("Menú de Pedidos");
+	}
 	
 }
