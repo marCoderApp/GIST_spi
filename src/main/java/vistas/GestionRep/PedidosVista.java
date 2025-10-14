@@ -26,7 +26,7 @@ public class PedidosVista {
 	
 	public PedidoModelo opcionCrearPedido() {
 		// Lógica para crear un nuevo pedido
-		return new PedidoModelo(filtroCodigoOrden, null, filtroCodigoOrden, filtroCodigoOrden);
+		return new PedidoModelo(filtroCodigoOrden, null, filtroCodigoOrden, filtroCodigoOrden, null);
 	}
 	
 	

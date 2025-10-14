@@ -1,6 +1,8 @@
 package vistas.GestionRep;
 
 import java.time.LocalDateTime;
+
+import modelos.GestionRep.EstadoPedido;
 import modelos.GestionRep.PedidoModelo;
 
 public class FormPedidosVista {
@@ -85,7 +87,7 @@ public class FormPedidosVista {
 	
 public PedidoModelo ingresarPedido() {
 	// Lógica para ingresar un nuevo pedido
-	return new PedidoModelo(presupuestoId, fechaCreacion, repuestos, ordenTrabajoId);
+	return new PedidoModelo(presupuestoId, fechaCreacion, repuestos, ordenTrabajoId, null);
 }
 
 public void abrirForm() {
@@ -98,7 +100,7 @@ public void modificarPedido(PedidoModelo pedido) {
     System.out.println("Modificando pedido: " + pedido);
 }
 
-public void cambiarEstado(PedidoModelo pedido, String nuevoEstado) {
+public void cambiarEstado(PedidoModelo pedido, EstadoPedido nuevoEstado) {
     // Lógica para cambiar el estado de un pedido
     pedido.setEstado(nuevoEstado);
     System.out.println("Cambiando estado del pedido: " + pedido + " a " + nuevoEstado);
