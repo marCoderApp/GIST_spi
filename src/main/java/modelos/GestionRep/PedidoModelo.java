@@ -1,6 +1,7 @@
 package modelos.GestionRep;
 
 import java.time.LocalDateTime;
+import modelos.GestionRep.EstadoPedido;
 
 public class PedidoModelo {
 	
@@ -9,14 +10,17 @@ public class PedidoModelo {
 	private LocalDateTime fecha;
 	private String repuestos;
 	private String adminId;
-	private String estado = "Pendiente"; // Pendiente, Enviado, Recibido
+	private EstadoPedido estado = EstadoPedido.PENDIENTE;
 	
-	public PedidoModelo(String ordenId, LocalDateTime fecha, String repuestos, String adminId) {
+	public PedidoModelo(String ordenId, LocalDateTime fecha,
+			String repuestos, String adminId,
+			EstadoPedido estado) {
 		this.pedidoId = generarPedidoId();
 		this.ordenId = ordenId;
 		this.fecha = fecha;
 		this.repuestos = repuestos;
 		this.adminId = adminId;
+		this.estado = estado;
 	}
 	
 	public String generarPedidoId() {
@@ -84,12 +88,12 @@ public class PedidoModelo {
 		this.adminId = adminId;
 	}
 
-	public String getEstado() {
+	public EstadoPedido getEstado() {
 		return estado;
 	}
 
-	public void setEstado(String estado) {
+	public void setEstado(EstadoPedido estado) {
 		this.estado = estado;
-	}		
+	}
 	
 }
