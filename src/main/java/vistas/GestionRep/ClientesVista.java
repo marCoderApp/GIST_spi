@@ -33,7 +33,7 @@ public class ClientesVista {
 	}
 	
 	public PedidoModelo opcionCrearPedido() {
-		return new PedidoModelo(clienteId, null, clienteId, clienteId);
+		return new PedidoModelo(clienteId, null, clienteId, clienteId, null);
 	}
 	
 	public void mostrarMensaje(String mensaje) {
