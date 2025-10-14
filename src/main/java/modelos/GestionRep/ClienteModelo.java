@@ -7,12 +7,15 @@ public class ClienteModelo {
 	
 	private String clienteId;
 	private String nombre;
+	private String apellido;
 	private String empresa;
 	private String telefono;
 	private String dni;
 	private String numeroTel;
 
-	public ClienteModelo(String nombre, String empresa, String telefono, String dni, String numeroTel) {
+	public ClienteModelo(String nombre, String apellido,
+			String empresa, String telefono,
+			String dni, String numeroTel) {
 		this.clienteId = generarClienteId();
 		this.nombre = nombre;
 		this.empresa = empresa;
@@ -42,7 +45,7 @@ public class ClienteModelo {
 	}
 	
 	public ClienteModelo obtenerCliente(String clienteId) {
-		return new ClienteModelo(clienteId, clienteId, clienteId, clienteId, clienteId);
+		return new ClienteModelo(clienteId, clienteId, clienteId, clienteId, clienteId, clienteId);
 	}
 	
 	public List<ClienteModelo> listarClientes() {
@@ -98,6 +101,14 @@ public class ClienteModelo {
 	
 	public void setNumeroTel(String numeroTel) {
 		this.numeroTel = numeroTel;
+	}
+
+	public String getApellido() {
+		return apellido;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
 	}
 	
 

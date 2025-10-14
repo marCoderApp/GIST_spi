@@ -3,6 +3,7 @@ package modelos.GestionRep;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import modelos.GestionRep.EstadoOrden;
 
 
 public class OrdenTrabajoModelo {
@@ -18,6 +19,7 @@ public class OrdenTrabajoModelo {
 	private LocalDateTime fechaRetiro = null;
 	private String adminId;
 	private String presupuesto_id;
+	private EstadoOrden estado = EstadoOrden.PENDIENTE;
 	
 	public OrdenTrabajoModelo(
 			String cliente_id,
@@ -26,7 +28,8 @@ public class OrdenTrabajoModelo {
 			String detalleRepId,
 			LocalDateTime fechaIngreso,
 			LocalDateTime fechaRetiro,
-			String adminId, String presupuesto_id
+			String adminId, String presupuesto_id,
+			EstadoOrden estado
 			) {
 		
 		this.ordenId = generarNumeroOrden();
@@ -38,6 +41,7 @@ public class OrdenTrabajoModelo {
 	    this.fechaRetiro = fechaRetiro;
 	    this.adminId = adminId;
 	    this.presupuesto_id = presupuesto_id;
+	    this.estado = estado;
 	}
 	
 	public String generarNumeroOrden() {
@@ -147,6 +151,14 @@ public class OrdenTrabajoModelo {
     public Boolean agregarMaquinaAlista(MaquinaModelo maquina) {
     	return true;
     }
+
+	public EstadoOrden getEstado() {
+		return estado;
+	}
+
+	public void setEstado(EstadoOrden estado) {
+		this.estado = estado;
+	}
 
     
     }

@@ -5,15 +5,19 @@ import java.time.LocalDateTime;
 public class DetalleReparacionModelo {
 	
 	private String detalleRepId;
+	private String descripcion;
 	private String repuestos; 
 	private String tecnicoId;
 	private LocalDateTime fecha;
 	private String ordenId;
 	private boolean ordenAsociada;
 	
-	public DetalleReparacionModelo(String detalleRepId, String repuestos, String tecnicoId, LocalDateTime fecha,
+	public DetalleReparacionModelo(String detalleRepId, String descripcion,
+			String repuestos, String tecnicoId,
+			LocalDateTime fecha,
 			String ordenId, boolean ordenAsociada) {
 		this.detalleRepId = generarDetalleRepId();
+		this.descripcion = descripcion;
 		this.repuestos = repuestos;
 		this.tecnicoId = tecnicoId;
 		this.fecha = fecha;
@@ -86,6 +90,14 @@ public class DetalleReparacionModelo {
 
 	public void setOrdenAsociada(boolean ordenAsociada) {
 	    this.ordenAsociada = ordenAsociada;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 	
