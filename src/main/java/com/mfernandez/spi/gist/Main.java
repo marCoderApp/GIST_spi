@@ -4,9 +4,9 @@ import java.util.Scanner;
 import vistas.GestionRep.*;
 import vistas.Personal.*;
 import vistas.Notificacion.*;
-
-import controladores.PersonalControl;
 import modelos.GestionRep.Credenciales;
+import conexion.ConexionDB;
+import java.sql.Connection;
 
 public class Main {
 
@@ -14,12 +14,19 @@ public class Main {
 		
 		Credenciales credenciales = new Credenciales(null, null);
 		LoginVista loginVista = new LoginVista(null, null, null, null, 0, false);
+		Connection conn = ConexionDB.conectar();
 		
 		Scanner scanner = new Scanner(System.in);
 		
 		System.out.println("╔═══════════════════════════════════════╗");
 		System.out.println("║           BIENVENIDO A GIST           ║");
 		System.out.println("╚═══════════════════════════════════════╝");
+		
+	      if (conn != null) {
+	            System.out.println("La conexión está funcionando correctamente ✅");
+	        } else {
+	            System.out.println("La conexión falló ❌");
+	        }
 
 		// INICIO DE SESIÓN
 	

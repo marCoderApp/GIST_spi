@@ -6,6 +6,9 @@ import controladores.PersonalControl;
 import modelos.GestionRep.Credenciales;
 
 public class LoginVista {
+	Scanner scanner = new Scanner(System.in);
+
+	
 	
 	private String usuario;
 	private String contrasena;
@@ -24,9 +27,7 @@ public class LoginVista {
 	}
 	
 	
-	
 	public boolean ingresarCredenciales(Credenciales credenciales) {
-		Scanner scanner = new Scanner(System.in);
 		PersonalControl personalControl = new PersonalControl(null, false, false, null);
 		
 		System.out.println("Por favor, ingresa tus credenciales para iniciar sesión.");
