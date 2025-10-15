@@ -1,15 +1,13 @@
-package modelos.GestionRep;
+package modelos.Notificacion;
 
-import modelos.Notificacion.EstadoTarea;
-
-public enum EstadoPedido {
+public enum EstadoTarea {
 	PENDIENTE("Pendiente"),
-    EN_CAMINO("En camino"),
-    RECIBIDO("Recibido");
+    EN_PROCESO("En_Proceso"),
+    COMPLETADO("Realizado");
 
     private final String valor;
 
-    EstadoPedido(String valor) {
+    EstadoTarea(String valor) {
         this.valor = valor;
     }
 
