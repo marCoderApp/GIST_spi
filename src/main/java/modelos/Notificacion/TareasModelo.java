@@ -9,7 +9,7 @@ public class TareasModelo {
 	private String descripcion;
 	private LocalDateTime fechaCreacion;
 	private String tipo;
-	private String estado;
+	private EstadoTarea estado;
 	
 	public TareasModelo(String titulo, String descripcion, LocalDateTime fechaCreacion, String tipo) {
 		this.tareaId = generarTareaId();
@@ -29,7 +29,7 @@ public class TareasModelo {
 	}
 	
 	public void actualizarEstadoTarea(String nuevoEstado) {
-		this.estado = nuevoEstado;
+	
 	}
 	
 	public void agregarTarea(TareasModelo datos) {
@@ -37,7 +37,7 @@ public class TareasModelo {
 	}
 	
 	public void finalizarTarea() {
-		this.estado = "Finalizada";
+		
 	}
 	
 	//Getters y Setters
@@ -81,13 +81,15 @@ public class TareasModelo {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-	
-	public String getEstado() {
+
+	public EstadoTarea getEstado() {
 		return estado;
 	}
-	
-	public void setEstado(String estado) {
+
+	public void setEstado(EstadoTarea estado) {
 		this.estado = estado;
 	}
+	
+	
 	
 }
