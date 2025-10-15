@@ -3,11 +3,13 @@ package modelos.GestionRep;
 public class Credenciales {
 
 	   private String usuario;
-	    private String contrasena;
+	    private String contraseña;
+	    private RolCredencial rol;
 
-	    public Credenciales(String usuario, String contrasena) {
+	    public Credenciales(String usuario, String contraseña, RolCredencial rol) {
 	        this.usuario = usuario;
-	        this.contrasena = contrasena;
+	        this.contraseña = contraseña;
+	        this.setRol(rol);
 	    }
 
 	    public String getUsuario() {
@@ -19,10 +21,18 @@ public class Credenciales {
 	    }
 
 	    public String getContrasena() {
-	        return contrasena;
+	        return contraseña;
 	    }
 
-	    public void setContrasena(String contrasena) {
-	        this.contrasena = contrasena;
+	    public void setContrasena(String contraseña) {
+	        this.contraseña = contraseña;
 	    }
+
+		public RolCredencial getRol() {
+			return rol;
+		}
+
+		public void setRol(RolCredencial rol) {
+			this.rol = rol;
+		}
 }
