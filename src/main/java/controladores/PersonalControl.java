@@ -21,8 +21,20 @@ public class PersonalControl {
 		this.setDatosTecnico(new TecnicoModelo(null, null, null, null, 0, 0));
 	}
 	
-	public boolean validarCredenciales(Credenciales credenciales) {
-       return true;
+	public boolean validarCredenciales(Credenciales credencialIngresada) {
+		AdminModelo user = new AdminModelo(null, null, 0);
+		
+		Credenciales cred_bdgist = user.buscarUsuario(credencialIngresada.getUsuario());
+		
+		if(cred_bdgist != null && cred_bdgist.getContrasena().equals(credencialIngresada.getContrasena())) {
+			
+			System.out.println("Login Exitoso, Bienvenido " + cred_bdgist.getUsuario() + ".");
+			return true;
+		}else {
+			System.out.println("Credenciales Incorrectas, Intente de Nuevo.");
+			return false;
+		}
+			
     }
 	
 	public void registrarTecnico(TecnicoModelo tecnico) {
