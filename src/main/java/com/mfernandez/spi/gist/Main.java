@@ -12,7 +12,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		Credenciales credenciales = new Credenciales(null, null, null);
+		Credenciales credenciales = new Credenciales(null, null, null, null, null);
 		LoginVista loginVista = new LoginVista(null, null, null, null, 0, false);
 		Connection conn = ConexionDB.conectar();
 		

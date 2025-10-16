@@ -1,11 +1,20 @@
 package modelos.Personal;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import conexion.ConexionDB;
+import modelos.GestionRep.Credenciales;
+
 public class AdminModelo {
 	
 	private String id;
 	private String nombre;
 	private String apellido;
 	private int turno;
+	private Connection conexion = ConexionDB.conectar();
 	
 	public AdminModelo(String nombre, String apellido, int turno) {
 		this.id = generarId();
@@ -20,9 +29,31 @@ public class AdminModelo {
 	}
 	
 	
-	public AdminModelo buscarAdmin(String id) {
-		// Lógica para buscar un administrador en la base de datos
-		// Retorna un objeto AdminModelo si se encuentra, de lo contrario retorna null
+	public Credenciales buscarUsuario(String nombreUsuario) {
+		// Lógica para buscar un administrador por su nombre de usuario
+		
+		String sqlConsulta = "SELECT * FROM credenciales WHERE usuario = ?";
+		
+		  try (PreparedStatement ps = conexion.prepareStatement(sqlConsulta)) {
+	            ps.setString(1, nombreUsuario);
+	            ResultSet result = ps.executeQuery();
+	            if (result.next()) {
+	                Credenciales cred = new Credenciales(null, null, null, null, null);
+	                cred.setUsuario(result.getString("usuario"));
+	                cred.setContrasena(result.getString("contraseña"));
+	                cred.setRol(modelos.GestionRep.RolCredencial.valueOf(result.getString("rol")));
+	                cred.setFechaCreacion(result.getTimestamp("fechaCreacion").toLocalDateTime());
+	                cred.setUsuarioId(result.getString("usuario_id"));
+	                
+	                
+	                return cred;
+	                
+	                
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		
 		return null;
 	}
 	
