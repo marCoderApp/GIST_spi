@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import conexion.ConexionDB;
 import modelos.GestionRep.ClienteModelo;
@@ -12,6 +13,7 @@ import modelos.GestionRep.DetalleReparacionModelo;
 import modelos.GestionRep.OrdenTrabajoModelo;
 import modelos.GestionRep.PedidoModelo;
 import modelos.GestionRep.PresupuestoModelo;
+import vistas.GestionRep.ClientesVista;
 
 public class GestionRepControl {
 
@@ -41,7 +43,7 @@ public class GestionRepControl {
 		return null; // Retorna null si no se encuentra la orden
 	}
 	
-	public boolean registrarCliente(ClienteModelo cliente) {
+	public ClienteModelo registrarCliente(ClienteModelo cliente) {
 		
 String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empresa, telefono, dni, cuit) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
@@ -76,15 +78,45 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 				
 				Boolean guardado = cliente.guardarCliente(ps);
 				if (guardado) {
-					return true;
+					return cliente;
 				}
 			
 		} catch (Exception e) {
 			System.out.println("Error al registrar el cliente: " + e.getMessage());
-			return false;
+			return null;
 		}
-		return false;
+		return null;
 	}
+	
+	public String elegirCliente() {
+		Scanner scanner = new Scanner(System.in);
+		ClientesVista clientesVista = new ClientesVista();
+		
+		System.out.println("Seleccione una opción:");
+		System.out.println("1. Elegir cliente existente");
+		System.out.println("2. Crear nuevo cliente");
+		 int opcion = scanner.nextInt();
+		    scanner.nextLine(); 
+		    
+			if (opcion == 1) {
+				List<ClienteModelo> clientes = ClienteModelo.listarClientes();
+				ClientesVista.mostrarListaClientes(clientes);
+				
+				System.out.println("Ingrese el ID del cliente: ");
+				String clienteId = scanner.nextLine();
+				System.out.println("Cliente seleccionado: " + clienteId);
+				return clienteId;
+			} else if (opcion == 2) {
+				System.out.println("Creando nuevo cliente...");
+				
+				ClienteModelo nuevoCliente = clientesVista.crearNuevoCliente();
+				return nuevoCliente.getClienteId(); // Retornar el ID del nuevo cliente
+			} else {
+				System.out.println("Opción inválida. Por favor, intente de nuevo.");
+			}
+		
+		return "";
+    }
 	
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
 		// Lógica para registrar el detalle de reparación

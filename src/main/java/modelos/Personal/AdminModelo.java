@@ -24,7 +24,7 @@ public class AdminModelo {
 	}
 	
 	public String generarId() {
-		String sql = "SELECT cliente_id FROM ADMINISTRADOR ORDER BY  DESC LIMIT 1";
+		String sql = "SELECT administrador_id FROM ADMINISTRADOR ORDER BY administrador_id DESC LIMIT 1";
 	    String ultimoId = null;
 	    try (PreparedStatement ps = conexion.prepareStatement(sql);
 	         ResultSet rs = ps.executeQuery()) {

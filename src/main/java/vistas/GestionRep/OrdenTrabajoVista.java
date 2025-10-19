@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
+import controladores.GestionRepControl;
 import modelos.Personal.TecnicoModelo;
 import modelos.GestionRep.*;	
 
@@ -40,47 +41,17 @@ public class OrdenTrabajoVista {
 	
 	public void ingresarDatos() {
 		Scanner scanner = new Scanner(System.in);
+		GestionRepControl gestionRepControl = new GestionRepControl();
 		
 		System.out.println("-----------------------------");
 		System.out.println("CREAR NUEVA ORDEN DE TRABAJO");
 		System.out.println("-----------------------------");
-		elegirCliente();
-		System.out.println("Descripción de la falla:");
+		String clienteId = gestionRepControl.elegirCliente();
+		System.out.println("Maquinas");
 		String descripcionFalla = scanner.nextLine();
-		
-		
 		
 	}
 	
-	public String elegirCliente() {
-		Scanner scanner = new Scanner(System.in);
-		ClientesVista clientesVista = new ClientesVista();
-		
-		System.out.println("Seleccione una opción:");
-		System.out.println("1. Elegir cliente existente");
-		System.out.println("2. Crear nuevo cliente");
-		 int opcion = scanner.nextInt();
-		    scanner.nextLine(); // limpiar buffer
-		    
-			if (opcion == 1) {
-				List<ClienteModelo> clientes = ClienteModelo.listarClientes();
-				ClientesVista.mostrarListaClientes(clientes);
-				
-				System.out.println("Ingrese el ID del cliente: ");
-				String clienteId = scanner.nextLine();
-				System.out.println("Cliente seleccionado: " + clienteId);
-				return clienteId;
-			} else if (opcion == 2) {
-				System.out.println("Creando nuevo cliente...");
-				
-				clientesVista.crearNuevoCliente();
-				return ""; // Retornar el ID del nuevo cliente
-			} else {
-				System.out.println("Opción inválida. Por favor, intente de nuevo.");
-			}
-		
-		return "";
-    }
 
 	public void guardarCambios(OrdenTrabajoModelo orden) {
 		
