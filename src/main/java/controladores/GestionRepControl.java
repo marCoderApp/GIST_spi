@@ -1,9 +1,13 @@
 package controladores;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import conexion.ConexionDB;
+import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
 import modelos.GestionRep.OrdenTrabajoModelo;
 import modelos.GestionRep.PedidoModelo;
@@ -13,8 +17,10 @@ public class GestionRepControl {
 
 	private boolean ordenCreada;
 	private List<OrdenTrabajoModelo> ordenesTrabajo = new ArrayList<>();
+	public static Connection conexion = ConexionDB.conectar();
 	
 	public GestionRepControl() {
+		
 		this.setOrdenCreada(false);
 	}
 
@@ -33,6 +39,51 @@ public class GestionRepControl {
 			}
 		}
 		return null; // Retorna null si no se encuentra la orden
+	}
+	
+	public boolean registrarCliente(ClienteModelo cliente) {
+		
+String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empresa, telefono, dni, cuit) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		
+		try(PreparedStatement ps = conexion.prepareStatement(sqlSentencia)) {
+			ps.setString(1, cliente.getClienteId());
+			ps.setString(2, cliente.getNombre());
+			ps.setString(3, cliente.getApellido());
+			
+			 if (cliente.getEmpresa() == null || cliente.getEmpresa().trim().isEmpty()) {
+		            ps.setNull(4, java.sql.Types.VARCHAR);
+		        } else {
+		            ps.setString(4, cliente.getEmpresa());
+		        }
+			 
+			 if (cliente.getTelefono() == null || cliente.getTelefono().trim().isEmpty()) {
+		            ps.setNull(5, java.sql.Types.VARCHAR);
+		        } else {
+		            ps.setString(5, cliente.getTelefono());
+		        }
+			 
+			 if (cliente.getDni() == null || cliente.getDni().trim().isEmpty()) {
+		            ps.setNull(6, java.sql.Types.VARCHAR);
+		        } else {
+		            ps.setString(6, cliente.getDni());
+		        }
+			 
+				if (cliente.getCuit() == null || cliente.getCuit().trim().isEmpty()) {
+					ps.setNull(7, java.sql.Types.VARCHAR);
+				} else {
+					ps.setString(7, cliente.getCuit());
+				}
+				
+				Boolean guardado = cliente.guardarCliente(ps);
+				if (guardado) {
+					return true;
+				}
+			
+		} catch (Exception e) {
+			System.out.println("Error al registrar el cliente: " + e.getMessage());
+			return false;
+		}
+		return false;
 	}
 	
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {

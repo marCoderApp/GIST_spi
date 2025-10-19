@@ -2,8 +2,12 @@ package modelos.GestionRep;
 
 public enum EstadoOrden {
 	PENDIENTE("Pendiente"),
-    EN_PROCESO("En_proceso"),
-    COMPLETADO("Completado");
+    EN_REVISION("En revision"),
+    REVISADA("Revisada"),
+    CONFIRMADA("Confirmada"),
+    RECHAZADA("Rechazada"),
+    LISTA("Lista"),
+    RETIRADA("Retirada");
 
     private final String valor;
 
