@@ -1,7 +1,13 @@
 package modelos.GestionRep;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import conexion.ConexionDB;
 
 public class ClienteModelo {
 	
@@ -11,25 +17,69 @@ public class ClienteModelo {
 	private String empresa;
 	private String telefono;
 	private String dni;
-	private String numeroTel;
+	private String cuit;
+	private static List<ClienteModelo> clientes = new ArrayList<>();
+	private static Connection conexion = ConexionDB.conectar();
 
 	public ClienteModelo(String nombre, String apellido,
 			String empresa, String telefono,
-			String dni, String numeroTel) {
+			String dni, String cuit) {
 		this.clienteId = generarClienteId();
 		this.nombre = nombre;
+		this.apellido = apellido;
 		this.empresa = empresa;
 		this.telefono = telefono;
 		this.dni = dni;
-		this.numeroTel = numeroTel;
+		this.setCuit(cuit);
 	}
 	
 	public String generarClienteId() {
-		return "CL" + System.currentTimeMillis();
+		String sql = "SELECT cliente_id FROM CLIENTE ORDER BY cliente_id DESC LIMIT 1";
+	    String ultimoId = null;
+	    try (PreparedStatement ps = conexion.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            ultimoId = rs.getString("cliente_id");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    int siguienteNumero = 1;
+
+	    if (ultimoId != null && ultimoId.startsWith("CL")) {
+	        try {
+	            int numeroActual = Integer.parseInt(ultimoId.substring(2));
+	            siguienteNumero = numeroActual + 1;
+	        } catch (NumberFormatException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return String.format("CL%04d", siguienteNumero);
 	}
 	
-	public Boolean guardarCliente(ClienteModelo datos) {
-		return true;
+	public Boolean guardarCliente(PreparedStatement ps) {
+		int rowsAfectadas = 0;
+		
+		try {
+			rowsAfectadas = ps.executeUpdate();
+			
+			if (rowsAfectadas > 0) {
+				System.out.println("Cliente guardado exitosamente.");
+				return true;
+			} else {
+				System.out.println("No se pudo guardar el cliente.");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+		
 	}
 	
 	public void eliminarCliente(String clienteId) {
@@ -48,8 +98,33 @@ public class ClienteModelo {
 		return new ClienteModelo(clienteId, clienteId, clienteId, clienteId, clienteId, clienteId);
 	}
 	
-	public List<ClienteModelo> listarClientes() {
-		return new ArrayList<>();
+	public static List<ClienteModelo> listarClientes() {
+		
+		String sqlConsulta = "SELECT * FROM cliente";
+		
+		try (PreparedStatement ps = conexion.prepareStatement(sqlConsulta)) {
+			ResultSet result = ps.executeQuery();
+
+			while (result.next()) {
+				ClienteModelo cliente = new ClienteModelo(
+						result.getString("nombre"),
+						result.getString("apellido"),
+						result.getString("empresa"),
+						result.getString("telefono"),
+						result.getString("dni"),
+						result.getString("cuit"));
+
+				cliente.setClienteId(result.getString("cliente_id"));
+				clientes.add(cliente);
+			}
+
+			return clientes;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	
@@ -74,9 +149,6 @@ public class ClienteModelo {
 		return dni;
 	}
 	
-	public String getNumeroTel() {
-		return numeroTel;
-	}
 	
 	// Setters
 	public void setClienteId(String clienteId) {
@@ -99,16 +171,20 @@ public class ClienteModelo {
 		this.dni = dni;
 	}
 	
-	public void setNumeroTel(String numeroTel) {
-		this.numeroTel = numeroTel;
-	}
-
 	public String getApellido() {
 		return apellido;
 	}
 
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
+	}
+
+	public String getCuit() {
+		return cuit;
+	}
+
+	public void setCuit(String cuit) {
+		this.cuit = cuit;
 	}
 	
 

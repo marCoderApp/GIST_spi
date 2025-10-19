@@ -2,7 +2,9 @@ package vistas.GestionRep;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
+import controladores.GestionRepControl;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.PedidoModelo;
 
@@ -32,18 +34,54 @@ public class ClientesVista {
 		System.out.println("5. Salir");
 	}
 	
-	public PedidoModelo opcionCrearPedido() {
-		return new PedidoModelo(clienteId, null, clienteId, clienteId, null);
+	public ClienteModelo crearNuevoCliente() {
+		
+		GestionRepControl gestionRepControl = new GestionRepControl();
+		Scanner scanner = new Scanner(System.in);
+
+	    System.out.println("=== Crear nuevo cliente ===");
+	    System.out.print("Nombre: ");
+	    String nombre = scanner.nextLine();
+	    System.out.print("Apellido: ");
+	    String apellido = scanner.nextLine();
+	    System.out.print("Empresa: ");
+	    String empresa = scanner.nextLine();
+	    System.out.print("Teléfono: ");
+	    String telefono = scanner.nextLine();
+	    System.out.print("DNI: ");
+	    String dni = scanner.nextLine();
+	    System.out.print("CUIT: ");
+	    String cuit = scanner.nextLine();
+	    
+	    ClienteModelo nuevoCliente = new ClienteModelo(nombre, apellido, empresa, telefono, dni, cuit);
+	    
+	    boolean guardado = gestionRepControl.registrarCliente(nuevoCliente);
+		
+		if (guardado) {
+			mostrarMensaje("Cliente creado exitosamente.");
+			return nuevoCliente;
+		} else {
+			mostrarMensaje("Error al crear el cliente.");
+		}
+		return null;
 	}
 	
 	public void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
     }
 	
-	public void mostrarListaClientes(List<ClienteModelo> clientes) {
+	public static void mostrarListaClientes(List<ClienteModelo> clientes) {
 		System.out.println("Lista de Clientes:");
 		for (ClienteModelo cliente : clientes) {
-			System.out.println(cliente);
+			 System.out.println("───────────────────────────────");
+			    System.out.println("ID Cliente: " + cliente.getClienteId());
+			    System.out.println("Nombre:     " + cliente.getNombre());
+			    System.out.println("Apellido:   " + cliente.getApellido());
+			    System.out.println("Empresa:    " + cliente.getEmpresa());
+			    System.out.println("Teléfono:   " + cliente.getTelefono());
+			    System.out.println("DNI:        " + cliente.getDni());
+			    System.out.println("CUIT:       " + cliente.getCuit());
+				 System.out.println("───────────────────────────────");
 		}
 	}
 	

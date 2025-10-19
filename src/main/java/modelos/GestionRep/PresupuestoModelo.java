@@ -1,17 +1,20 @@
 package modelos.GestionRep;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PresupuestoModelo {
 
 	private String presupuestoId;
 	private String ordenId;
 	private LocalDateTime fechaCreacion;
-	private String detalleRepId;
 	private String adminId;
 	private LocalDateTime fechaEstimada;
 	private float total;
 	private String estado;
+	private List<RepuestoModelo> repuestos = new ArrayList<>();
+
 
 	public PresupuestoModelo(
 			String ordenId,
@@ -20,17 +23,17 @@ public class PresupuestoModelo {
 			String detalleRepId,
 			LocalDateTime fechaEstimada,
 			float total,
-			String estado
+			String estado, List<RepuestoModelo> repuestos
 			) {
 		
 		this.presupuestoId = generarPresupuestoId();
 		this.ordenId = ordenId;
 		this.adminId = adminId;
 		this.fechaCreacion = fechaCreacion;
-		this.detalleRepId = detalleRepId;
 		this.fechaEstimada = fechaEstimada;
 		this.total = total;
-		this.estado = estado;		
+		this.estado = estado;	
+		this.repuestos = repuestos;
 	}
 	
 	public String generarPresupuestoId() {
@@ -67,14 +70,6 @@ public class PresupuestoModelo {
 
     public void setAdminId(String adminId) {
         this.adminId = adminId;
-    }
-
-    public String getDetalleRepId() {
-        return detalleRepId;
-    }
-
-    public void setDetalleRepId(String detalleRepId) {
-        this.detalleRepId = detalleRepId;
     }
 
     public LocalDateTime getFechaEstimada() {

@@ -22,7 +22,7 @@ public class FormPresupVista {
 	}
 	
 	public PresupuestoModelo ingresarPresupuesto() {
-		return new PresupuestoModelo(presupuestoId, fechaCreacion, detalleReparacion, ordenTrabajoId, fechaCreacion, total, detalleReparacion);
+		return new PresupuestoModelo(presupuestoId, fechaCreacion, detalleReparacion, ordenTrabajoId, fechaCreacion, total, detalleReparacion, null);
 	}
 	
 	public void abrirFormulario() {

@@ -72,7 +72,7 @@ Scanner scanner = new Scanner(System.in);
                 case 1:
                     System.out.println("=== Nueva Orden de trabajo ===");
                        // Lógica para la Opción 1
-                    ordenVista.mostrarFormularioRegistro();
+                    ordenVista.opcionCrearOrden();
                     break;
                 case 2:
                     System.out.println("=== Lista de Órdenes de trabajo ===");

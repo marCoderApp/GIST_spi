@@ -24,8 +24,31 @@ public class AdminModelo {
 	}
 	
 	public String generarId() {
-		// Lógica para generar un ID único para el administrador
-		return "ADM" + System.currentTimeMillis();
+		String sql = "SELECT cliente_id FROM ADMINISTRADOR ORDER BY  DESC LIMIT 1";
+	    String ultimoId = null;
+	    try (PreparedStatement ps = conexion.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            ultimoId = rs.getString("administrador_id");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    int siguienteNumero = 1;
+
+	    if (ultimoId != null && ultimoId.startsWith("ADM")) {
+	        try {
+	            int numeroActual = Integer.parseInt(ultimoId.substring(3));
+	            siguienteNumero = numeroActual + 1;
+	        } catch (NumberFormatException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return String.format("ADM%04d", siguienteNumero);
 	}
 	
 	
@@ -45,10 +68,7 @@ public class AdminModelo {
 	                cred.setFechaCreacion(result.getTimestamp("fechaCreacion").toLocalDateTime());
 	                cred.setUsuarioId(result.getString("usuario_id"));
 	                
-	                
-	                return cred;
-	                
-	                
+	                return cred;             
 	            }
 	        } catch (SQLException e) {
 	            e.printStackTrace();
