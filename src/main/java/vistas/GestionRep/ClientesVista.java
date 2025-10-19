@@ -55,9 +55,9 @@ public class ClientesVista {
 	    
 	    ClienteModelo nuevoCliente = new ClienteModelo(nombre, apellido, empresa, telefono, dni, cuit);
 	    
-	    boolean guardado = gestionRepControl.registrarCliente(nuevoCliente);
+	    ClienteModelo guardado = gestionRepControl.registrarCliente(nuevoCliente);
 		
-		if (guardado) {
+		if (guardado != null) {
 			mostrarMensaje("Cliente creado exitosamente.");
 			return nuevoCliente;
 		} else {
