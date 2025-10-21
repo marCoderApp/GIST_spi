@@ -145,6 +145,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 				
 				return maquinasSeleccionadas;
 			} else if (opcion == 2) {
+				List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas();
+				return nuevasMaquinas;
 				
 			} else {
 				System.out.println("Opción inválida. Por favor, intente de nuevo.");
@@ -196,8 +198,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
                         rs.getString("tipo"),
                         rs.getString("marca"),
                         rs.getString("modelo"),
-                        rs.getString("color"),
-                        rs.getString("orden_id"));
+                        rs.getString("color"));
                 maquina.setMaquinaId(rs.getString("id"));
                 return maquina;
             }
@@ -211,9 +212,47 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 	private List<MaquinaModelo> agregarMaquinasNuevas() {
 		
+		Scanner scanner	 = new Scanner(System.in);
+		List<MaquinaModelo> nuevasMaquinas = new ArrayList<>();
+		MaquinaModelo nuevaMaquina = new MaquinaModelo(null, null, null, null);
 		
+		boolean agregarOtra = true;
+
+        System.out.println("=== Registrar nuevas máquinas ===");
+
+        while (agregarOtra) {
+            System.out.print("Tipo (eléctrica o combustión): ");
+            String tipo = scanner.nextLine();
+
+            System.out.print("Marca: ");
+            String marca = scanner.nextLine();
+
+            System.out.print("Modelo: ");
+            String modelo = scanner.nextLine();
+
+            System.out.print("Color: ");
+            String color = scanner.nextLine();
+
+            
+            //Asignar valores a la nueva máquina
+            
+            nuevaMaquina.setTipo(tipo);
+            nuevaMaquina.setMarca(marca);
+            nuevaMaquina.setModelo(modelo);
+            nuevaMaquina.setColor(color);
+            
+            nuevasMaquinas.add(nuevaMaquina);
+
+            System.out.println("Máquina registrada con ID: " + nuevaMaquina.getMaquinaId());
+
+            System.out.print("¿Desea agregar otra máquina? (s/n): ");
+            String respuesta = scanner.nextLine();
+            if (!respuesta.equalsIgnoreCase("s")) {
+                agregarOtra = false;
+            }
+        }
 		
-		return null;
+		return nuevasMaquinas;
 	}
 
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {

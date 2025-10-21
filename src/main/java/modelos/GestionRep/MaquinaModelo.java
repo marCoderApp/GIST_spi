@@ -16,17 +16,15 @@ public class MaquinaModelo {
 	private String marca;
 	private String modelo;
 	private String color;
-	private String ordenId;
 	private static Connection conexion = ConexionDB.conectar();
 	// Constructors
 	
-	public MaquinaModelo(String tipo, String marca, String modelo, String color, String ordenId) {
+	public MaquinaModelo(String tipo, String marca, String modelo, String color) {
 		this.maquinaId = generarMaquinaId();
 		this.tipo = tipo;
 		this.marca = marca;
 		this.modelo = modelo;
 		this.color = color;
-		this.ordenId = ordenId;
 	}
 	
 	public String generarMaquinaId() {
@@ -68,8 +66,7 @@ public class MaquinaModelo {
 				MaquinaModelo maquina = new MaquinaModelo(rs.getString("tipo"), 
 						rs.getString("marca"),
 						rs.getString("modelo"),
-						rs.getString("color"),
-						rs.getString("orden_id"));
+						rs.getString("color"));
 				maquina.setMaquinaId(rs.getString("id"));
 				listaMaquinas.add(maquina);
 			}
@@ -89,8 +86,7 @@ public class MaquinaModelo {
 					+ maquina.getMarca() +
 					", Modelo: " + maquina.getModelo() +
 					", Color: " + maquina.getColor()
-					+ ", Orden ID: " 
-					+ maquina.getOrdenId());
+					+ ", Orden ID: ");
 		}
 	}
 	
@@ -138,9 +134,6 @@ public class MaquinaModelo {
 		return color;
 	}
 
-	public String getOrdenId() {
-		return ordenId;
-	}
 	
 	// Setters
 	
@@ -164,9 +157,6 @@ public class MaquinaModelo {
 		this.color = color;
 	}
 	
-	public void setOrdenId(String ordenId) {
-		this.ordenId = ordenId;
-	}
 	
 	// Methods
 	

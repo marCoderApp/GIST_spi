@@ -48,7 +48,7 @@ public class AdminModelo {
 	        }
 	    }
 
-	    return String.format("ADM%04d", siguienteNumero);
+	    return String.format("ADM%03d", siguienteNumero);
 	}
 	
 	
@@ -61,12 +61,13 @@ public class AdminModelo {
 	            ps.setString(1, nombreUsuario);
 	            ResultSet result = ps.executeQuery();
 	            if (result.next()) {
-	                Credenciales cred = new Credenciales(null, null, null, null, null);
+	                Credenciales cred = new Credenciales(null, null, null, null, null, null);
 	                cred.setUsuario(result.getString("usuario"));
 	                cred.setContrasena(result.getString("contraseña"));
 	                cred.setRol(modelos.GestionRep.RolCredencial.valueOf(result.getString("rol")));
 	                cred.setFechaCreacion(result.getTimestamp("fechaCreacion").toLocalDateTime());
-	                cred.setUsuarioId(result.getString("usuario_id"));
+	                cred.setAdmin_id(result.getString("admin_id"));
+	                cred.setTecnico_id(result.getString("tecnico_id"));
 	                
 	                return cred;             
 	            }
