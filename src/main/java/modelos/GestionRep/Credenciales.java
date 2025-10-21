@@ -8,15 +8,19 @@ public class Credenciales {
 	    private String contraseña;
 	    private RolCredencial rol;
 	    private LocalDateTime fechaCreacion; 
-	    private String usuarioId;
+	    private String admin_id;
+	    private String tecnico_id;
 	    
 
-	    public Credenciales(String usuario, String contraseña, RolCredencial rol, LocalDateTime fechaCreacion, String usuarioId) {
+	    public Credenciales(String usuario, String contraseña, RolCredencial rol, LocalDateTime fechaCreacion,
+	    		String admin_id,
+	    		String tecnico_id) {
 	        this.usuario = usuario;
 	        this.contraseña = contraseña;
 	        this.setRol(rol);
 	        this.setFechaCreacion(fechaCreacion);
-	        this.setUsuarioId(usuarioId);
+	        this.setAdmin_id(admin_id);
+	        this.setTecnico_id(tecnico_id);
 	    }
 
 	    public String getUsuario() {
@@ -51,11 +55,20 @@ public class Credenciales {
 			this.fechaCreacion = fechaCreacion;
 		}
 
-		public String getUsuarioId() {
-			return usuarioId;
+
+		public String getAdmin_id() {
+			return admin_id;
 		}
 
-		public void setUsuarioId(String usuarioId) {
-			this.usuarioId = usuarioId;
+		public void setAdmin_id(String admin_id) {
+			this.admin_id = admin_id;
+		}
+
+		public String getTecnico_id() {
+			return tecnico_id;
+		}
+
+		public void setTecnico_id(String tecnico_id) {
+			this.tecnico_id = tecnico_id;
 		}
 }

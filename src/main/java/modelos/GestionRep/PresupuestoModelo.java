@@ -37,7 +37,7 @@ public class PresupuestoModelo {
 	}
 	
 	public String generarPresupuestoId() {
-		return "PRESU-" + Math.random();
+		return "PRE" + Math.random();
 	}
 	
 	public String getPresupuestoId() {

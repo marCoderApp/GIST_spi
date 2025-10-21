@@ -48,7 +48,10 @@ public class OrdenTrabajoVista {
 		System.out.println("-----------------------------");
 		String clienteId = gestionRepControl.elegirCliente();
 		System.out.println("Maquinas");
-		String descripcionFalla = scanner.nextLine();
+		List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas();
+		for (MaquinaModelo maquina : maquinas) {
+			System.out.println(" - " + maquina.getTipo() + " (ID: " + maquina.getMaquinaId() + ")");
+		}
 		
 	}
 	
