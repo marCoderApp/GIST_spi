@@ -90,12 +90,14 @@ public class MaquinaModelo {
 		}
 	}
 	
-	private void crearNuevaMaquina(List<MaquinaModelo> maquinas) {
+	public boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
 		// Lógica para crear una nueva máquina
-		String sql = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color) VALUES (?, ?, ?, ?, ?)";
+		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color) VALUES (?, ?, ?, ?, ?)";
+		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";
 	    
 	    try (Connection conexion = ConexionDB.conectar();
-	         PreparedStatement ps = conexion.prepareStatement(sql)) {
+	         PreparedStatement ps = conexion.prepareStatement(sqlInsertarMaquina);
+	    	PreparedStatement psOrdenMaquina = conexion.prepareStatement(sqlOrdenMaquina)) {
 
 	        for (MaquinaModelo m : maquinas) {
 	            ps.setString(1, m.getMaquinaId());
@@ -103,14 +105,21 @@ public class MaquinaModelo {
 	            ps.setString(3, m.getMarca());
 	            ps.setString(4, m.getModelo());
 	            ps.setString(5, m.getColor());
-	            ps.executeUpdate();
+	            ps.addBatch();
+	            
+	            psOrdenMaquina.setString(1, ordenId);
+	            psOrdenMaquina.setString(2, m.getMaquinaId());
+	            psOrdenMaquina.addBatch();
 	        }
-
-	        System.out.println("Máquinas registradas correctamente ✅");
+	        
+	        ps.executeBatch();
+	        psOrdenMaquina.executeBatch();
+	        return true;
 
 	    } catch (SQLException e) {
 	        System.err.println("Error al registrar máquinas: " + e.getMessage());
 	    }
+	    return false;
 	}
 	
 	// Getters

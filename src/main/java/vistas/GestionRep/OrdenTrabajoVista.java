@@ -42,13 +42,14 @@ public class OrdenTrabajoVista {
 	public void ingresarDatos() {
 		Scanner scanner = new Scanner(System.in);
 		GestionRepControl gestionRepControl = new GestionRepControl();
+		OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, descripcion, descripcion, fechaCreacion, fechaCreacion, descripcion, descripcion, null);
 		
 		System.out.println("-----------------------------");
 		System.out.println("CREAR NUEVA ORDEN DE TRABAJO");
 		System.out.println("-----------------------------");
 		String clienteId = gestionRepControl.elegirCliente();
 		System.out.println("Maquinas");
-		List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas();
+		List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas(orden);
 		for (MaquinaModelo maquina : maquinas) {
 			System.out.println(" - " + maquina.getTipo() + " (ID: " + maquina.getMaquinaId() + ")");
 		}

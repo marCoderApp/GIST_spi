@@ -119,7 +119,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		return "";
     }
 	
-	public List<MaquinaModelo> seleccionarMaquinas() {
+	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
+		String ordenId = orden.getOrdenId();
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Seleccione una opción:");
 		System.out.println("1. Seleccionar máquina/s existente/s");
@@ -139,13 +140,13 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 				
 				
 				if (scanner.nextInt() == 1) {
-					List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas();
+					List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas(ordenId);
 					maquinasSeleccionadas.addAll(nuevasMaquinas);
 				}
 				
 				return maquinasSeleccionadas;
 			} else if (opcion == 2) {
-				List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas();
+				List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas(ordenId);
 				return nuevasMaquinas;
 				
 			} else {
@@ -210,8 +211,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		return null;
 	}
 
-	private List<MaquinaModelo> agregarMaquinasNuevas() {
-		
+	private List<MaquinaModelo> agregarMaquinasNuevas(String ordenId) {
 		Scanner scanner	 = new Scanner(System.in);
 		List<MaquinaModelo> nuevasMaquinas = new ArrayList<>();
 		MaquinaModelo nuevaMaquina = new MaquinaModelo(null, null, null, null);
@@ -242,17 +242,29 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             nuevaMaquina.setColor(color);
             
             nuevasMaquinas.add(nuevaMaquina);
-
-            System.out.println("Máquina registrada con ID: " + nuevaMaquina.getMaquinaId());
-
-            System.out.print("¿Desea agregar otra máquina? (s/n): ");
-            String respuesta = scanner.nextLine();
-            if (!respuesta.equalsIgnoreCase("s")) {
-                agregarOtra = false;
-            }
+            
+            try {
+				boolean guardado = nuevaMaquina.guardarNuevaMaquina(nuevasMaquinas, ordenId);
+					if (guardado) {
+						System.out.println("Máquinas registradas correctamente ✅");
+					}
+		            System.out.print("¿Desea agregar otra máquina? (s/n): ");
+		            String respuesta = scanner.nextLine();
+		            if (!respuesta.equalsIgnoreCase("s")) {
+		                agregarOtra = false;
+		            }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         }
 		
 		return nuevasMaquinas;
+	}
+	
+	public void insertarOrdenBase(OrdenTrabajoModelo orden) {
+		// Lógica para insertar la orden de trabajo en la base de datos
+		
+		String sqlInsertarOrdenBase = "INSERT INTO ORDEN_TRABAJO (orden_id, cliente_id, descripcion, fecha_creacion, estado, admin_id) VALUES (?, ?, ?, ?, ?, ?)";
 	}
 
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {

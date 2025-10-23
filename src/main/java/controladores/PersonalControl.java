@@ -27,11 +27,8 @@ public class PersonalControl {
 		Credenciales cred_bdgist = user.buscarUsuario(credencialIngresada.getUsuario());
 		
 		if(cred_bdgist != null && cred_bdgist.getContrasena().equals(credencialIngresada.getContrasena())) {
-			
-			System.out.println("Login Exitoso, Bienvenido " + cred_bdgist.getUsuario() + ".");
 			return true;
 		}else {
-			System.out.println("Credenciales Incorrectas, Intente de Nuevo.");
 			return false;
 		}
 			
