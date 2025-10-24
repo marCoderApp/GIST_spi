@@ -85,6 +85,8 @@ public class OrdenTrabajoVista {
 			System.out.println(" - " + maquina.getTipo() + " (ID: " + maquina.getMaquinaId() + ")");
 		}
 		
+		
+		
 	}
 	
 
