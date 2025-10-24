@@ -10,6 +10,8 @@ public class PersonalControl {
 	private boolean tecnicoGuardado;
 	private boolean contraseñaValida;
 	private TecnicoModelo datosTecnico;
+	public static String adminIdPersonalControl;
+	public static String tecnicoIdPersonalControl;
 	
 	public PersonalControl(AdminModelo datosAdministrador,
 			boolean tecnicoGuardado,
@@ -26,6 +28,8 @@ public class PersonalControl {
 		
 		Credenciales cred_bdgist = user.buscarUsuario(credencialIngresada.getUsuario());
 		
+		filtrarIdPorRol(cred_bdgist, cred_bdgist.getRol().getValor());
+		
 		if(cred_bdgist != null && cred_bdgist.getContrasena().equals(credencialIngresada.getContrasena())) {
 			return true;
 		}else {
@@ -33,6 +37,28 @@ public class PersonalControl {
 		}
 			
     }
+	
+	
+	public void filtrarIdPorRol(Credenciales cred_bdgist, String rolValor) {
+
+		if (rolValor == "ADMIN") {
+			PersonalControl.adminIdPersonalControl = cred_bdgist.getAdmin_id();
+		}else {
+			PersonalControl.tecnicoIdPersonalControl = cred_bdgist.getTecnico_id();
+		}
+	}
+	
+	public String obtenerTecnicoId(String usuarioId) {
+
+		return usuarioId;
+
+	}
+	
+	public String obtenerAdminId(String usuarioId) {
+		
+		return usuarioId;
+		
+	}
 	
 	public void registrarTecnico(TecnicoModelo tecnico) {
 		

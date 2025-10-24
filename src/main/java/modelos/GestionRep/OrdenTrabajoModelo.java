@@ -1,5 +1,6 @@
 package modelos.GestionRep;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,21 +16,23 @@ public class OrdenTrabajoModelo {
 	private List<MaquinaModelo> maquinas = new ArrayList<>();
 	private String descripcion_falla;
 	private String detalleRepId;
-	private LocalDateTime fechaIngreso;
+	private LocalDate fechaIngreso;
 	private LocalDateTime fechaRetiro = null;
 	private String adminId;
 	private String presupuesto_id;
 	private EstadoOrden estado = EstadoOrden.PENDIENTE;
+	private String tecnicoId;
 	
 	public OrdenTrabajoModelo(
 			String cliente_id,
 			List<MaquinaModelo> maquinas, 
 			String descripcion_falla,
 			String detalleRepId,
-			LocalDateTime fechaIngreso,
+			LocalDate fechaIngreso,
 			LocalDateTime fechaRetiro,
 			String adminId, String presupuesto_id,
-			EstadoOrden estado
+			EstadoOrden estado,
+			String tecnicoId
 			) {
 		
 		this.ordenId = generarNumeroOrden();
@@ -42,6 +45,7 @@ public class OrdenTrabajoModelo {
 	    this.adminId = adminId;
 	    this.presupuesto_id = presupuesto_id;
 	    this.estado = estado;
+	    this.tecnicoId = setTecnicoId(tecnicoId);
 	}
 	
 	public String generarNumeroOrden() {
@@ -93,12 +97,12 @@ public class OrdenTrabajoModelo {
         this.detalleRepId = detalleRepId;
     }
 
-    public LocalDateTime getFechaIngreso() {
+    public LocalDate getFechaIngreso() {
         return fechaIngreso;
     }
 
-    public void setFechaIngreso(LocalDateTime fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
+    public void setFechaIngreso(LocalDate localDate) {
+        this.fechaIngreso = localDate;
     }
 
     public LocalDateTime getFechaRetiro() {
@@ -158,6 +162,14 @@ public class OrdenTrabajoModelo {
 
 	public void setEstado(EstadoOrden estado) {
 		this.estado = estado;
+	}
+
+	public String getTecnicoId() {
+		return tecnicoId;
+	}
+
+	public String setTecnicoId(String tecnicoId) {
+		return this.tecnicoId = tecnicoId;
 	}
 
     
