@@ -3,6 +3,7 @@ package controladores;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class GestionRepControl {
 	private boolean ordenCreada;
 	private List<OrdenTrabajoModelo> ordenesTrabajo = new ArrayList<>();
 	public static Connection conexion = ConexionDB.conectar();
+	public static String clienteIdGestionRep;
 	
 	public GestionRepControl() {
 		
@@ -106,12 +108,15 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 				System.out.println("Ingrese el ID del cliente: ");
 				String clienteId = scanner.nextLine();
 				System.out.println("Cliente seleccionado: " + clienteId);
+				clienteIdGestionRep = clienteId;
 				return clienteId;
 			} else if (opcion == 2) {
 				System.out.println("Creando nuevo cliente...");
 				
 				ClienteModelo nuevoCliente = clientesVista.crearNuevoCliente();
+				clienteIdGestionRep = nuevoCliente.getClienteId();
 				return nuevoCliente.getClienteId(); // Retornar el ID del nuevo cliente
+				
 			} else {
 				System.out.println("Opción inválida. Por favor, intente de nuevo.");
 			}
@@ -262,14 +267,35 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	}
 	
 	public void insertarOrdenBase(OrdenTrabajoModelo orden) {
-		// Lógica para insertar la orden de trabajo en la base de datos
 		
-		String sqlInsertarOrdenBase = "INSERT INTO ORDEN_TRABAJO (orden_id, cliente_id, descripcion, fecha_creacion, estado, admin_id) VALUES (?, ?, ?, ?, ?, ?)";
+		String sqlInsertarOrdenBase = "INSERT INTO "
+				+ "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, descripcion_falla, fecha_ingreso, estado, admin_id, tecnico_id) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+		
+			try(PreparedStatement psInsertarOrdenBase = conexion.prepareStatement(sqlInsertarOrdenBase)){
+					psInsertarOrdenBase.setString(1, orden.getOrdenId());
+					psInsertarOrdenBase.setString(2, clienteIdGestionRep);
+					psInsertarOrdenBase.setString(3, orden.getDescripcion_falla());
+					if (orden.getFechaIngreso() == null) {
+					    orden.setFechaIngreso(LocalDate.now()); // o LocalDateTime.now() si usás fecha+hora
+					}
+					psInsertarOrdenBase.setDate(4, java.sql.Date.valueOf(orden.getFechaIngreso()));
+					psInsertarOrdenBase.setString(5, orden.getEstado().getValor());
+					psInsertarOrdenBase.setString(6, PersonalControl.adminIdPersonalControl);
+					psInsertarOrdenBase.setString(7, PersonalControl.tecnicoIdPersonalControl);
+				
+					psInsertarOrdenBase.executeUpdate();
+				
+			}catch(Exception e) {
+				 System.out.println("Error al insertar Orden: " + e.getMessage());
+				 e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
+			}
 	}
 
+
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
-		// Lógica para registrar el detalle de reparación
-		return detalle; // Retorna el detalle registrado (simulado)
+		
+		return detalle; 
 	}
 	
 	public void crearPresupuesto(PresupuestoModelo presupuesto) {

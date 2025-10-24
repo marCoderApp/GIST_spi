@@ -1,10 +1,12 @@
 package vistas.GestionRep;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
 import controladores.GestionRepControl;
+import controladores.PersonalControl;
 import modelos.Personal.TecnicoModelo;
 import modelos.GestionRep.*;	
 
@@ -42,12 +44,41 @@ public class OrdenTrabajoVista {
 	public void ingresarDatos() {
 		Scanner scanner = new Scanner(System.in);
 		GestionRepControl gestionRepControl = new GestionRepControl();
-		OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, descripcion, descripcion, fechaCreacion, fechaCreacion, descripcion, descripcion, null);
+		OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, null, null, null, null, null, null, null, null);
 		
 		System.out.println("-----------------------------");
 		System.out.println("CREAR NUEVA ORDEN DE TRABAJO");
 		System.out.println("-----------------------------");
-		String clienteId = gestionRepControl.elegirCliente();
+		gestionRepControl.elegirCliente();
+		String clienteId = GestionRepControl.clienteIdGestionRep;
+		System.out.println("Ingrese la descripción de la falla");
+		String descripcion_falla = scanner.nextLine();
+		String tecnicoId = PersonalControl.tecnicoIdPersonalControl;
+		String adminId = PersonalControl.adminIdPersonalControl;
+		
+		orden.setCliente_id(clienteId);
+		orden.setDescripcion_falla(descripcion_falla);
+		orden.setTecnicoId(tecnicoId);
+		orden.setAdminId(adminId);
+		orden.setEstado(EstadoOrden.PENDIENTE);
+		
+	    LocalDate fecha = (orden.getFechaIngreso() != null)
+                ? orden.getFechaIngreso()
+                : LocalDate.now();
+
+		
+		 System.out.println("\n=== DATOS DE LA ORDEN A INSERTAR ===");
+	        System.out.println("Orden ID: " + orden.getOrdenId());
+	        System.out.println("Cliente ID: " + GestionRepControl.clienteIdGestionRep);
+	        System.out.println("Descripción: " + orden.getDescripcion_falla());
+	        System.out.println("Fecha creación: " + fecha);
+	        System.out.println("Estado: " + orden.getEstado().getValor());
+	        System.out.println("Admin ID: " + PersonalControl.adminIdPersonalControl);
+	        System.out.println("Técnico ID: " + PersonalControl.tecnicoIdPersonalControl);
+	        System.out.println("=====================================\n");
+		
+		gestionRepControl.insertarOrdenBase(orden);
+		
 		System.out.println("Maquinas");
 		List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas(orden);
 		for (MaquinaModelo maquina : maquinas) {
