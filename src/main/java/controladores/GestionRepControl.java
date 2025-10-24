@@ -24,6 +24,7 @@ public class GestionRepControl {
 	private List<OrdenTrabajoModelo> ordenesTrabajo = new ArrayList<>();
 	public static Connection conexion = ConexionDB.conectar();
 	public static String clienteIdGestionRep;
+	private String ordenId;
 	
 	public GestionRepControl() {
 		
@@ -178,6 +179,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 		    if (maquina1 != null) {
 		        maquinasSeleccionadas.add(maquina1);
+		        insertarEnOrdenMaquinas(maquinasSeleccionadas);
 		        return maquinasSeleccionadas;
 		        
 		    } else {
@@ -190,6 +192,26 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		
 	}
 	
+	private void insertarEnOrdenMaquinas(List <MaquinaModelo> maquinasSeleccionadas) {
+		
+		String sqlInsertarEnOrdenMaquinas = "INSERT INTO orden_maquinas"
+				+ "(orden_id, maquina_id) VALUES (?, ?)";
+		
+		try(PreparedStatement ps = conexion.prepareStatement(sqlInsertarEnOrdenMaquinas)){
+			
+			for(MaquinaModelo m : maquinasSeleccionadas) {
+				ps.setString(1, ordenId);
+				ps.setString(2, m.getMaquinaId());
+				ps.addBatch();
+			}
+			
+			ps.executeBatch();
+			
+		}catch(Exception e) {
+			System.out.println("Error al buscar la máquina: " + e.getMessage());
+		}
+		
+	}
 	
 	private MaquinaModelo buscarMaquinaPorId(String id) {
 		
@@ -267,6 +289,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	}
 	
 	public void insertarOrdenBase(OrdenTrabajoModelo orden) {
+		
+		ordenId = orden.getOrdenId();
 		
 		String sqlInsertarOrdenBase = "INSERT INTO "
 				+ "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, descripcion_falla, fecha_ingreso, estado, admin_id, tecnico_id) "

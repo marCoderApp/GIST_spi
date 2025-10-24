@@ -1,9 +1,14 @@
 package modelos.GestionRep;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import controladores.GestionRepControl;
 import modelos.GestionRep.EstadoOrden;
 
 
@@ -49,11 +54,33 @@ public class OrdenTrabajoModelo {
 	}
 	
 	public String generarNumeroOrden() {
-		int bloque = 10 + ((contador - 1) / 1000);
-		int numeroDentroBloque = ((contador - 1) % 1000) + 1;
-		String codigo = String.format("ORDEN%d%03d", bloque, numeroDentroBloque);
-		contador++;
-		return codigo;
+		String sql = "SELECT orden_trabajo_id FROM orden_de_trabajo ORDER BY orden_trabajo_id DESC LIMIT 1";
+	    String ultimoId = null;
+	    
+	    try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            ultimoId = rs.getString("orden_trabajo_id");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    int siguienteNumero = 1;
+
+	    if (ultimoId != null && ultimoId.startsWith("ORDEN")) {
+	        try {
+	            int numeroActual = Integer.parseInt(ultimoId.substring(5));
+	            System.out.println(numeroActual);
+	            siguienteNumero = numeroActual + 1;
+	        } catch (NumberFormatException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return String.format("ORDEN%05d", siguienteNumero);
 	}
 	
 	// 🔹 Getters y Setters
