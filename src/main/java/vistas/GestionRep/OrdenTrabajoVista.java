@@ -1,6 +1,7 @@
 package vistas.GestionRep;
 
-import java.time.LocalDate;
+import java.sql.PreparedStatement;
+//import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
@@ -62,12 +63,12 @@ public class OrdenTrabajoVista {
 		orden.setAdminId(adminId);
 		orden.setEstado(EstadoOrden.PENDIENTE);
 		
-	    LocalDate fecha = (orden.getFechaIngreso() != null)
+	    /*LocalDate fecha = (orden.getFechaIngreso() != null)
                 ? orden.getFechaIngreso()
-                : LocalDate.now();
+                : LocalDate.now();*/
 
 		
-		 System.out.println("\n=== DATOS DE LA ORDEN A INSERTAR ===");
+		/* System.out.println("\n=== DATOS DE LA ORDEN A INSERTAR ===");
 	        System.out.println("Orden ID: " + orden.getOrdenId());
 	        System.out.println("Cliente ID: " + GestionRepControl.clienteIdGestionRep);
 	        System.out.println("Descripción: " + orden.getDescripcion_falla());
@@ -75,23 +76,43 @@ public class OrdenTrabajoVista {
 	        System.out.println("Estado: " + orden.getEstado().getValor());
 	        System.out.println("Admin ID: " + PersonalControl.adminIdPersonalControl);
 	        System.out.println("Técnico ID: " + PersonalControl.tecnicoIdPersonalControl);
-	        System.out.println("=====================================\n");
+	        System.out.println("=====================================\n");*/
 		
 		gestionRepControl.insertarOrdenBase(orden);
 		
 		System.out.println("Maquinas");
 		List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas(orden);
 		for (MaquinaModelo maquina : maquinas) {
-			System.out.println(" - " + maquina.getTipo() + " (ID: " + maquina.getMaquinaId() + ")");
+			System.out.println(" - " + maquina.getTipo() + " - " + maquina.getMarca() + " (ID: " + maquina.getMaquinaId() + ")");
 		}
 		
-		
-		
+			System.out.println("Ingrese Observaciones");
+			String observaciones = scanner.nextLine();
+			
+			orden.setObservaciones(observaciones);
+			
+			guardarCambios(orden, observaciones);
+			
+			if(GestionRepControl.chequearIdOrden(orden.getOrdenId())) {
+				System.out.println("La Orden de Trabajo ha sido agregada correctamente");
+			}else {
+				System.out.println("Se ha producido un error.");
+			}	
 	}
 	
 
-	public void guardarCambios(OrdenTrabajoModelo orden) {
+	public void guardarCambios(OrdenTrabajoModelo orden, String observaciones) {
+		String sqlGuardarCambios = "UPDATE orden_de_trabajo SET observaciones = ? WHERE "
+				+ "orden_trabajo_id = ? ";
 		
+		try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlGuardarCambios)){
+			ps.setString(1, observaciones);
+			ps.setString(2, orden.getOrdenId());
+			
+			ps.executeUpdate();
+		}catch(Exception e) {
+			 System.out.println("Error al insertar observaciones: " + e.getMessage());
+		}
 	}
 	
 	public void mostrarMensaje(String mensaje, boolean exito) {

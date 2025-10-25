@@ -9,12 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controladores.GestionRepControl;
-import modelos.GestionRep.EstadoOrden;
+//import modelos.GestionRep.EstadoOrden;
 
 
 public class OrdenTrabajoModelo {
-	
-	private static int contador = 500;
 	
 	private String ordenId;
 	private String cliente_id;
@@ -27,6 +25,7 @@ public class OrdenTrabajoModelo {
 	private String presupuesto_id;
 	private EstadoOrden estado = EstadoOrden.PENDIENTE;
 	private String tecnicoId;
+	private String observaciones;
 	
 	public OrdenTrabajoModelo(
 			String cliente_id,
@@ -197,6 +196,14 @@ public class OrdenTrabajoModelo {
 
 	public String setTecnicoId(String tecnicoId) {
 		return this.tecnicoId = tecnicoId;
+	}
+
+	public String getObservaciones() {
+		return observaciones;
+	}
+
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
 	}
 
     
