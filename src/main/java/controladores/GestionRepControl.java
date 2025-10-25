@@ -139,7 +139,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 				List<MaquinaModelo> maquinas = MaquinaModelo.listarMaquinas();
 				MaquinaModelo.mostrarListaMaquinas(maquinas);
 				List<MaquinaModelo> maquinasSeleccionadas = agregarMaquinasExistentes();
-				
+		        insertarEnOrdenMaquinas(maquinasSeleccionadas);
 				System.out.println("Desea añadir una nueva máquina?:");
 				System.out.println("1. Si");
 				System.out.println("2. No");
@@ -179,8 +179,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 		    if (maquina1 != null) {
 		        maquinasSeleccionadas.add(maquina1);
-		        insertarEnOrdenMaquinas(maquinasSeleccionadas);
-		        return maquinasSeleccionadas;
+		        
 		        
 		    } else {
 		        System.out.println("⚠️  No se encontró la máquina con ID: " + id);
@@ -316,6 +315,23 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 			}
 	}
 
+	public static boolean chequearIdOrden(String ordenId) {
+		String sqlCheckOrdenId = "SELECT * FROM orden_de_trabajo WHERE orden_trabajo_id = ?";
+		boolean esGuardado = false;
+		
+		try(PreparedStatement ps = conexion.prepareStatement(sqlCheckOrdenId)){
+			ps.setString(1, ordenId);
+			
+			  try (ResultSet rs = ps.executeQuery()) {
+		            esGuardado = rs.next(); 
+		        }
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return esGuardado;
+		
+	}
 
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
 		

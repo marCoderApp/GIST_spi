@@ -15,7 +15,6 @@ public class Main {
 		Credenciales credenciales = new Credenciales(null, null, null, null, null, null);
 		LoginVista loginVista = new LoginVista(null, null, null, null, 0, false);
 		Connection conn = ConexionDB.conectar();
-		String adminId = null;
 		
 		Scanner scanner = new Scanner(System.in);
 		
@@ -34,9 +33,10 @@ public class Main {
 		if (loginVista.ingresarCredenciales(credenciales)) {
 			mostrarMenu();
 		} else {
-			System.out.println("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+			System.out.println("Credenciales inválidas. Por favor, intentalo de nuevo.");
 			
 		}
+		
 		scanner.close();
       
     }
