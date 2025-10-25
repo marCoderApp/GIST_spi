@@ -26,6 +26,7 @@ public class OrdenTrabajoModelo {
 	private EstadoOrden estado = EstadoOrden.PENDIENTE;
 	private String tecnicoId;
 	private String observaciones;
+	private String despacho;
 	
 	public OrdenTrabajoModelo(
 			String cliente_id,
@@ -36,7 +37,8 @@ public class OrdenTrabajoModelo {
 			LocalDateTime fechaRetiro,
 			String adminId, String presupuesto_id,
 			EstadoOrden estado,
-			String tecnicoId
+			String tecnicoId,
+			String despacho
 			) {
 		
 		this.ordenId = generarNumeroOrden();
@@ -50,6 +52,7 @@ public class OrdenTrabajoModelo {
 	    this.presupuesto_id = presupuesto_id;
 	    this.estado = estado;
 	    this.tecnicoId = setTecnicoId(tecnicoId);
+	    this.setDespacho(despacho);
 	}
 	
 	public String generarNumeroOrden() {
@@ -174,7 +177,27 @@ public class OrdenTrabajoModelo {
     	return listarOrdenes;
     }
     
-    public Boolean actualizarEstado(LocalDateTime fechaRetiro, String adminId, String estado) {
+    public static Boolean actualizarEstado(String ordenIdParam, EstadoOrden estado) {
+    	String sqlActualizar = "UPDATE ORDEN_DE_TRABAJO SET estado = ?"
+    			+ " WHERE ORDEN_TRABAJO_ID = ? AND ESTADO = 'Lista'";
+    	
+    	try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlActualizar)){
+    		ps.setString(1, estado.getValor());
+    		ps.setString(2, ordenIdParam);
+
+			int filasAfectadas = ps.executeUpdate();
+
+	        if (filasAfectadas > 0) {
+	            System.out.println("\nEl estado fue actualizado correctamente .\n");
+	        } else {
+	            System.out.println("\nNo se encontró una orden LISTA con ese ID.\n");
+	        }
+    		
+    	}catch(Exception e){
+   		 System.out.println("Error al actualizar la Orden: " + e.getMessage());
+		 e.printStackTrace(); 
+    	}
+    	
     	return true;
     }
     
@@ -204,6 +227,14 @@ public class OrdenTrabajoModelo {
 
 	public void setObservaciones(String observaciones) {
 		this.observaciones = observaciones;
+	}
+
+	public String getDespacho() {
+		return despacho;
+	}
+
+	public void setDespacho(String despacho) {
+		this.despacho = despacho;
 	}
 
     

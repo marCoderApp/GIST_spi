@@ -57,7 +57,7 @@ Scanner scanner = new Scanner(System.in);
             System.out.println("╠════════════════════════════════════════=╣");
             System.out.println("║ 1. Registrar nueva orden de trabajo     ║");
             System.out.println("║ 2. Listar órdenes de trabajo            ║");
-            System.out.println("║ 3. Marcar orden como retirada           ║");
+            System.out.println("║ 3. Registrar entrega de maquina/s       ║");
             System.out.println("║ 4. Gestionar clientes                   ║");
             System.out.println("║ 5. Gestionar técnicos                   ║");
             System.out.println("║ 6. Gestionar Novedades                  ║");
@@ -79,7 +79,7 @@ Scanner scanner = new Scanner(System.in);
                 case 2:
                     System.out.println("=== Lista de Órdenes de trabajo ===");
                     // Lógica para la Opción 2
-					ordenVista.mostrarLista(null);
+					ordenVista.mostrarLista();
                     break;
                 case 3:
                     System.out.println("=== Marcar Orden como Retirada ===");

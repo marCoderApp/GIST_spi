@@ -12,6 +12,7 @@ import java.util.Scanner;
 import conexion.ConexionDB;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
+import modelos.GestionRep.EstadoOrden;
 import modelos.GestionRep.MaquinaModelo;
 import modelos.GestionRep.OrdenTrabajoModelo;
 import modelos.GestionRep.PedidoModelo;
@@ -101,7 +102,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		System.out.println("1. Elegir cliente existente");
 		System.out.println("2. Crear nuevo cliente");
 		 int opcion = scanner.nextInt();
-		    scanner.nextLine(); 
+		    scanner.nextLine();
 		    
 			if (opcion == 1) {
 				List<ClienteModelo> clientes = ClienteModelo.listarClientes();
@@ -332,6 +333,29 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		return esGuardado;
 		
 	}
+	
+	public void registrarEntrega(String ordenIdParam, String adminId) {
+		
+		String sqlRetirarEntrega = "UPDATE ORDEN_DE_TRABAJO SET despacho = ?, "
+				+ "fecha_retiro = ? WHERE ORDEN_TRABAJO_ID = ?";
+		
+		try(PreparedStatement ps = conexion.prepareStatement(sqlRetirarEntrega)){
+			ps.setString(1, adminId);
+			ps.setTimestamp(2, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
+			ps.setString(3, ordenIdParam);
+			int filasAfectadas = ps.executeUpdate();
+
+		        if (filasAfectadas > 0) {
+		        	OrdenTrabajoModelo.actualizarEstado(ordenIdParam, EstadoOrden.RETIRADA);
+		            System.out.println("\n✅ La máquina fue entregada al cliente correctamente.\n");
+		        } else {
+		            System.out.println("\n⚠️ No se encontró una orden LISTA con ese ID.\n");
+		        }
+		}catch(Exception e) {
+			 e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
+		}
+		
+	}
 
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
 		
@@ -350,13 +374,10 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		// Lógica para obtener la lista de órdenes de trabajo
 	}
 	
-	public void obtenerListaOrdenes() {
-		// Lógica para obtener la lista de órdenes de trabajo
-	}	
+	public static void obtenerListaOrdenes() {
 	
-	public void registrarEntrega(LocalDateTime fechaEntrega, String ordenId) {
-		// Lógica para registrar la entrega de una orden de trabajo
-	}
+
+	}	
 	
 	//Getters and Setters
 	public boolean isOrdenCreada() {
