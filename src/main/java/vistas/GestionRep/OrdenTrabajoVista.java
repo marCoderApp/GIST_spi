@@ -54,61 +54,80 @@ public class OrdenTrabajoVista {
 	}
 	
 	public void ingresarDatos() {
-		Scanner scanner = new Scanner(System.in);
 		GestionRepControl gestionRepControl = new GestionRepControl();
-		OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, null, null, null, null, null, null, null, null, null);
-		
-		System.out.println("-----------------------------");
-		System.out.println("CREAR NUEVA ORDEN DE TRABAJO");
-		System.out.println("-----------------------------");
-		gestionRepControl.elegirCliente();
-		String clienteId = GestionRepControl.clienteIdGestionRep;
-		System.out.println("Ingrese la descripción de la falla");
-		String descripcion_falla = scanner.nextLine();
-		String tecnicoId = PersonalControl.tecnicoIdPersonalControl;
-		String adminId = PersonalControl.adminIdPersonalControl;
-		
-		orden.setCliente_id(clienteId);
-		orden.setDescripcion_falla(descripcion_falla);
-		orden.setTecnicoId(tecnicoId);
-		orden.setAdminId(adminId);
-		orden.setEstado(EstadoOrden.PENDIENTE);
-		
-	    /*LocalDate fecha = (orden.getFechaIngreso() != null)
-                ? orden.getFechaIngreso()
-                : LocalDate.now();*/
+	    OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, null, null, null, null, null, null, null, null, null);
 
-		
-		/* System.out.println("\n=== DATOS DE LA ORDEN A INSERTAR ===");
-	        System.out.println("Orden ID: " + orden.getOrdenId());
-	        System.out.println("Cliente ID: " + GestionRepControl.clienteIdGestionRep);
-	        System.out.println("Descripción: " + orden.getDescripcion_falla());
-	        System.out.println("Fecha creación: " + fecha);
-	        System.out.println("Estado: " + orden.getEstado().getValor());
-	        System.out.println("Admin ID: " + PersonalControl.adminIdPersonalControl);
-	        System.out.println("Técnico ID: " + PersonalControl.tecnicoIdPersonalControl);
-	        System.out.println("=====================================\n");*/
-		
-		gestionRepControl.insertarOrdenBase(orden);
-		
-		System.out.println("Maquinas");
-		List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas(orden);
-		for (MaquinaModelo maquina : maquinas) {
-			System.out.println(" - " + maquina.getTipo() + " - " + maquina.getMarca() + " (ID: " + maquina.getMaquinaId() + ")");
-		}
-		
-			System.out.println("Ingrese Observaciones");
-			String observaciones = scanner.nextLine();
-			
-			orden.setObservaciones(observaciones);
-			
-			guardarCambios(orden, observaciones);
-			
-			if(GestionRepControl.chequearIdOrden(orden.getOrdenId())) {
-				System.out.println("La Orden de Trabajo ha sido agregada correctamente");
-			}else {
-				System.out.println("Se ha producido un error.");
-			}	
+	    // Ventana para seleccionar cliente con tu misma lógica
+	    gestionRepControl.elegirCliente();
+	    String clienteId = GestionRepControl.clienteIdGestionRep;
+
+	    if (clienteId == null) {
+	        Alert alerta = new Alert(Alert.AlertType.WARNING, "Debe seleccionar un cliente antes de continuar.");
+	        alerta.showAndWait();
+	        return;
+	    }
+
+	    // Solicitar descripción de falla
+	    TextInputDialog dialogoDescripcion = new TextInputDialog();
+	    dialogoDescripcion.setTitle("Nueva Orden de Trabajo");
+	    dialogoDescripcion.setHeaderText("Descripción de la falla");
+	    dialogoDescripcion.setContentText("Ingrese la descripción:");
+
+	    Optional<String> descripcionResultado = dialogoDescripcion.showAndWait();
+	    if (!descripcionResultado.isPresent() || descripcionResultado.get().trim().isEmpty()) {
+	        return;
+	    }
+
+	    String descripcion_falla = descripcionResultado.get();
+	    String tecnicoId = PersonalControl.tecnicoIdPersonalControl;
+	    String adminId = PersonalControl.adminIdPersonalControl;
+
+	    orden.setCliente_id(clienteId);
+	    orden.setDescripcion_falla(descripcion_falla);
+	    orden.setTecnicoId(tecnicoId);
+	    orden.setAdminId(adminId);
+	    orden.setEstado(EstadoOrden.PENDIENTE);
+
+	    gestionRepControl.insertarOrdenBase(orden);
+
+	    // Selección de máquinas usando tu método
+	    List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas(orden);
+
+	    // Mostrar lista de máquinas elegidas
+	    StringBuilder maquinasTexto = new StringBuilder("Máquinas seleccionadas:\n\n");
+	    for (MaquinaModelo maquina : maquinas) {
+	        maquinasTexto.append(" - ")
+	        .append(maquina.getTipo()).append(" - ")
+	        .append(maquina.getMarca()).append(" (ID: ")
+	        .append(maquina.getMaquinaId()).append(")\n");
+	    }
+
+	    Alert maquinasAlert = new Alert(Alert.AlertType.INFORMATION, maquinasTexto.toString());
+	    maquinasAlert.setHeaderText("Máquinas asociadas a la orden");
+	    maquinasAlert.showAndWait();
+
+	    // Pedir Observaciones
+	    TextInputDialog dialogoObservaciones = new TextInputDialog();
+	    dialogoObservaciones.setTitle("Observaciones");
+	    dialogoObservaciones.setHeaderText("Ingrese observaciones para la orden");
+	    dialogoObservaciones.setContentText("Observaciones:");
+
+	    Optional<String> observacionResultado = dialogoObservaciones.showAndWait();
+	    String observaciones = observacionResultado.isPresent() ? observacionResultado.get() : "";
+
+	    orden.setObservaciones(observaciones);
+	    guardarCambios(orden, observaciones);
+
+	    // Verificación final
+	    if (GestionRepControl.chequearIdOrden(orden.getOrdenId())) {
+	        Alert ok = new Alert(Alert.AlertType.INFORMATION, "✅ La Orden de Trabajo ha sido agregada correctamente");
+	        ok.setHeaderText("Registro Exitoso");
+	        ok.showAndWait();
+	    } else {
+	        Alert error = new Alert(Alert.AlertType.ERROR, "❌ Se ha producido un error al registrar la orden.");
+	        error.setHeaderText("Error");
+	        error.showAndWait();
+	    }
 	}
 	
 

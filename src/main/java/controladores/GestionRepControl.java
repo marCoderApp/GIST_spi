@@ -7,9 +7,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import conexion.ConexionDB;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ButtonBar.ButtonData;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
 import modelos.GestionRep.EstadoOrden;
@@ -95,35 +100,71 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	}
 	
 	public String elegirCliente() {
-		Scanner scanner = new Scanner(System.in);
 		ClientesVista clientesVista = new ClientesVista();
-		
-		System.out.println("Seleccione una opción:");
-		System.out.println("1. Elegir cliente existente");
-		System.out.println("2. Crear nuevo cliente");
-		 int opcion = scanner.nextInt();
-		    scanner.nextLine();
-		    
-			if (opcion == 1) {
-				List<ClienteModelo> clientes = ClienteModelo.listarClientes();
-				ClientesVista.mostrarListaClientes(clientes);
-				System.out.println("Ingrese el ID del cliente: ");
-				String clienteId = scanner.nextLine();
-				System.out.println("Cliente seleccionado: " + clienteId);
-				clienteIdGestionRep = clienteId;
-				return clienteId;
-			} else if (opcion == 2) {
-				System.out.println("Creando nuevo cliente...");
-				
-				ClienteModelo nuevoCliente = clientesVista.crearNuevoCliente();
-				clienteIdGestionRep = nuevoCliente.getClienteId();
-				return nuevoCliente.getClienteId(); // Retornar el ID del nuevo cliente
-				
-			} else {
-				System.out.println("Opción inválida. Por favor, intente de nuevo.");
-			}
-		
-		return "";
+
+	    // 1️⃣ Diálogo para elegir entre cliente existente o crear uno nuevo
+	    Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+	    alerta.setTitle("Selección de Cliente");
+	    alerta.setHeaderText("Seleccione una opción:");
+	    alerta.setContentText("¿Qué desea hacer?");
+
+	    ButtonType botonExistente = new ButtonType("Elegir cliente existente");
+	    ButtonType botonNuevo = new ButtonType("Crear nuevo cliente");
+	    ButtonType botonCancelar = new ButtonType("Cancelar", ButtonData.CANCEL_CLOSE);
+
+	    alerta.getButtonTypes().setAll(botonExistente, botonNuevo, botonCancelar);
+
+	    Optional<ButtonType> resultado = alerta.showAndWait();
+
+	    // ✅ Elegir existente
+	    if (resultado.isPresent() && resultado.get() == botonExistente) {
+
+	        List<ClienteModelo> clientes = ClienteModelo.listarClientes();
+
+	        if (clientes.isEmpty()) {
+	            Alert alertaVacio = new Alert(Alert.AlertType.WARNING);
+	            alertaVacio.setHeaderText("No hay clientes cargados");
+	            alertaVacio.setContentText("Debe crear un cliente nuevo.");
+	            alertaVacio.show();
+	            return "";
+	        }
+
+	        List<String> opcionesClientes = clientes.stream()
+	                .map(cliente -> cliente.getClienteId() + " - " + cliente.getNombre() + " " + cliente.getApellido())
+	                .toList();
+
+	        ChoiceDialog<String> dialogoClientes =
+	                new ChoiceDialog<>(opcionesClientes.get(0), opcionesClientes);
+	        dialogoClientes.setTitle("Clientes");
+	        dialogoClientes.setHeaderText("Seleccione un cliente existente:");
+	        dialogoClientes.setContentText("Clientes:");
+
+	        Optional<String> seleccion = dialogoClientes.showAndWait();
+
+	        if (seleccion.isPresent()) {
+	            String clienteId = seleccion.get().split(" - ")[0]; // obtener solo el ID
+	            System.out.println("Cliente seleccionado: " + clienteId);
+	            clienteIdGestionRep = clienteId;
+	            return clienteId;
+	        } else {
+	            return "";
+	        }
+	    }
+
+	 
+	    if (resultado.isPresent() && resultado.get() == botonNuevo) {
+	        ClienteModelo nuevoCliente = clientesVista.crearNuevoCliente();
+	        clienteIdGestionRep = nuevoCliente.getClienteId();
+	        return nuevoCliente.getClienteId();
+	    }
+
+	   
+	    Alert alertaInvalido = new Alert(Alert.AlertType.ERROR);
+	    alertaInvalido.setHeaderText("Opción inválida");
+	    alertaInvalido.setContentText("Debe seleccionar una opción válida.");
+	    alertaInvalido.show();
+
+	    return "";
     }
 	
 	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
