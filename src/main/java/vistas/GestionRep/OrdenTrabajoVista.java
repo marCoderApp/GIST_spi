@@ -200,32 +200,14 @@ public class OrdenTrabajoVista {
 
 		        while (rs.next()) {
 		            if (!encontrada) {
-		                texto.append("📌 ID Orden: ").append(rs.getString("orden_trabajo_id")).append("\n");
-		                texto.append("👤 Cliente: ").append(rs.getString("nombre")).append(" ")
-		                        .append(rs.getString("apellido")).append("\n");
-		                texto.append("📞 Teléfono: ").append(rs.getString("telefono")).append("\n");
-		                texto.append("🪪 DNI: ").append(rs.getString("dni")).append("\n");
-		                texto.append("💼 Empresa: ").append(rs.getString("empresa")).append("\n");
-		                texto.append("🔖 CUIT: ").append(rs.getString("cuit")).append("\n");
-		                texto.append("📝 Falla: ").append(rs.getString("descripcion_falla")).append("\n");
-		                texto.append("📅 Ingreso: ").append(rs.getString("fecha_ingreso")).append("\n");
-		                texto.append("🚚 Despacho: ").append(rs.getString("despacho")).append("\n\n");
-
-		                texto.append("⚙️ Máquinas:\n");
-		                encontrada = true;
-		                ordenIdParam = rs.getString("orden_trabajo_id");
+		            	ordenIdParam = rs.getString("orden_trabajo_id");
 		                formOrdenTrabajoVista.abrirForm(ordenIdParam, PersonalControl.adminIdPersonalControl);
+		                
+		                encontrada = true;
+		                
 		            }
 
-		            String idMaquina = rs.getString("id");
-		            if (idMaquina != null) {
-		                texto.append("   - ID: ").append(idMaquina)
-		                        .append(" | ").append(rs.getString("tipo"))
-		                        .append(" | ").append(rs.getString("marca"))
-		                        .append(" | Modelo: ").append(rs.getString("modelo"))
-		                        .append(" | Color: ").append(rs.getString("color"))
-		                        .append("\n");
-		            }
+		            
 		        }
 
 		        if (!encontrada) {

@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -168,68 +167,124 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
     }
 	
 	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
-		String ordenId = orden.getOrdenId();
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Seleccione una opción:");
-		System.out.println("1. Seleccionar máquina/s existente/s");
-		System.out.println("2. Añadir máquina/s nueva/s");
-		
-		 int opcion = scanner.nextInt();
-		    scanner.nextLine(); 
-		    
-			if (opcion == 1) {
-				List<MaquinaModelo> maquinas = MaquinaModelo.listarMaquinas();
-				MaquinaModelo.mostrarListaMaquinas(maquinas);
-				List<MaquinaModelo> maquinasSeleccionadas = agregarMaquinasExistentes();
-		        insertarEnOrdenMaquinas(maquinasSeleccionadas);
-				System.out.println("Desea añadir una nueva máquina?:");
-				System.out.println("1. Si");
-				System.out.println("2. No");
-				
-				
-				if (scanner.nextInt() == 1) {
-					List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas(ordenId);
-					maquinasSeleccionadas.addAll(nuevasMaquinas);
-				}
-				
-				return maquinasSeleccionadas;
-			} else if (opcion == 2) {
-				List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas(ordenId);
-				return nuevasMaquinas;
-				
-			} else {
-				System.out.println("Opción inválida. Por favor, intente de nuevo.");
-			}
-		
-		
-		return null;
+		 String ordenId = orden.getOrdenId();
+		    List<MaquinaModelo> maquinasSeleccionadas = null;
+
+		    List<String> opcionesSeleccion = List.of(
+		            "Seleccionar máquina/s existente/s",
+		            "Añadir máquina/s nueva/s"
+		    );
+
+		    ChoiceDialog<String> dialogoOpciones = new ChoiceDialog<>(
+		            opcionesSeleccion.get(0), opcionesSeleccion
+		    );
+		    dialogoOpciones.setTitle("Selección de Máquinas");
+		    dialogoOpciones.setHeaderText("Seleccione una opción");
+		    dialogoOpciones.setContentText("Elija una opción:");
+
+		    Optional<String> resultado = dialogoOpciones.showAndWait();
+
+		    if (resultado.isPresent()) {
+		        String seleccion = resultado.get();
+
+		        if (seleccion.equals(opcionesSeleccion.get(0))) {
+		            // Llamamos al método separado
+		            maquinasSeleccionadas = agregarMaquinasExistentes();
+		            insertarEnOrdenMaquinas(maquinasSeleccionadas);
+
+		            // Preguntar si quiere agregar nuevas máquinas
+		            Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+		            alerta.setTitle("Agregar Máquina");
+		            alerta.setHeaderText("¿Desea añadir una nueva máquina?");
+		            alerta.getButtonTypes().setAll(
+		                    new ButtonType("Sí", ButtonData.YES),
+		                    new ButtonType("No", ButtonData.NO)
+		            );
+
+		            Optional<ButtonType> respuesta = alerta.showAndWait();
+
+		            if (respuesta.isPresent() &&
+		                respuesta.get().getButtonData() == ButtonData.YES) {
+
+		                List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas(ordenId);
+		                maquinasSeleccionadas.addAll(nuevasMaquinas);
+		            }
+
+		            return maquinasSeleccionadas;
+
+		        } else if (seleccion.equals(opcionesSeleccion.get(1))) {
+		            // Solo agregar máquinas nuevas
+		            return agregarMaquinasNuevas(ordenId);
+		        }
+		    }
+
+		    // Si se cierra el diálogo o selección inválida
+		    Alert error = new Alert(Alert.AlertType.ERROR);
+		    error.setTitle("Error");
+		    error.setHeaderText("Opción inválida");
+		    error.setContentText("Debe seleccionar una opción válida.");
+		    error.showAndWait();
+
+		    return null;
 	}
 	
 	public List<MaquinaModelo> agregarMaquinasExistentes() {
-		List<MaquinaModelo> maquinasSeleccionadas = new ArrayList<>();
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("=== Seleccionar máquinas existentes ===");
-		System.out.println("Ingrese los IDs de las máquinas separadas por coma (ej: MAQ0001,MAQ0003,MAQ0007): ");
-		String entrada = scanner.nextLine();
+		List<MaquinaModelo> listaMaquinas = MaquinaModelo.listarMaquinas();
+	    List<MaquinaModelo> maquinasSeleccionadas = new ArrayList<>();
 
-		// separar los IDs
-		String[] ids = entrada.split(",");
+	    if (listaMaquinas.isEmpty()) {
+	        Alert alertaVacio = new Alert(Alert.AlertType.WARNING);
+	        alertaVacio.setHeaderText("No hay máquinas cargadas");
+	        alertaVacio.setContentText("Debe agregar nuevas máquinas primero.");
+	        alertaVacio.show();
+	        return maquinasSeleccionadas;
+	    }
 
-		for (String id : ids) {
-		    id = id.trim(); // quitar espacios
-		    MaquinaModelo maquina1 = buscarMaquinaPorId(id);
+	    boolean continuar = true;
 
-		    if (maquina1 != null) {
-		        maquinasSeleccionadas.add(maquina1);
-		        
-		        
-		    } else {
-		        System.out.println("⚠️  No se encontró la máquina con ID: " + id);
-		    }
-		}
+	    while (continuar) {
 
-		System.out.println("Máquinas seleccionadas correctamente ✅");
-		return maquinasSeleccionadas;
+	        // Preparar lista de opciones
+	        List<String> opciones = listaMaquinas.stream()
+	                .map(m -> m.getMaquinaId() + " | " + m.getTipo() + " | " + m.getMarca() + " | " + m.getModelo())
+	                .toList();
+
+	        ChoiceDialog<String> dialogo = new ChoiceDialog<>(opciones.get(0), opciones);
+	        dialogo.setTitle("Seleccionar Máquina");
+	        dialogo.setHeaderText("Seleccione una máquina existente:");
+	        dialogo.setContentText("Máquina:");
+
+	        Optional<String> resultado = dialogo.showAndWait();
+
+	        if (resultado.isPresent()) {
+	            String seleccionado = resultado.get();
+	            String idSeleccionado = seleccionado.split(" \\| ")[0];
+
+	            // Agregar máquina seleccionada a la lista
+	            listaMaquinas.stream()
+	                    .filter(m -> m.getMaquinaId().equals(idSeleccionado))
+	                    .findFirst()
+	                    .ifPresent(maquinasSeleccionadas::add);
+
+	            // Preguntar si quiere seleccionar otra máquina
+	            Alert pregunta = new Alert(Alert.AlertType.CONFIRMATION);
+	            pregunta.setTitle("Seleccionar más máquinas");
+	            pregunta.setHeaderText("¿Desea agregar otra máquina?");
+	            pregunta.getButtonTypes().setAll(
+	                    new ButtonType("Sí", ButtonData.YES),
+	                    new ButtonType("No", ButtonData.NO)
+	            );
+
+	            Optional<ButtonType> respuesta = pregunta.showAndWait();
+	            continuar = respuesta.isPresent() &&
+	                        respuesta.get().getButtonData() == ButtonData.YES;
+
+	        } else {
+	            continuar = false;
+	        }
+	    }
+
+	    return maquinasSeleccionadas;
 		
 	}
 	
@@ -375,7 +430,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		
 	}
 	
-	public void registrarEntrega(String ordenIdParam, String adminId) {
+	public boolean registrarEntrega(String ordenIdParam, String adminId) {
 		
 		String sqlRetirarEntrega = "UPDATE ORDEN_DE_TRABAJO SET despacho = ?, "
 				+ "fecha_retiro = ? WHERE ORDEN_TRABAJO_ID = ?";
@@ -389,12 +444,14 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		        if (filasAfectadas > 0) {
 		        	OrdenTrabajoModelo.actualizarEstado(ordenIdParam, EstadoOrden.RETIRADA);
 		            System.out.println("\n✅ La máquina fue entregada al cliente correctamente.\n");
+		            return true;
 		        } else {
 		            System.out.println("\n⚠️ No se encontró una orden LISTA con ese ID.\n");
 		        }
 		}catch(Exception e) {
 			 e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
 		}
+		return false;
 		
 	}
 
