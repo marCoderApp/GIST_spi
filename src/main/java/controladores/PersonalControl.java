@@ -28,6 +28,11 @@ public class PersonalControl {
 		
 		Credenciales cred_bdgist = user.buscarUsuario(credencialIngresada.getUsuario());
 		
+		 if (cred_bdgist == null) {
+		        System.out.println("⚠️ Usuario no encontrado en la base de datos: " + credencialIngresada.getUsuario());
+		        return false;
+		    }
+		
 		filtrarIdPorRol(cred_bdgist, cred_bdgist.getRol().getValor());
 		
 		if(cred_bdgist != null && cred_bdgist.getContrasena().equals(credencialIngresada.getContrasena())) {

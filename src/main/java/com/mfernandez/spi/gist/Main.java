@@ -13,7 +13,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		Credenciales credenciales = new Credenciales(null, null, null, null, null, null);
-		LoginVista loginVista = new LoginVista(null, null, null, null, 0, false);
+		LoginVista loginVista = new LoginVista(null);
 		Connection conn = ConexionDB.conectar();
 		
 		Scanner scanner = new Scanner(System.in);
@@ -135,5 +135,3 @@ Scanner scanner = new Scanner(System.in);
         scanner.close();
 	}
 }
-
-

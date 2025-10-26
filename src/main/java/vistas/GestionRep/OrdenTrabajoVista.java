@@ -5,10 +5,19 @@ import java.sql.ResultSet;
 //import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import controladores.GestionRepControl;
 import controladores.PersonalControl;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import modelos.Personal.TecnicoModelo;
 import modelos.GestionRep.*;	
 
@@ -138,40 +147,52 @@ public class OrdenTrabajoVista {
 	}
 	
 	public void seleccionarOrden() {
-		    Scanner scanner = new Scanner(System.in);
+		 TextInputDialog dialogo = new TextInputDialog();
+		    dialogo.setTitle("Entrega de Orden");
+		    dialogo.setHeaderText("Ingrese el ID de la Orden LISTA para entregar");
+		    dialogo.setContentText("ID Orden:");
+
+		    Optional<String> resultadoDialogo = dialogo.showAndWait();
+		    if (!resultadoDialogo.isPresent() || resultadoDialogo.get().isEmpty()) {
+		        return;
+		    }
+
+		    String ordenId = resultadoDialogo.get();
 		    String ordenIdParam;
 
-		    String sqlConsultaOrdenes = 
-		        "SELECT O.ORDEN_TRABAJO_ID, "
-		        + "O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
-		        + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, "
-		        + "C.DNI, C.CUIT, M.ID, M.TIPO, "
-		        + "M.MARCA, M.MODELO, M.COLOR, O.DESPACHO "
-		        + "FROM ORDEN_DE_TRABAJO O "
-		        + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-		        + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-		        + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
-		        + "WHERE O.ORDEN_TRABAJO_ID = ? AND ESTADO = 'Lista'";
-
-		    System.out.println("Ingrese el ID de la Orden de Trabajo para entregar:");
-		    String ordenId = scanner.nextLine();
+		    String sqlConsultaOrdenes =
+		            "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
+		            + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, "
+		            + "C.DNI, C.CUIT, M.ID, M.TIPO, "
+		            + "M.MARCA, M.MODELO, M.COLOR, O.DESPACHO "
+		            + "FROM ORDEN_DE_TRABAJO O "
+		            + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+		            + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+		            + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+		            + "WHERE O.ORDEN_TRABAJO_ID = ? AND ESTADO = 'Lista'";
 
 		    try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlConsultaOrdenes)) {
 		        ps.setString(1, ordenId);
 		        ResultSet rs = ps.executeQuery();
 
 		        boolean encontrada = false;
+		        StringBuilder texto = new StringBuilder();
+		        texto.append("✅ ORDEN LISTA PARA ENTREGA\n\n");
+
 		        while (rs.next()) {
 		            if (!encontrada) {
-		                System.out.println("\n✅ ORDEN ENCONTRADA");
-		                System.out.println("ID: " + rs.getString("orden_trabajo_id"));
-		                System.out.println("Cliente: " + rs.getString("nombre") + " " + rs.getString("apellido"));
-		                System.out.println("Teléfono: " + rs.getString("telefono") + " - DNI: " + rs.getString("dni"));
-		                System.out.println("CUIT: " + rs.getString("cuit"));
-		                System.out.println("Empresa: " + rs.getString("empresa"));
-		                System.out.println("Descripción: " + rs.getString("descripcion_falla"));
-		                System.out.println("Estado: " + rs.getString("estado"));
-		                System.out.println("\nMáquinas asociadas:");
+		                texto.append("📌 ID Orden: ").append(rs.getString("orden_trabajo_id")).append("\n");
+		                texto.append("👤 Cliente: ").append(rs.getString("nombre")).append(" ")
+		                        .append(rs.getString("apellido")).append("\n");
+		                texto.append("📞 Teléfono: ").append(rs.getString("telefono")).append("\n");
+		                texto.append("🪪 DNI: ").append(rs.getString("dni")).append("\n");
+		                texto.append("💼 Empresa: ").append(rs.getString("empresa")).append("\n");
+		                texto.append("🔖 CUIT: ").append(rs.getString("cuit")).append("\n");
+		                texto.append("📝 Falla: ").append(rs.getString("descripcion_falla")).append("\n");
+		                texto.append("📅 Ingreso: ").append(rs.getString("fecha_ingreso")).append("\n");
+		                texto.append("🚚 Despacho: ").append(rs.getString("despacho")).append("\n\n");
+
+		                texto.append("⚙️ Máquinas:\n");
 		                encontrada = true;
 		                ordenIdParam = rs.getString("orden_trabajo_id");
 		                formOrdenTrabajoVista.abrirForm(ordenIdParam, PersonalControl.adminIdPersonalControl);
@@ -179,22 +200,36 @@ public class OrdenTrabajoVista {
 
 		            String idMaquina = rs.getString("id");
 		            if (idMaquina != null) {
-		                System.out.println(" - ID: " + idMaquina 
-		                        + " | " + rs.getString("tipo")
-		                        + " | " + rs.getString("marca")
-		                        + " | Modelo: " + rs.getString("modelo")
-		                        + " | Color: " + rs.getString("color"));
+		                texto.append("   - ID: ").append(idMaquina)
+		                        .append(" | ").append(rs.getString("tipo"))
+		                        .append(" | ").append(rs.getString("marca"))
+		                        .append(" | Modelo: ").append(rs.getString("modelo"))
+		                        .append(" | Color: ").append(rs.getString("color"))
+		                        .append("\n");
 		            }
-		           
 		        }
 
 		        if (!encontrada) {
-		            System.out.println("❌ No existe una orden LISTA con ese ID.");
+		            Alert alerta = new Alert(Alert.AlertType.WARNING, "❌ No existe una orden LISTA con ese ID.");
+		            alerta.setHeaderText("Orden no encontrada");
+		            alerta.showAndWait();
+		            return;
 		        }
 
-		}catch(Exception e) {
-			  System.out.println("Ocurrió un error en el proceso: " + e.getMessage());
-		}
+		        TextArea areaTexto = new TextArea(texto.toString());
+		        areaTexto.setEditable(false);
+		        areaTexto.setWrapText(true);
+
+		        Stage ventana = new Stage();
+		        ventana.setTitle("Entrega de Orden");
+		        ventana.setScene(new Scene(new StackPane(areaTexto), 600, 450));
+		        ventana.show();
+
+		    } catch (Exception e) {
+		        Alert alerta = new Alert(Alert.AlertType.ERROR, "⚠️ Error en el proceso: " + e.getMessage());
+		        alerta.setHeaderText("Error");
+		        alerta.showAndWait();
+		    }
 	}   
 	
 	
@@ -202,53 +237,68 @@ public class OrdenTrabajoVista {
 	}
 	
 	public void mostrarLista() {
-		String sqlConsultaOrdenes = "SELECT O.ORDEN_TRABAJO_ID, "
-				+ "O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
-				+ "C.NOMBRE, C.APELLIDO, C.EMPRESA, M.ID, M.TIPO, "
-				+ "M.MARCA, M.MODELO, M.COLOR FROM ORDEN_DE_TRABAJO O"
-				+ " JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID"
-				+ " LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID"
-				+ " LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID"
-				+ " ORDER BY O.ORDEN_TRABAJO_ID";
-		try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlConsultaOrdenes)){
-			ResultSet rs =ps.executeQuery();
-			
-			   String ordenActual = "";
-		        boolean primeraLinea = true;
+		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
+		            + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
+		            + "FROM ORDEN_DE_TRABAJO O "
+		            + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+		            + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+		            + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+		            + "ORDER BY O.ORDEN_TRABAJO_ID";
 
-		        while (rs.next()) {
-		            String ordenId = rs.getString("orden_trabajo_id");
+		    try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
+		        ResultSet resultado = consultaPreparada.executeQuery();
 
-		            if (!ordenId.equals(ordenActual)) {
-		                if (!primeraLinea) System.out.println("-----------------------------------");
-		                primeraLinea = false;
+		        TreeItem<String> nodoRaiz = new TreeItem<>("LISTADO ORDENES DE TRABAJO");
+		        nodoRaiz.setExpanded(true);
 
-		                System.out.println("📌 ORDEN: " + ordenId);
-		                System.out.println("Nombre: " + rs.getString("nombre"));
-		                System.out.println("Apellido: " + rs.getString("apellido"));
-		                System.out.println("Descripción: " + rs.getString("descripcion_falla"));
-		                System.out.println("Fecha: " + rs.getDate("fecha_ingreso"));
-		                System.out.println("Estado: " + rs.getString("estado"));
-		                System.out.println("Máquinas:");
-		                ordenActual = ordenId;
+		        TreeItem<String> nodoOrdenActual = null;
+		        String idOrdenActual = "";
+
+		        while (resultado.next()) {
+		            String idOrden = resultado.getString("orden_trabajo_id");
+
+		            if (!idOrden.equals(idOrdenActual)) {
+		                idOrdenActual = idOrden;
+
+		                String descripcionOrden = "📌 " + idOrden +
+		                        " | " + resultado.getString("nombre") + " " + resultado.getString("apellido") +
+		                        " | Estado: " + resultado.getString("estado");
+
+		                nodoOrdenActual = new TreeItem<>(descripcionOrden);
+		                nodoOrdenActual.setExpanded(true);
+
+		                nodoRaiz.getChildren().add(nodoOrdenActual);
 		            }
 
-		            String maquinaId = rs.getString("id");
+		            String idMaquina = resultado.getString("maquina_id");
 
-		            if (maquinaId != null) {
-		                System.out.println("   - " + maquinaId + " | " +
-		                    rs.getString("tipo") + " | " +
-		                    rs.getString("marca") + " | " +
-		                    rs.getString("modelo"));
+		            if (idMaquina != null) {
+		                String descripcionMaquina = "⚙️ Máquina/s: " + idMaquina + " → "
+		                        + resultado.getString("tipo") + " "
+		                        + resultado.getString("marca") + " "
+		                        + resultado.getString("modelo");
+		                nodoOrdenActual.getChildren().add(new TreeItem<>(descripcionMaquina));
 		            } else {
-		                System.out.println("   (Sin máquinas asociadas)");
+		                nodoOrdenActual.getChildren().add(new TreeItem<>("❌ Sin máquinas asociadas"));
 		            }
 		        }
-		}catch(Exception e) {
-			   System.out.println("Error al mostrar lista: " + e.getMessage());
-		}
+
+		        TreeView<String> vistaArbol = new TreeView<>(nodoRaiz);
+
+		        Stage ventana = new Stage();
+		        ventana.setTitle("Lista de Órdenes de Trabajo");
+
+		        Scene escena = new Scene(new StackPane(vistaArbol), 700, 500);
+		        ventana.setScene(escena);
+		        ventana.show();
+
+		    } catch (Exception e) {
+		        Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
+		        alerta.showAndWait();
+		    }
+		    }
 		
-	}
+	
 	
 	
 	//Setters and getters

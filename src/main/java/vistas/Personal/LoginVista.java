@@ -1,107 +1,83 @@
 package vistas.Personal;
 
-import java.util.Scanner;
 
 import controladores.PersonalControl;
 import modelos.GestionRep.Credenciales;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 public class LoginVista {
-	Scanner scanner = new Scanner(System.in);
+	 private Stage stage;
+	    private TextField txtUsuario;
+	    private PasswordField txtContrasenia;
+	    private Label lblMensaje;
 
-	
-	
-	private String usuario;
-	private String contrasena;
-	private String rol;
-	private String error;
-	private int intentosFallidos;
-	private boolean recordarUsuario;
-	
-	public LoginVista(String usuario, String contrasena, String rol, String error, int intentosFallidos, boolean recordarUsuario) {
-		this.usuario = "";
-		this.contrasena = "";
-		this.rol = "";
-		this.error = "";
-		this.intentosFallidos = 0;
-		this.recordarUsuario = false;
-	}
-	
-	
-	public boolean ingresarCredenciales(Credenciales credenciales) {
-		PersonalControl personalControl = new PersonalControl(null, false, false, null);
-		
-		System.out.println("Por favor, ingresa tus credenciales para iniciar sesión.");
-		System.out.print("Usuario: ");
-		String usuario = scanner.nextLine();
-		System.out.print("Contraseña: ");
-		String contraseña = scanner.nextLine();
-		
-		
-		//VALIDACION DE CREDENCIALES
-		credenciales.setUsuario(usuario);
-		credenciales.setContrasena(contraseña);
-		
-		boolean acceso = personalControl.validarCredenciales(credenciales);
-	
-		if (acceso) {
-			System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario + "!");
-		} else {
-			System.out.println("Credenciales inválidas. Por favor, inténtalo de nuevo.");
-		}
-		return acceso;
-	}
-	
+	    public LoginVista(Stage stage) {
+	        this.stage = stage;
+	    }
 
-	//Getters and Setters
-	
-	public String getUsuario() {
-		return usuario;
-	}
-	
-	public void setUsuario(String usuario) {
-		this.usuario = usuario;
-	}
-	
-	public String getContrasena() {
-		return contrasena;
-	}
-	
-	public void setContrasena(String contrasena) {
-		this.contrasena = contrasena;
-	}
-	
-	public String getRol() {
-		return rol;
-	}
-	
-	public void setRol(String rol) {
-		this.rol = rol;
-	}
-	
-	public String getError() {
-		return error;
-	}
-	
-	public void setError(String error) {
-		this.error = error;
-	}
-	
-	public int getIntentosFallidos() {
-		return intentosFallidos;
-	}
-	
-	public void setIntentosFallidos(int intentosFallidos) {
-		this.intentosFallidos = intentosFallidos;
-	}
-	
-	public boolean isRecordarUsuario() {
-		return recordarUsuario;
-	}
-	
-	public void setRecordarUsuario(boolean recordarUsuario) {
-		this.recordarUsuario = recordarUsuario;
-	}
-	
-	
+	    // Misma firma que tu versión por consola
+	    public boolean ingresarCredenciales(Credenciales credenciales) {
+	        Stage loginStage = new Stage();
+	        loginStage.setTitle("Inicio de Sesión - GIST");
+
+	        Label lblTitulo = new Label("🔐 Iniciar Sesión");
+	        lblTitulo.setStyle("-fx-font-size: 25px; -fx-font-weight: bold;");
+
+	        txtUsuario = new TextField();
+	        txtUsuario.setPromptText("Usuario");
+
+	        txtContrasenia = new PasswordField();
+	        txtContrasenia.setPromptText("Contraseña");
+
+	        lblMensaje = new Label();
+
+	        Button btnIngresar = new Button("Ingresar");
+	        Button btnCancelar = new Button("Cancelar");
+
+	        HBox botones = new HBox(10, btnIngresar, btnCancelar);
+	        botones.setAlignment(Pos.CENTER);
+
+	        VBox root = new VBox(15, lblTitulo, txtUsuario, txtContrasenia, botones, lblMensaje);
+	        root.setAlignment(Pos.CENTER);
+	        root.setStyle("-fx-padding: 20; -fx-background-color: #f7f7f7;");
+
+	        Scene scene = new Scene(root, 300, 250);
+	        loginStage.setScene(scene);
+
+	        final boolean[] autenticado = {false};
+
+	        btnIngresar.setOnAction(e -> {
+	            String usuario = txtUsuario.getText();
+	            String contrasenia = txtContrasenia.getText();
+
+	            // Cargar credenciales
+	            credenciales.setUsuario(usuario);
+	            credenciales.setContrasena(contrasenia);
+
+	            // Usar el controlador de Personal
+	            PersonalControl control = new PersonalControl(null, false, false, null);
+	            boolean valido = control.validarCredenciales(credenciales);
+
+	            if (valido) {
+	                lblMensaje.setText("✅ Inicio de sesión exitoso");
+	                autenticado[0] = true;
+	                loginStage.close();
+	            } else {
+	                lblMensaje.setText("❌ Usuario o contraseña incorrectos");
+	            }
+	        });
+
+	        btnCancelar.setOnAction(e -> {
+	            autenticado[0] = false;
+	            loginStage.close();
+	        });
+
+	        loginStage.showAndWait();
+	        return autenticado[0];
+	    }
 	
 }
