@@ -13,7 +13,6 @@ import controladores.GestionRepControl;
 
 
 public class OrdenTrabajoModelo {
-	
 	private String ordenId;
 	private String cliente_id;
 	private List<MaquinaModelo> maquinas = new ArrayList<>();
@@ -27,20 +26,11 @@ public class OrdenTrabajoModelo {
 	private String tecnicoId;
 	private String observaciones;
 	private String despacho;
-	
 	public OrdenTrabajoModelo(
-			String cliente_id,
-			List<MaquinaModelo> maquinas, 
-			String descripcion_falla,
-			String detalleRepId,
-			LocalDate fechaIngreso,
-			LocalDateTime fechaRetiro,
-			String adminId, String presupuesto_id,
-			EstadoOrden estado,
-			String tecnicoId,
-			String despacho
+			String cliente_id, List<MaquinaModelo> maquinas, String descripcion_falla,
+			String detalleRepId, LocalDate fechaIngreso, LocalDateTime fechaRetiro,
+			String adminId, String presupuesto_id, EstadoOrden estado, String tecnicoId, String despacho
 			) {
-		
 		this.ordenId = generarNumeroOrden();
 		this.cliente_id = cliente_id;
 		this.maquinas = maquinas;
