@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="C:/Users/Franco/Desktop/Gist_app.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/gist/src/test/test.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=gist/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.mfernandez.spi.gist{MainFX.java[MainFX" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <folder path="/gist/src"/>
+        <folder path="/gist/target"/>
+        <file path="/gist/.classpath"/>
+        <file path="/gist/.project"/>
+        <file path="/gist/LICENSE"/>
+        <file path="/gist/pom.xml"/>
+        <javaElement handleIdentifier="=gist/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/"/>
+        <javaElement handleIdentifier="=gist/src\/main\/resources=/maven.pomderived=/true=/=/optional=/true=/"/>
+        <javaElement handleIdentifier="=gist/src\/test\/java=/test=/true=/=/optional=/true=/=/maven.pomderived=/true=/"/>
+        <javaElement handleIdentifier="=gist/src\/test\/resources=/test=/true=/=/maven.pomderived=/true=/=/optional=/true=/"/>
+    </selectedElements>
+</jardesc>

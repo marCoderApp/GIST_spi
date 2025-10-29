@@ -140,7 +140,16 @@ public class MainFX extends Application {
 	    }
 
 	    public static void main(String[] args) {
-	        launch(args);
+	    	 try {
+	    	        launch(args);
+	    	    } catch (Exception e) {
+	    	        e.printStackTrace();
+	    	        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+	    	            javafx.scene.control.Alert.AlertType.ERROR, 
+	    	            "Error: " + e.getMessage()
+	    	        );
+	    	        alert.showAndWait();
+	    	    }
 	    }
 
 }
