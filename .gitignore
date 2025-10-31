@@ -22,3 +22,13 @@ Thumbs.db
 
 # Runtime files
 runtime/
+
+# Remove target folder and exe files from Git tracking
+git rm -r --cached target/
+git rm --cached *.exe
+
+# Stage the .gitignore
+git add .gitignore
+
+# Commit the changes
+git commit -m "Add .gitignore and remove build artifacts"
