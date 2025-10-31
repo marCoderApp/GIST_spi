@@ -1,14 +1,11 @@
 package modelos.Personal;
 
 import java.util.List;
-
+import modelos.Personal.PersonalBase;
 import modelos.Notificacion.TareasModelo;
 
-public class TecnicoModelo {
+public class TecnicoModelo extends PersonalBase {
 
-	private String tecnicoId;
-	private String nombre;
-	private String apellido;
 	private String especialidad;
 	private List<TareasModelo> tareasAsignadas;
 	private int tareasCompletadas;
@@ -16,27 +13,31 @@ public class TecnicoModelo {
 	
 	public TecnicoModelo(String nombre, String apellido, String especialidad,
 			List<TareasModelo> tareasAsignadas, int tareasCompletadas, int tareasPendientes) {
-		this.tecnicoId = generarTecnicoId();
-		this.nombre = nombre;
-		this.apellido = apellido;
+		super(nombre, apellido);
+        this.id = generarId();
 		this.especialidad = especialidad;
 		this.tareasAsignadas = tareasAsignadas;
 		this.tareasCompletadas = tareasCompletadas;
 		this.tareasPendientes = tareasPendientes;
 	}
 	
-	public String generarTecnicoId() {
+	public String generarId() {
 		return "TEC" + System.currentTimeMillis();
 	}
 	
      //Getters and Setters
 	
-	public String getTecnicoId() {
-		        return tecnicoId;
+	public String getId() {
+		        return id;
 	}
+
+    @Override
+    public String getRol(){
+        return "TECNICO";
+    }
 	
 	public void setTecnicoId(String tecnicoId) {
-		this.tecnicoId = tecnicoId;
+		this.id = id;
 	}
 	
 	public String getNombre() {

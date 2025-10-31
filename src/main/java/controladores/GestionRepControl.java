@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
 import modelos.GestionRep.EstadoOrden;
@@ -113,9 +114,17 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 	    alerta.getButtonTypes().setAll(botonExistente, botonNuevo, botonCancelar);
 
+        alerta.getDialogPane().lookupButton(botonCancelar).setStyle(
+                "-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;"
+        );
+
+        alerta.getDialogPane().lookupButton(botonNuevo).setStyle(
+                "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;"
+        );
+
 	    Optional<ButtonType> resultado = alerta.showAndWait();
 
-	    // ✅ Elegir existente
+	    // Elegir existente
 	    if (resultado.isPresent() && resultado.get() == botonExistente) {
 
 	        List<ClienteModelo> clientes = ClienteModelo.listarClientes();
@@ -150,7 +159,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	        }
 	    }
 
-	 
+	 //Crear y elegir un cliente nuevo.
 	    if (resultado.isPresent() && resultado.get() == botonNuevo) {
 	        ClienteModelo nuevoCliente = clientesVista.crearNuevoCliente();
 	        clienteIdGestionRep = nuevoCliente.getClienteId();
@@ -334,55 +343,159 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		return null;
 	}
 
-	private List<MaquinaModelo> agregarMaquinasNuevas(String ordenId) {
-		Scanner scanner	 = new Scanner(System.in);
-		List<MaquinaModelo> nuevasMaquinas = new ArrayList<>();
-		MaquinaModelo nuevaMaquina = new MaquinaModelo(null, null, null, null);
-		
-		boolean agregarOtra = true;
-
-        System.out.println("=== Registrar nuevas máquinas ===");
+    private List<MaquinaModelo> agregarMaquinasNuevas(String ordenId) {
+        List<MaquinaModelo> nuevasMaquinas = new ArrayList<>();
+        boolean agregarOtra = true;
 
         while (agregarOtra) {
-            System.out.print("Tipo (eléctrica o combustión): ");
-            String tipo = scanner.nextLine();
+            // Crear ventana de diálogo personalizada
+            MaquinaModelo nuevaMaquina = mostrarFormularioNuevaMaquina();
 
-            System.out.print("Marca: ");
-            String marca = scanner.nextLine();
+            if (nuevaMaquina == null) {
+                // Usuario canceló
+                break;
+            }
 
-            System.out.print("Modelo: ");
-            String modelo = scanner.nextLine();
-
-            System.out.print("Color: ");
-            String color = scanner.nextLine();
-
-            
-            //Asignar valores a la nueva máquina
-            
-            nuevaMaquina.setTipo(tipo);
-            nuevaMaquina.setMarca(marca);
-            nuevaMaquina.setModelo(modelo);
-            nuevaMaquina.setColor(color);
-            
             nuevasMaquinas.add(nuevaMaquina);
-            
+
             try {
-				boolean guardado = nuevaMaquina.guardarNuevaMaquina(nuevasMaquinas, ordenId);
-					if (guardado) {
-						System.out.println("Máquinas registradas correctamente ✅");
-					}
-		            System.out.print("¿Desea agregar otra máquina? (s/n): ");
-		            String respuesta = scanner.nextLine();
-		            if (!respuesta.equalsIgnoreCase("s")) {
-		                agregarOtra = false;
-		            }
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                boolean guardado = nuevaMaquina.guardarNuevaMaquina(nuevasMaquinas, ordenId);
+                if (guardado) {
+                    Alert exitoAlert = new Alert(Alert.AlertType.INFORMATION);
+                    exitoAlert.setTitle("Registro Exitoso");
+                    exitoAlert.setHeaderText("Máquina registrada correctamente ✅");
+                    exitoAlert.showAndWait();
+                }
+
+                // Preguntar si desea agregar otra máquina
+                Alert confirmarOtra = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmarOtra.setTitle("Agregar Otra Máquina");
+                confirmarOtra.setHeaderText("¿Desea agregar otra máquina?");
+                confirmarOtra.getButtonTypes().setAll(
+                        new ButtonType("Sí", ButtonData.YES),
+                        new ButtonType("No", ButtonData.NO)
+                );
+
+                Optional<ButtonType> respuesta = confirmarOtra.showAndWait();
+                agregarOtra = respuesta.isPresent() &&
+                        respuesta.get().getButtonData() == ButtonData.YES;
+
+            } catch (Exception e) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText("Error al guardar la máquina");
+                errorAlert.setContentText(e.getMessage());
+                errorAlert.showAndWait();
+                e.printStackTrace();
+            }
         }
-		
-		return nuevasMaquinas;
-	}
+
+        return nuevasMaquinas;
+    }
+
+    private MaquinaModelo mostrarFormularioNuevaMaquina() {
+        // Crear un Stage personalizado para el formulario
+        Stage ventanaFormulario = new Stage();
+        ventanaFormulario.setTitle("Registrar Nueva Máquina");
+        ventanaFormulario.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+        // Crear campos de texto
+        javafx.scene.control.Label lblTitulo = new javafx.scene.control.Label("=== Registrar Nueva Máquina ===");
+        lblTitulo.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 16));
+
+        javafx.scene.control.Label lblTipo = new javafx.scene.control.Label("Tipo de Máquina:");
+        javafx.scene.control.TextField txtTipo = new javafx.scene.control.TextField();
+        txtTipo.setPromptText("Ej: Amoladora, Desmalezadora, Percutor, etc.");
+        txtTipo.setPrefWidth(250);
+
+        javafx.scene.control.Label lblMarca = new javafx.scene.control.Label("Marca:");
+        javafx.scene.control.TextField txtMarca = new javafx.scene.control.TextField();
+        txtMarca.setPromptText("Ingrese marca");
+        txtMarca.setPrefWidth(250);
+
+        javafx.scene.control.Label lblModelo = new javafx.scene.control.Label("Modelo:");
+        javafx.scene.control.TextField txtModelo = new javafx.scene.control.TextField();
+        txtModelo.setPromptText("Ingrese modelo");
+        txtModelo.setPrefWidth(250);
+
+        javafx.scene.control.Label lblColor = new javafx.scene.control.Label("Color:");
+        javafx.scene.control.TextField txtColor = new javafx.scene.control.TextField();
+        txtColor.setPromptText("Ingrese color");
+        txtColor.setPrefWidth(250);
+
+        // Botones
+        javafx.scene.control.Button btnGuardar = new javafx.scene.control.Button("Guardar");
+        javafx.scene.control.Button btnCancelar = new javafx.scene.control.Button("Cancelar");
+
+        // Variable para almacenar el resultado
+        final MaquinaModelo[] resultado = new MaquinaModelo[1];
+
+        btnGuardar.setOnAction(e -> {
+            String tipo = txtTipo.getText().trim();
+            String marca = txtMarca.getText().trim();
+            String modelo = txtModelo.getText().trim();
+            String color = txtColor.getText().trim();
+
+            // Validación
+            if (tipo == null || tipo.isEmpty()) {
+                Alert alerta = new Alert(Alert.AlertType.WARNING);
+                alerta.setTitle("Campo Requerido");
+                alerta.setHeaderText("Debe seleccionar un tipo");
+                alerta.showAndWait();
+                return;
+            }
+
+            if (marca.isEmpty() || modelo.isEmpty() || color.isEmpty()) {
+                Alert alerta = new Alert(Alert.AlertType.WARNING);
+                alerta.setTitle("Campos Requeridos");
+                alerta.setHeaderText("Todos los campos son obligatorios");
+                alerta.showAndWait();
+                return;
+            }
+
+            // Crear nueva máquina
+            resultado[0] = new MaquinaModelo(tipo, marca, modelo, color);
+            ventanaFormulario.close();
+        });
+
+        btnCancelar.setOnAction(e -> {
+            resultado[0] = null;
+            ventanaFormulario.close();
+        });
+
+        // Estilo de botones
+        btnGuardar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnGuardar.setPrefWidth(100);
+        btnCancelar.setPrefWidth(100);
+
+        // Layout
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10);
+        grid.setVgap(15);
+        grid.setPadding(new javafx.geometry.Insets(20));
+
+        grid.add(lblTitulo, 0, 0, 2, 1);
+        grid.add(lblTipo, 0, 1);
+        grid.add(txtTipo, 1, 1);
+        grid.add(lblMarca, 0, 2);
+        grid.add(txtMarca, 1, 2);
+        grid.add(lblModelo, 0, 3);
+        grid.add(txtModelo, 1, 3);
+        grid.add(lblColor, 0, 4);
+        grid.add(txtColor, 1, 4);
+
+        javafx.scene.layout.HBox botonesBox = new javafx.scene.layout.HBox(10);
+        botonesBox.setAlignment(javafx.geometry.Pos.CENTER);
+        botonesBox.getChildren().addAll(btnGuardar, btnCancelar);
+        grid.add(botonesBox, 0, 5, 2, 1);
+
+        javafx.scene.Scene escena = new javafx.scene.Scene(grid, 400, 350);
+        ventanaFormulario.setScene(escena);
+        ventanaFormulario.showAndWait();
+
+        return resultado[0];
+    }
 	
 	public void insertarOrdenBase(OrdenTrabajoModelo orden) {
 		

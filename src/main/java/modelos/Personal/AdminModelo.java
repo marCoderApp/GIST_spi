@@ -4,23 +4,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import conexion.ConexionDB;
 import modelos.GestionRep.Credenciales;
+import modelos.Personal.PersonalBase;
 
-public class AdminModelo {
-	
-	private String id;
-	private String nombre;
-	private String apellido;
+public class AdminModelo extends PersonalBase {
+
 	private int turno;
 	private Connection conexion = ConexionDB.conectar();
 	
 	public AdminModelo(String nombre, String apellido, int turno) {
-		this.id = generarId();
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.turno = turno;
+		super(nombre, apellido);
+        this.id = generarId();
+        this.turno = turno;
 	}
 	
 	public String generarId() {
@@ -79,8 +75,6 @@ public class AdminModelo {
 	}
 	
 	public Boolean verificarContraseña(String contraseña) {
-		// Lógica para verificar la contraseña del administrador
-		// Retorna true si la contraseña es correcta, de lo contrario retorna false
 		return null;
 	}
 	
@@ -103,6 +97,11 @@ public class AdminModelo {
 	public void setTurno(int turno) {
 		this.turno = turno;
 	}
+
+    @Override
+    public String getRol(){
+        return "ADMIN";
+    }
 	
 	@Override
 	public String toString() {
