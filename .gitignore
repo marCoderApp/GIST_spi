@@ -1,0 +1,24 @@
+# Build directories
+target/
+bin/
+
+# Compiled executables
+*.exe
+*.app
+*.dmg
+*.jar
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Runtime files
+runtime/
