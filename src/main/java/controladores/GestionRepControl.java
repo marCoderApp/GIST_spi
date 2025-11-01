@@ -37,7 +37,7 @@ public class GestionRepControl {
 		this.setOrdenCreada(false);
 	}
 
-	
+	//ORDENES DE TRABAJO
 	public boolean registrarOrden(OrdenTrabajoModelo orden) {
         this.ordenesTrabajo.add(orden);
         this.setOrdenCreada(true);
@@ -53,7 +53,79 @@ public class GestionRepControl {
 		}
 		return null; // Retorna null si no se encuentra la orden
 	}
-	
+
+    public void insertarOrdenBase(OrdenTrabajoModelo orden) {
+
+        ordenId = orden.getOrdenId();
+
+        String sqlInsertarOrdenBase = "INSERT INTO "
+                + "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, descripcion_falla, fecha_ingreso, estado, admin_id, tecnico_id) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try(PreparedStatement psInsertarOrdenBase = conexion.prepareStatement(sqlInsertarOrdenBase)){
+            psInsertarOrdenBase.setString(1, orden.getOrdenId());
+            psInsertarOrdenBase.setString(2, clienteIdGestionRep);
+            psInsertarOrdenBase.setString(3, orden.getDescripcion_falla());
+            if (orden.getFechaIngreso() == null) {
+                orden.setFechaIngreso(LocalDate.now()); // o LocalDateTime.now() si usás fecha+hora
+            }
+            psInsertarOrdenBase.setDate(4, java.sql.Date.valueOf(orden.getFechaIngreso()));
+            psInsertarOrdenBase.setString(5, orden.getEstado().getValor());
+            psInsertarOrdenBase.setString(6, PersonalControl.adminIdPersonalControl);
+            psInsertarOrdenBase.setString(7, PersonalControl.tecnicoIdPersonalControl);
+
+            psInsertarOrdenBase.executeUpdate();
+
+        }catch(Exception e) {
+            System.out.println("Error al insertar Orden: " + e.getMessage());
+            e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
+        }
+    }
+
+    public static boolean chequearIdOrden(String ordenId) {
+        String sqlCheckOrdenId = "SELECT * FROM orden_de_trabajo WHERE orden_trabajo_id = ?";
+        boolean esGuardado = false;
+
+        try(PreparedStatement ps = conexion.prepareStatement(sqlCheckOrdenId)){
+            ps.setString(1, ordenId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                esGuardado = rs.next();
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return esGuardado;
+
+    }
+
+    public boolean registrarEntrega(String ordenIdParam, String adminId) {
+
+        String sqlRetirarEntrega = "UPDATE ORDEN_DE_TRABAJO SET despacho = ?, "
+                + "fecha_retiro = ? WHERE ORDEN_TRABAJO_ID = ?";
+
+        try(PreparedStatement ps = conexion.prepareStatement(sqlRetirarEntrega)){
+            ps.setString(1, adminId);
+            ps.setTimestamp(2, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
+            ps.setString(3, ordenIdParam);
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                OrdenTrabajoModelo.actualizarEstado(ordenIdParam, EstadoOrden.RETIRADA);
+                System.out.println("\n✅ La máquina fue entregada al cliente correctamente.\n");
+                return true;
+            } else {
+                System.out.println("\n⚠️ No se encontró una orden LISTA con ese ID.\n");
+            }
+        }catch(Exception e) {
+            e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
+        }
+        return false;
+
+    }
+
+    //CLIENTES
 	public ClienteModelo registrarCliente(ClienteModelo cliente) {
 		
 String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empresa, telefono, dni, cuit) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -174,7 +246,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 	    return "";
     }
-	
+
+    //MAQUINAS
 	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
 		 String ordenId = orden.getOrdenId();
 		    List<MaquinaModelo> maquinasSeleccionadas = null;
@@ -496,78 +569,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
         return resultado[0];
     }
-	
-	public void insertarOrdenBase(OrdenTrabajoModelo orden) {
-		
-		ordenId = orden.getOrdenId();
-		
-		String sqlInsertarOrdenBase = "INSERT INTO "
-				+ "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, descripcion_falla, fecha_ingreso, estado, admin_id, tecnico_id) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
-		
-			try(PreparedStatement psInsertarOrdenBase = conexion.prepareStatement(sqlInsertarOrdenBase)){
-					psInsertarOrdenBase.setString(1, orden.getOrdenId());
-					psInsertarOrdenBase.setString(2, clienteIdGestionRep);
-					psInsertarOrdenBase.setString(3, orden.getDescripcion_falla());
-					if (orden.getFechaIngreso() == null) {
-					    orden.setFechaIngreso(LocalDate.now()); // o LocalDateTime.now() si usás fecha+hora
-					}
-					psInsertarOrdenBase.setDate(4, java.sql.Date.valueOf(orden.getFechaIngreso()));
-					psInsertarOrdenBase.setString(5, orden.getEstado().getValor());
-					psInsertarOrdenBase.setString(6, PersonalControl.adminIdPersonalControl);
-					psInsertarOrdenBase.setString(7, PersonalControl.tecnicoIdPersonalControl);
-				
-					psInsertarOrdenBase.executeUpdate();
-				
-			}catch(Exception e) {
-				 System.out.println("Error al insertar Orden: " + e.getMessage());
-				 e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
-			}
-	}
 
-	public static boolean chequearIdOrden(String ordenId) {
-		String sqlCheckOrdenId = "SELECT * FROM orden_de_trabajo WHERE orden_trabajo_id = ?";
-		boolean esGuardado = false;
-		
-		try(PreparedStatement ps = conexion.prepareStatement(sqlCheckOrdenId)){
-			ps.setString(1, ordenId);
-			
-			  try (ResultSet rs = ps.executeQuery()) {
-		            esGuardado = rs.next(); 
-		        }
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		return esGuardado;
-		
-	}
-	
-	public boolean registrarEntrega(String ordenIdParam, String adminId) {
-		
-		String sqlRetirarEntrega = "UPDATE ORDEN_DE_TRABAJO SET despacho = ?, "
-				+ "fecha_retiro = ? WHERE ORDEN_TRABAJO_ID = ?";
-		
-		try(PreparedStatement ps = conexion.prepareStatement(sqlRetirarEntrega)){
-			ps.setString(1, adminId);
-			ps.setTimestamp(2, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()));
-			ps.setString(3, ordenIdParam);
-			int filasAfectadas = ps.executeUpdate();
-
-		        if (filasAfectadas > 0) {
-		        	OrdenTrabajoModelo.actualizarEstado(ordenIdParam, EstadoOrden.RETIRADA);
-		            System.out.println("\n✅ La máquina fue entregada al cliente correctamente.\n");
-		            return true;
-		        } else {
-		            System.out.println("\n⚠️ No se encontró una orden LISTA con ese ID.\n");
-		        }
-		}catch(Exception e) {
-			 e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
-		}
-		return false;
-		
-	}
-
+    //DEMAS MÉTODOS
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
 		
 		return detalle; 

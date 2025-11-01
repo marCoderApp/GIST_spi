@@ -1,10 +1,24 @@
 package vistas.GestionRep;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import controladores.GestionRepControl;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.PedidoModelo;
@@ -26,6 +40,31 @@ public class ClientesVista {
 	}
 	
 	public void mostrarMenuClientes() {
+
+        //Ventana
+        Stage gestionClientesVentana = new Stage();
+        gestionClientesVentana.setTitle("Gestión Clientes");
+
+        //Título
+        Label titulo = new Label("Gestión de Clientes - GIST");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        //Botones
+        Button botonCrearCliente = new Button("Crear nuevo cliente");
+        Button botonListarClientes = new Button("Listar clientes");
+        Button botonBuscarCliente = new Button("Buscar cliente");
+        Button botonSalir = new Button("Salir");
+
+        botonCrearCliente.setPrefWidth(250);
+        botonListarClientes.setPrefWidth(250);
+        botonBuscarCliente.setPrefWidth(250);
+        botonSalir.setPrefWidth(250);
+
+        botonCrearCliente.setOnAction(e -> {crearNuevoCliente();});
+        botonListarClientes.setOnAction(e -> {mostrarListaClientes();});
+        botonBuscarCliente.setOnAction(e -> {});
+
+
 		// TODO Auto-generated method stub
 		System.out.println("=== Gestión de Clientes ===");
 		System.out.println("1. Listar Clientes");
@@ -34,7 +73,8 @@ public class ClientesVista {
 		System.out.println("4. Filtrar Órdenes por Código");
 		System.out.println("5. Salir");
 	}
-	
+
+    //CREAR NUEVO CLIENTE
 	public ClienteModelo crearNuevoCliente() {
 
         GestionRepControl gestionRepControl = new GestionRepControl();
@@ -181,25 +221,205 @@ public class ClientesVista {
 
         return resultado[0];
 	}
-	
+
+
+	//BUSCAR CLIENTE
+    public ClienteModelo buscarCliente(){
+
+        TextInputDialog dialogo = new TextInputDialog();
+        dialogo.setTitle("Buscar cliente");
+        dialogo.setHeaderText("Ingrese nombre o apellido del cliente");
+        dialogo.setContentText("Busqueda:");
+
+        Optional<String> resultado = dialogo.showAndWait();
+
+        if(resultado.isPresent() && !resultado.get().trim().isEmpty()){
+            String criterio = resultado.get().trim();
+
+            List<ClienteModelo> clientesEncontrados = buscarClientesPorNombre(criterio);
+            
+            if(clientesEncontrados.isEmpty()) {
+            	Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+            	alerta.setTitle("No hay clientes - Lista vacía");
+            	alerta.setHeaderText("No se han encontrado clientes");
+            	alerta.showAndWait();
+            }else {
+            	mostrarResultadosBusqueda(clientesEncontrados);
+            }
+        }
+
+        return null;
+    }
+    
+    //BUSCAR CLIENTE POR NOMBRE
+    private List<ClienteModelo> buscarClientesPorNombre(String criterio){
+    	List<ClienteModelo> resultados = new ArrayList<>();
+    	
+    	String sqlBusqueda = "SELECT * FROM CLIENTE WHERE"
+    			+ " LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ?";
+    	
+    	try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlBusqueda)){
+    		ps.setString(1, "%" + criterio.toLowerCase() + "%");
+    		ps.setString(2, "%" + criterio.toLowerCase() + "%");
+    		
+    		ResultSet rs = ps.executeQuery();
+    		
+    		while(rs.next()) {
+    			ClienteModelo cliente = new ClienteModelo(
+    					rs.getString("nombre"),
+    					rs.getString("apellido"),
+    					rs.getString("empresa"),
+    					rs.getString("telefono"),
+    					rs.getString("cuit"),
+    					rs.getString("dni")
+    					);
+    			cliente.setClienteId(rs.getString("cliente_id"));
+    			resultados.add(cliente);
+    		}
+    		
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	return resultados;
+    }
+    
+    //MOSTRAR RESULTADOS
+    private void mostrarResultadosBusqueda(List<ClienteModelo> clientes) {
+    	Stage ventanaResultados = new Stage();
+    	ventanaResultados.setTitle("Resultados de la Búsqueda");
+    	
+    	TableView<ClienteModelo> tablaResultados = new TableView<>();
+    	
+    	ObservableList<ClienteModelo> datos = FXCollections.observableArrayList(clientes);
+    	
+    	//COLUMNAS
+    	TableColumn<ClienteModelo, String> columnaId = new TableColumn<>("ID");
+		columnaId.setCellValueFactory(new PropertyValueFactory<>("Cliente_id"));
+		
+		TableColumn<ClienteModelo, String> columnaNombre = new TableColumn<>("Nombre");
+		columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		
+		TableColumn<ClienteModelo, String> columnaApellido = new TableColumn<>("apellido");
+		columnaApellido.setCellValueFactory(new PropertyValueFactory<>("Apellido"));
+		
+		TableColumn<ClienteModelo, String> columnaEmpresa = new TableColumn<>("Empresa");
+		columnaEmpresa.setCellValueFactory(new PropertyValueFactory<>("empresa"));
+		
+		TableColumn<ClienteModelo, String> columnaCuit = new TableColumn<>("CUIT");
+		columnaCuit.setCellValueFactory(new PropertyValueFactory<>("cuit"));
+    	
+		TableColumn<ClienteModelo, String> columnaDni = new TableColumn<>("DNI");
+		columnaDni.setCellValueFactory(new PropertyValueFactory<>("dni"));
+    }
+
+    //MOSTRAR MENSAJE
 	public void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
     }
-	
-	public static void mostrarListaClientes(List<ClienteModelo> clientes) {
-		System.out.println("Lista de Clientes:");
-		for (ClienteModelo cliente : clientes) {
-			 System.out.println("───────────────────────────────");
-			    System.out.println("ID Cliente: " + cliente.getClienteId());
-			    System.out.println("Nombre:     " + cliente.getNombre());
-			    System.out.println("Apellido:   " + cliente.getApellido());
-			    System.out.println("Empresa:    " + cliente.getEmpresa());
-			    System.out.println("Teléfono:   " + cliente.getTelefono());
-			    System.out.println("DNI:        " + cliente.getDni());
-			    System.out.println("CUIT:       " + cliente.getCuit());
-				 System.out.println("───────────────────────────────");
-		}
+
+    //MOSTRAR LISTA DE CLIENTES
+	public static void mostrarListaClientes() {
+        Stage ventana = new Stage();
+        ventana.setTitle("Lista de Clientes");
+
+        // Obtener clientes de la base de datos
+        List<ClienteModelo> listaClientes = ClienteModelo.listarClientes();
+
+        if (listaClientes.isEmpty()) {
+            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+            alerta.setTitle("Sin Clientes");
+            alerta.setHeaderText("No hay clientes registrados");
+            alerta.setContentText("Cree un nuevo cliente para comenzar.");
+            alerta.showAndWait();
+            return;
+        }
+
+        // Crear tabla
+        TableView<ClienteModelo> tabla = new TableView<>();
+        ObservableList<ClienteModelo> datos = FXCollections.observableArrayList(listaClientes);
+
+        // Columnas
+        TableColumn<ClienteModelo, String> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("clienteId"));
+        colId.setPrefWidth(80);
+
+        TableColumn<ClienteModelo, String> colNombre = new TableColumn<>("Nombre");
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colNombre.setPrefWidth(120);
+
+        TableColumn<ClienteModelo, String> colApellido = new TableColumn<>("Apellido");
+        colApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        colApellido.setPrefWidth(120);
+
+        TableColumn<ClienteModelo, String> colEmpresa = new TableColumn<>("Empresa");
+        colEmpresa.setCellValueFactory(new PropertyValueFactory<>("empresa"));
+        colEmpresa.setPrefWidth(150);
+
+        TableColumn<ClienteModelo, String> colTelefono = new TableColumn<>("Teléfono");
+        colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+        colTelefono.setPrefWidth(120);
+
+        TableColumn<ClienteModelo, String> colDni = new TableColumn<>("DNI");
+        colDni.setCellValueFactory(new PropertyValueFactory<>("dni"));
+        colDni.setPrefWidth(100);
+
+        TableColumn<ClienteModelo, String> colCuit = new TableColumn<>("CUIT");
+        colCuit.setCellValueFactory(new PropertyValueFactory<>("cuit"));
+        colCuit.setPrefWidth(120);
+
+        tabla.getColumns().addAll(colId, colNombre, colApellido, colEmpresa, colTelefono, colDni, colCuit);
+        tabla.setItems(datos);
+
+        // Botones de acción
+        Button btnEditar = new Button("✏️ Editar");
+        Button btnEliminar = new Button("️ Eliminar");
+        Button btnCerrar = new Button(" Cerrar");
+
+        btnEditar.setOnAction(e -> {
+            ClienteModelo seleccionado = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionado != null) {
+                editarCliente(seleccionado, ventana);
+            } else {
+                Alert alerta = new Alert(Alert.AlertType.WARNING);
+                alerta.setTitle("Sin Selección");
+                alerta.setHeaderText("Debe seleccionar un cliente");
+                alerta.showAndWait();
+            }
+        });
+
+        btnEliminar.setOnAction(e -> {
+            ClienteModelo seleccionado = tabla.getSelectionModel().getSelectedItem();
+            if (seleccionado != null) {
+                eliminarCliente(seleccionado, ventana);
+            } else {
+                Alert alerta = new Alert(Alert.AlertType.WARNING);
+                alerta.setTitle("Sin Selección");
+                alerta.setHeaderText("Debe seleccionar un cliente");
+                alerta.showAndWait();
+            }
+        });
+
+        btnCerrar.setOnAction(e -> ventana.close());
+
+        // Layout de botones
+        HBox botonesBox = new HBox(10);
+        botonesBox.setAlignment(Pos.CENTER);
+        botonesBox.setPadding(new Insets(10));
+        botonesBox.getChildren().addAll(btnEditar, btnEliminar, btnCerrar);
+
+        // Layout principal
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+        layout.getChildren().addAll(tabla, botonesBox);
+
+        Scene escena = new Scene(layout, 900, 500);
+        ventana.setScene(escena);
+        ventana.show();
 	}
+
+
+
 	
 	//Getters
 	
