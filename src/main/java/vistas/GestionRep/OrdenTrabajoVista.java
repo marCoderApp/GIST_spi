@@ -49,15 +49,17 @@ public class OrdenTrabajoVista {
 		this.mensajeError = "";
 	}
 	
+	//OPCION CREAR ORDEN
 	public void opcionCrearOrden() {
 		ingresarDatos();
 	}
 	
+	//INGRESAR DATOS DE LA ORDEN
 	public void ingresarDatos() {
 		GestionRepControl gestionRepControl = new GestionRepControl();
 	    OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, null, null, null, null, null, null, null, null, null);
 
-	    // Ventana para seleccionar cliente con tu misma lógica
+	    // Ventana para seleccionar cliente
 	    gestionRepControl.elegirCliente();
 	    String clienteId = GestionRepControl.clienteIdGestionRep;
 
@@ -90,7 +92,7 @@ public class OrdenTrabajoVista {
 
 	    gestionRepControl.insertarOrdenBase(orden);
 
-	    // Selección de máquinas usando tu método
+	    // Selección de máquinas usando
 	    List<MaquinaModelo> maquinas = gestionRepControl.seleccionarMaquinas(orden);
 
 	    // Mostrar lista de máquinas elegidas
@@ -131,6 +133,7 @@ public class OrdenTrabajoVista {
 	}
 	
 
+	//GUARDAR CAMBIOS
 	public void guardarCambios(OrdenTrabajoModelo orden, String observaciones) {
 		String sqlGuardarCambios = "UPDATE orden_de_trabajo SET observaciones = ? WHERE "
 				+ "orden_trabajo_id = ? ";
@@ -144,6 +147,7 @@ public class OrdenTrabajoVista {
 			 System.out.println("Error al insertar observaciones: " + e.getMessage());
 		}
 	}
+	
 	
 	public void mostrarMensaje(String mensaje, boolean exito) {
 
@@ -165,6 +169,7 @@ public class OrdenTrabajoVista {
 		seleccionarOrden();
 	}
 	
+	//SELECCIONAR UNA ORDEN
 	public void seleccionarOrden() {
 		 TextInputDialog dialogo = new TextInputDialog();
 		    dialogo.setTitle("Entrega de Orden");
@@ -237,6 +242,8 @@ public class OrdenTrabajoVista {
 	public void mostrarConfirmacion(String mensaje) {
 	}
 	
+	//MOSTRAR LISTA DE ORDENES.
+	//MODIFICAR ESTE MÉTODO.
 	public void mostrarLista() {
 		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
 		            + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
@@ -245,6 +252,10 @@ public class OrdenTrabajoVista {
 		            + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
 		            + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
 		            + "ORDER BY O.ORDEN_TRABAJO_ID";
+		 
+		  Stage ventana = new Stage();
+	        ventana.setTitle("Lista de Órdenes de Trabajo");
+
 
 		    try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
 		        ResultSet resultado = consultaPreparada.executeQuery();
@@ -254,6 +265,8 @@ public class OrdenTrabajoVista {
 
 		        TreeItem<String> nodoOrdenActual = null;
 		        String idOrdenActual = "";
+		        
+		        
 
 		        while (resultado.next()) {
 		            String idOrden = resultado.getString("orden_trabajo_id");
@@ -286,9 +299,7 @@ public class OrdenTrabajoVista {
 
 		        TreeView<String> vistaArbol = new TreeView<>(nodoRaiz);
 
-		        Stage ventana = new Stage();
-		        ventana.setTitle("Lista de Órdenes de Trabajo");
-
+		      
 		        Scene escena = new Scene(new StackPane(vistaArbol), 700, 500);
 		        ventana.setScene(escena);
 		        ventana.show();
@@ -299,8 +310,6 @@ public class OrdenTrabajoVista {
 		    }
 		    }
 		
-	
-	
 	
 	//Setters and getters
 	

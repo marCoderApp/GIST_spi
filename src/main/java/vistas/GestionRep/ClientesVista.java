@@ -11,6 +11,7 @@ import java.util.Scanner;
 import controladores.GestionRepControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -62,16 +63,47 @@ public class ClientesVista {
 
         botonCrearCliente.setOnAction(e -> {crearNuevoCliente();});
         botonListarClientes.setOnAction(e -> {mostrarListaClientes();});
-        botonBuscarCliente.setOnAction(e -> {});
-
-
-		// TODO Auto-generated method stub
-		System.out.println("=== Gestión de Clientes ===");
-		System.out.println("1. Listar Clientes");
-		System.out.println("2. Seleccionar Cliente");
-		System.out.println("3. Crear Pedido");
-		System.out.println("4. Filtrar Órdenes por Código");
-		System.out.println("5. Salir");
+        botonBuscarCliente.setOnAction(e -> {buscarCliente();});
+        botonSalir.setOnAction(e -> gestionClientesVentana.close());
+        
+     // Estilos
+     		String estiloBoton = 
+     			"-fx-background-color: white;" +
+     			"-fx-text-fill: black;" +
+     			"-fx-border-color: black;" +
+     			"-fx-border-width: 1.5;" +
+     			"-fx-background-radius: 8;" +
+     			"-fx-border-radius: 8;" +
+     			"-fx-font-size: 14px;";
+     		
+     		botonCrearCliente.setStyle(estiloBoton);
+     		botonListarClientes.setStyle(estiloBoton);
+     		botonBuscarCliente.setStyle(estiloBoton);
+     		botonSalir.setStyle(estiloBoton);
+     		
+     		// Hover effects
+     		Button[] botones = {botonCrearCliente, botonListarClientes,
+     				botonBuscarCliente, botonSalir};
+     		for (Button btn : botones) {
+     			btn.setOnMouseEntered(e -> btn.setStyle(estiloBoton + "-fx-background-color: #f5851c;"));
+     			btn.setOnMouseExited(e -> btn.setStyle(estiloBoton));
+     		}
+     		
+     		// Layout
+     		VBox layout = new VBox(15);
+     		layout.setAlignment(Pos.CENTER);
+     		layout.setPadding(new Insets(30));
+     		layout.getChildren().addAll(titulo,
+     				botonCrearCliente,
+     				botonListarClientes,
+     				botonBuscarCliente,
+     				botonSalir);
+     		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+     		
+     		Scene escena = new Scene(layout, 400, 450);
+     		gestionClientesVentana.setScene(escena);
+     		gestionClientesVentana.show();
+        
 	}
 
     //CREAR NUEVO CLIENTE
@@ -319,6 +351,7 @@ public class ClientesVista {
     }
 
     //MOSTRAR LISTA DE CLIENTES
+	@SuppressWarnings("unchecked")
 	public static void mostrarListaClientes() {
         Stage ventana = new Stage();
         ventana.setTitle("Lista de Clientes");
@@ -417,10 +450,22 @@ public class ClientesVista {
         ventana.setScene(escena);
         ventana.show();
 	}
-
-
-
 	
+	//EDITAR CLIENTE
+	
+	private static void editarCliente(ClienteModelo cliente,
+			Stage ventanaPadre) {
+		
+	}
+	
+	//ELIMINAR CLIENTE
+	private static void eliminarCliente(ClienteModelo cliente,
+			Stage ventanaPadre) {
+		
+	}
+	
+	
+
 	//Getters
 	
 	public String getClienteId() {
