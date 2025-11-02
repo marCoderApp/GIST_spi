@@ -10,13 +10,24 @@ import java.util.Scanner;
 
 import controladores.GestionRepControl;
 import controladores.PersonalControl;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import modelos.Personal.TecnicoModelo;
 import modelos.GestionRep.*;	
@@ -254,61 +265,162 @@ public class OrdenTrabajoVista {
 		            + "ORDER BY O.ORDEN_TRABAJO_ID";
 		 
 		  Stage ventana = new Stage();
-	        ventana.setTitle("Lista de Órdenes de Trabajo");
+	      ventana.setTitle("Lista de Órdenes de Trabajo");
 
+	      TableView<ObservableList<String>> tabla = new TableView<>();
+	      ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+	      
+	      String[] nombresCampos = {
+	    		  "Orden_trabajo_id", "Fecha_ingreso",
+	    		  "Descripcion_falla", "Estado",
+	    		  "Cliente", "Maquina_id", 
+	    		  "Tipo", "Marca", "Modelo"
+	      };
+	      
+	      for(String nombreCampo : nombresCampos){
+	    	  final int colIndex = tabla.getColumns().size();
+	    	  TableColumn<ObservableList<String>, String> columna = 
+	    			  new TableColumn<>(nombreCampo);
+	    	  
+	    	  columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
+	    			  (param.getValue().size() > colIndex) ? 
+	    					  param.getValue().get(colIndex) : ""));
+	    	  columna.setPrefWidth(switch(nombreCampo) {
+	    	  case "Orden_trabajo_id" -> 100;
+	    	  case "Fecha_ingreso" -> 120;
+	    	  case "Descripcion_falla" -> 200;
+	    	  case "Cliente" -> 150;
+	    	  case "Estado" -> 150;
+	    	  case "Maquina_id" -> 100;
+	    	  case "Tipo" -> 150;
+	    	  case "Marca" -> 120;
+	    	  case "Modelo" -> 150;
+	    	  default -> 120;
+	    	  });
+	    	 tabla.getColumns().add(columna);
+	      }
 
 		    try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
 		        ResultSet resultado = consultaPreparada.executeQuery();
 
-		        TreeItem<String> nodoRaiz = new TreeItem<>("LISTADO ORDENES DE TRABAJO");
-		        nodoRaiz.setExpanded(true);
-
-		        TreeItem<String> nodoOrdenActual = null;
-		        String idOrdenActual = "";
+	
 		        
-		        
-
 		        while (resultado.next()) {
-		            String idOrden = resultado.getString("orden_trabajo_id");
-
-		            if (!idOrden.equals(idOrdenActual)) {
-		                idOrdenActual = idOrden;
-
-		                String descripcionOrden = "📌 " + idOrden +
-		                        " | " + resultado.getString("nombre") + " " + resultado.getString("apellido") +
-		                        " | Estado: " + resultado.getString("estado");
-
-		                nodoOrdenActual = new TreeItem<>(descripcionOrden);
-		                nodoOrdenActual.setExpanded(true);
-
-		                nodoRaiz.getChildren().add(nodoOrdenActual);
-		            }
-
-		            String idMaquina = resultado.getString("maquina_id");
-
-		            if (idMaquina != null) {
-		                String descripcionMaquina = "⚙️ Máquina/s: " + idMaquina + " → "
-		                        + resultado.getString("tipo") + " "
-		                        + resultado.getString("marca") + " "
-		                        + resultado.getString("modelo");
-		                nodoOrdenActual.getChildren().add(new TreeItem<>(descripcionMaquina));
-		            } else {
-		                nodoOrdenActual.getChildren().add(new TreeItem<>("❌ Sin máquinas asociadas"));
-		            }
+		          ObservableList<String> fila = 
+		        		  FXCollections.observableArrayList();
+		        
+		          String orden_trabajo_id = resultado.getString("orden_trabajo_"
+		          		+ "id");
+		          String fecha_ingreso = resultado.getString("fecha_ingreso");
+		          String descripcion_falla = resultado.getString("descripcion_falla");
+		          String estado = resultado.getString("estado");
+		          String cliente = resultado.getString("nombre") + " " +
+		        		  resultado.getString("apellido");
+		          String maquina_id = resultado.getString("maquina_id");
+		          String tipo = resultado.getString("tipo");
+		          String marca = resultado.getString("marca");
+		          String modelo = resultado.getString("modelo");
+		          
+		          if(maquina_id == null) {
+		        	  maquina_id = "X";
+		        	  tipo = "Sin";
+		        	  marca = "Máquina";
+		        	  modelo = "Asociada";
+		          }
+		          
+		          fila.addAll(orden_trabajo_id, fecha_ingreso,
+		        		  descripcion_falla, estado,
+		        		  cliente, maquina_id, tipo,
+		        		  marca, modelo);
+		          datos.add(fila); 
 		        }
-
-		        TreeView<String> vistaArbol = new TreeView<>(nodoRaiz);
-
-		      
-		        Scene escena = new Scene(new StackPane(vistaArbol), 700, 500);
+		        
+		        tabla.setItems(datos);
+		        
+		        Button botonEditar = new Button("✏️ Editar");
+		        Button botonEliminar = new Button("Eliminar");
+		        Button botonCerrar = new Button("Cerrar");
+		        
+		        botonEditar.setOnAction(e -> {
+		        	ObservableList<String> seleccionado = 
+		        			tabla.getSelectionModel().getSelectedItem();
+		        	
+		        	if(seleccionado != null) {
+		        		String ordenId = seleccionado.get(0);
+		        		editarOrdenPorId(ordenId);
+		        	}else {
+		        		  mostrarAdvertencia("Debe seleccionar una orden para editar.");
+		        	}
+		        	
+		        
+		        });
+		        
+		        botonEliminar.setOnAction(e -> {
+		        	ObservableList<String> seleccionado =
+		        			tabla.getSelectionModel()
+		        			.getSelectedItem();
+		        	
+		        	if(seleccionado != null) {
+		        		String ordenId = seleccionado.get(0);
+		        		
+		        		Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+		        				"¿Eliminar la orden con ID " + ordenId + "?",
+		        				ButtonType.YES, ButtonType.NO);
+		        		confirm.showAndWait().ifPresent(respuesta -> {
+		        			if(respuesta == ButtonType.YES) {
+		        				eliminarOrdenPorId(ordenId);
+		        				datos.remove(seleccionado);
+		        				}
+		        		});	        		
+		        	}else {
+		        		mostrarAdvertencia("Debe seleccionar una orden para"
+		        				+ "eliminar");
+		        	}
+		        	
+		        });
+		        
+		        botonCerrar.setOnAction(e -> 
+		        ventana.close());
+		        
+		        //LAYOUT
+		        
+		        HBox botonesBox = new HBox(10, botonEditar, botonEliminar, 
+		        		botonCerrar);
+		        
+		        botonesBox.setAlignment(Pos.CENTER);
+		        botonesBox.setPadding(new Insets(10));
+		        
+		        VBox layout = new VBox(10, tabla, botonesBox);
+		        layout.setPadding(new Insets(10));
+			    
+			      
+		        Scene escena = new Scene(layout);
 		        ventana.setScene(escena);
 		        ventana.show();
-
 		    } catch (Exception e) {
 		        Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
 		        alerta.showAndWait();
 		    }
-		    }
+	}
+	
+	//MOSTRAR ADVERTENCIA
+	private static void mostrarAdvertencia(String mensaje) {
+	    Alert alerta = new Alert(Alert.AlertType.WARNING);
+	    alerta.setTitle("Advertencia");
+	    alerta.setHeaderText(null);
+	    alerta.setContentText(mensaje);
+	    alerta.showAndWait();
+	}
+	
+	//EDITAR ORDEN POR ID
+	private void editarOrdenPorId(String ordenId) {
+		System.out.println("EDITAR ORDEN");
+	}
+	
+	//ELIMINAR ORDEN POR ID
+	private void eliminarOrdenPorId(String ordenId) {
+		System.out.println("ELIMINAR ORDEN");
+	}
 		
 	
 	//Setters and getters

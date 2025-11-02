@@ -412,7 +412,8 @@ public class ClientesVista {
         btnEditar.setOnAction(e -> {
             ClienteModelo seleccionado = tabla.getSelectionModel().getSelectedItem();
             if (seleccionado != null) {
-                editarCliente(seleccionado, ventana);
+            	String cliente_id = seleccionado.getClienteId();
+                editarClientePorId(seleccionado, ventana, cliente_id);
             } else {
                 Alert alerta = new Alert(Alert.AlertType.WARNING);
                 alerta.setTitle("Sin Selección");
@@ -424,7 +425,18 @@ public class ClientesVista {
         btnEliminar.setOnAction(e -> {
             ClienteModelo seleccionado = tabla.getSelectionModel().getSelectedItem();
             if (seleccionado != null) {
-                eliminarCliente(seleccionado, ventana);
+            	String cliente_id = seleccionado.getClienteId();
+              
+                
+            	Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+        				"¿Eliminar el cliente con ID " + cliente_id + "?",
+        				ButtonType.YES, ButtonType.NO);
+        		confirm.showAndWait().ifPresent(respuesta -> {
+        			if(respuesta == ButtonType.YES) {
+        				eliminarClientePorId(seleccionado, ventana, cliente_id);
+        				datos.remove(seleccionado);
+        				}
+        		});	  
             } else {
                 Alert alerta = new Alert(Alert.AlertType.WARNING);
                 alerta.setTitle("Sin Selección");
@@ -453,14 +465,14 @@ public class ClientesVista {
 	
 	//EDITAR CLIENTE
 	
-	private static void editarCliente(ClienteModelo cliente,
-			Stage ventanaPadre) {
+	private static void editarClientePorId(ClienteModelo cliente,
+			Stage ventanaPadre, String cliente_id) {
 		
 	}
 	
 	//ELIMINAR CLIENTE
-	private static void eliminarCliente(ClienteModelo cliente,
-			Stage ventanaPadre) {
+	private static void eliminarClientePorId(ClienteModelo cliente,
+			Stage ventanaPadre, String cliente_id) {
 		
 	}
 	
