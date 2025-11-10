@@ -66,9 +66,9 @@ public class MainFX extends Application {
 	        ClientesVista clientesVista = new ClientesVista();
 	        btn4.setOnAction(e -> clientesVista.mostrarMenuClientes());
 
-	        Button btn5 = new Button("👷🏻 Gestionar técnicos");
-	        TecnicoVista tecnicoVista = new TecnicoVista(null);
-	        btn5.setOnAction(e ->  tecnicoVista.mostrarMenuTecnicos());
+	        Button btn5 = new Button("👷🏻 Gestionar Usuarios");
+	        UsuarioVista usuarioVista = new UsuarioVista(null);
+	        btn5.setOnAction(e ->  usuarioVista.mostrarMenuUsuarios());
 
 	        Button btn6 = new Button("💡 Gestionar novedades");
 	        NovedadesVista novedadesVista = new NovedadesVista(null, null, null, null, null);
