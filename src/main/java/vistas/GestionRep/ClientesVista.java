@@ -119,7 +119,7 @@ public class ClientesVista {
         javafx.scene.control.Label lblTitulo = new javafx.scene.control.Label("=== Crear nuevo cliente ===");
         lblTitulo.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 16));
 
-        // Campos de texto con sus labels
+        //IMPUTS
         javafx.scene.control.Label lblNombre = new javafx.scene.control.Label("Nombre:*");
         javafx.scene.control.TextField txtNombre = new javafx.scene.control.TextField();
         txtNombre.setPromptText("Ingrese nombre");

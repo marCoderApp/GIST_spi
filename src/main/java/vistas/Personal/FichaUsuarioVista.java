@@ -1,18 +1,24 @@
 package vistas.Personal;
 
+import controladores.PersonalControl;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import modelos.Personal.TecnicoModelo;
 import modelos.Notificacion.TareasModelo;
-import java.util.List;
+import controladores.PersonalControl;
+
+import java.awt.*;
+import javafx.scene.control.Button;
 
 public class FichaUsuarioVista {
 
-	
 	private String usuarioId;
 	private String nombre;
 	private String apellido;
 	private String especialidad;
 	private int cantidadTareas;
+    private PersonalControl personalControl = new PersonalControl(null, false, false, null);
+
 	
 	public FichaUsuarioVista(String usuarioId, String nombre, String apellido, String especialidad,
                              int cantidadTareas) {
@@ -27,6 +33,70 @@ public class FichaUsuarioVista {
     //MENÚ ADMINISTRADORES
     public void mostrarMenuAdministradores(){
         System.out.println("MOSTRAR MENU ADMINISTRADORES");
+
+        Stage gestionAdministradorVentana = new Stage();
+        gestionAdministradorVentana.setTitle("Gestión de Administradores");
+
+        //TÍTULO
+        javafx.scene.control.Label titulo = new javafx.scene.control.Label("Gestión de Administradores - GIST");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 24));
+
+        //BOTONES
+        Button botonCrearAdmin = new Button("➕ Crear nuevo admin");
+        Button botonListarAdmins = new Button("📋 Listar admin");
+        Button botonBuscarAdmin = new Button("🔍 Buscar admin");
+        Button botonVolver = new Button("🔙 Volver");
+
+        //ESTILOS
+        String estiloBoton =
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: black;" +
+                        "-fx-border-color: black;" +
+                        "-fx-border-width: 1.5;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-border-radius: 8;" +
+                        "-fx-font-size: 14px;";
+
+        botonCrearAdmin.setStyle(estiloBoton);
+        botonBuscarAdmin.setStyle(estiloBoton);
+        botonListarAdmins.setStyle(estiloBoton);
+        botonVolver.setStyle(estiloBoton);
+
+        botonCrearAdmin.setPrefWidth(250);
+        botonListarAdmins.setPrefWidth(250);
+        botonBuscarAdmin.setPrefWidth(250);
+        botonVolver.setPrefWidth(250);
+
+        //ACCIONES DE BOTONES
+        botonCrearAdmin.setOnAction(e -> opcionCrearAdmin());
+        botonListarAdmins.setOnAction(e -> mostrarLista());
+        botonBuscarAdmin.setOnAction(e->{buscarUser("ADMINISTRADOR");});
+        botonVolver.setOnAction(e -> {gestionAdministradorVentana.close();});
+
+        // Hover effects
+        javafx.scene.control.Button[] botones = {botonCrearAdmin,
+                botonListarAdmins,
+                botonBuscarAdmin, botonVolver};
+        for (javafx.scene.control.Button btn : botones) {
+            btn.setOnMouseEntered(e -> btn.setStyle(estiloBoton + "-fx-background-color: #f5851c;"));
+            btn.setOnMouseExited(e -> btn.setStyle(estiloBoton));
+        }
+
+        // Layout
+        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(15);
+        layout.setAlignment(javafx.geometry.Pos.CENTER);
+        layout.setPadding(new javafx.geometry.Insets(30));
+        layout.getChildren().addAll(titulo,
+                botonCrearAdmin,
+                botonListarAdmins,
+                botonBuscarAdmin,
+                botonVolver);
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+
+        javafx.scene.Scene escena = new javafx.scene.Scene(layout, 400, 450);
+        gestionAdministradorVentana.setScene(escena);
+        gestionAdministradorVentana.show();
+
     }
 
     //MENÚ TECNICOS
@@ -53,7 +123,7 @@ public class FichaUsuarioVista {
 
         botonCrearTecnico.setOnAction(e -> opcionCrearTecnico());
         botonListarTecnicos.setOnAction(e -> mostrarLista());
-        botonBuscarTecnico.setOnAction(e -> buscarTecnico());
+        botonBuscarTecnico.setOnAction(e -> buscarUser("TECNICO"));
         botonVolver.setOnAction(e -> gestionTecnicosVentana.close());
 
         // Estilos
@@ -94,7 +164,121 @@ public class FichaUsuarioVista {
 
     //OPCIÓN CREAR TÉCNICO
     public void opcionCrearTecnico() {
-        System.out.println("CREANDO TECNICO");
+        System.out.println("CREANDO TECNICO...");
+
+        ingresarDatosTecnico();
+
+    }
+
+    private TecnicoModelo ingresarDatosTecnico(){
+        PersonalControl personalControl = new PersonalControl(null, false, false, null);
+
+        Stage ventanaCrearTecnico = new Stage();
+        ventanaCrearTecnico.setTitle("Crear nuevo técnico");
+        ventanaCrearTecnico.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+        //TÍTULO
+        javafx.scene.control.Label titulo = new javafx.scene.control.Label("Crear nuevo técnico");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 20));
+
+        //INPUTS
+        javafx.scene.control.TextField txtNombre = new javafx.scene.control.TextField();
+        txtNombre.setPromptText("Nombre");
+        txtNombre.setPrefWidth(250);
+
+        javafx.scene.control.TextField txtEspecialidad = new javafx.scene.control.TextField();
+        txtEspecialidad.setPromptText("Especialidad");
+        txtEspecialidad.setPrefWidth(250);
+
+        //BOTONES
+        javafx.scene.control.Button btnCrear = new javafx.scene.control.Button("Crear");
+        btnCrear.setPrefWidth(250);
+        javafx.scene.control.Button btnCancelar = new javafx.scene.control.Button("Cancelar");
+        btnCancelar.setPrefWidth(250);
+
+        btnCrear.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        final TecnicoModelo[] resultado = new TecnicoModelo[1];
+
+        //ACCIONES DE BOTONES
+        btnCrear.setOnAction(e -> {
+            String nombre = txtNombre.getText().trim();
+            String especialidad = txtEspecialidad.getText().trim();
+
+            if(nombre.isEmpty() || especialidad.isEmpty()){
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.WARNING
+                );
+                alerta.setTitle("Campos Requeridos");
+                alerta.setHeaderText("Nombre, Apellido y especialidad son obligatorios");
+                alerta.setContentText("Por favor, complete los campos marcados con *");
+                alerta.showAndWait();
+                return;
+            }
+
+            //CREAR NUEVO PERSONAL
+            TecnicoModelo nuevoTecnico = new TecnicoModelo(nombre,
+                    apellido,
+                    especialidad,
+                    0,
+                    0,
+                    0);
+
+            //GUARDAR TÉCNICO MODELO
+            TecnicoModelo guardado = personalControl.registrarTecnico(nuevoTecnico);
+
+            if (guardado != null) {
+                javafx.scene.control.Alert exitoAlert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION
+                );
+                exitoAlert.setTitle("Éxito");
+                exitoAlert.setHeaderText("Técnico creado exitosamente ✅");
+                exitoAlert.setContentText("ID: " + guardado.getId());
+                exitoAlert.showAndWait();
+
+                resultado[0] = guardado;
+                ventanaCrearTecnico.close();
+            } else {
+                javafx.scene.control.Alert errorAlert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.ERROR
+                );
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText("Error al crear el tecnico");
+                errorAlert.setContentText("No se pudo registrar el tecnico en la base de datos.");
+                errorAlert.showAndWait();
+            }
+
+        });
+        btnCancelar.setOnAction(e -> ventanaCrearTecnico.close());
+
+        //LAYOUT y GRID
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 20, 20, 20));
+        grid.add(titulo, 0, 0, 2, 1);
+        grid.add(new javafx.scene.control.Label("Nombre: "), 0, 1);
+        grid.add(txtNombre, 1, 1);
+        grid.add(new javafx.scene.control.Label("Especialidad: "), 0, 2);
+        grid.add(txtEspecialidad, 1, 2);
+
+        javafx.scene.layout.HBox hbox = new javafx.scene.layout.HBox(10);
+        hbox.setAlignment(javafx.geometry.Pos.CENTER);
+        hbox.getChildren().addAll(btnCrear, btnCancelar);
+        grid.add(hbox, 0, 4, 2, 1);
+        grid.setStyle("-fx-background-color: white;");
+
+        //MOSTRAR ESCENA
+        javafx.scene.Scene escena = new javafx.scene.Scene(grid, 400, 250);
+        ventanaCrearTecnico.setScene(escena);
+        ventanaCrearTecnico.showAndWait();
+
+        return resultado[0];
+
+    }
+
+    private void opcionCrearAdmin() {
     }
 	
 	public void abrirFicha() {
@@ -109,10 +293,19 @@ public class FichaUsuarioVista {
 		// Lógica para mostrar la lista de técnicos
 	}
 
-    private void buscarTecnico() {
+    //METODO PARA BUSCAR ADMINISTRADOR POR NOMBRE
+    private void buscarUser(String rol) {
         javafx.scene.control.TextInputDialog dialogo = new javafx.scene.control.TextInputDialog();
-        dialogo.setTitle("Buscar técnico");
-        dialogo.setHeaderText("Ingrese nombre o apellido del técnico");
+
+        // Configurar el diálogo según el rol
+        if (rol.equals("TECNICO")) {
+            dialogo.setTitle("Buscar técnico");
+            dialogo.setHeaderText("Ingrese nombre o apellido del técnico");
+        } else if (rol.equals("ADMINISTRADOR")) {
+            dialogo.setTitle("Buscar administrador");
+            dialogo.setHeaderText("Ingrese nombre o apellido del administrador");
+        }
+
         dialogo.setContentText("Búsqueda:");
 
         java.util.Optional<String> resultado = dialogo.showAndWait();
@@ -120,21 +313,214 @@ public class FichaUsuarioVista {
         if (resultado.isPresent() && !resultado.get().trim().isEmpty()) {
             String criterio = resultado.get().trim();
 
-            // Aquí implementarás la lógica de búsqueda según tu base de datos
+            // Buscar según el rol
+            if (rol.equals("TECNICO")) {
+                buscarTecnicoPorNombre(criterio);
+            } else if (rol.equals("ADMINISTRADOR")) {
+                buscarAdminPorNombre(criterio);
+            }
+        }
+    }
+
+    //METODO PARA BUSCAR TECNICO POR NOMBRE
+    private void buscarTecnicoPorNombre(String criterio) {
+        java.util.List<modelos.Personal.TecnicoModelo> resultados = new java.util.ArrayList<>();
+
+        String sqlBusqueda = "SELECT * FROM TECNICO WHERE " +
+                "LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ?";
+
+        try (java.sql.PreparedStatement ps = conexion.ConexionDB.conectar().prepareStatement(sqlBusqueda)) {
+            ps.setString(1, "%" + criterio.toLowerCase() + "%");
+            ps.setString(2, "%" + criterio.toLowerCase() + "%");
+
+            java.sql.ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                modelos.Personal.TecnicoModelo tecnico = new modelos.Personal.TecnicoModelo(
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getString("especialidad"),
+                        0, // tareasAsignadas
+                        rs.getInt("tareas_completadas"),
+                        rs.getInt("tareas_pendientes")
+                );
+                tecnico.setTecnicoId(rs.getString("tecnico_id"));
+                resultados.add(tecnico);
+            }
+
+            if (resultados.isEmpty()) {
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION
+                );
+                alerta.setTitle("Sin resultados");
+                alerta.setHeaderText("No se encontraron técnicos");
+                alerta.setContentText("No hay técnicos que coincidan con: " + criterio);
+                alerta.showAndWait();
+            } else {
+                mostrarResultadosTecnicos(resultados);
+            }
+
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
             javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.INFORMATION
+                    javafx.scene.control.Alert.AlertType.ERROR
             );
-            alerta.setTitle("Búsqueda");
-            alerta.setHeaderText("Buscando técnico: " + criterio);
-            alerta.setContentText("Función de búsqueda en desarrollo...");
+            alerta.setTitle("Error");
+            alerta.setHeaderText("Error al buscar técnicos");
+            alerta.setContentText("Error: " + e.getMessage());
             alerta.showAndWait();
         }
+    }
+
+    //METODO PARA ADMINISTRADORES POR NOMBRE
+    private void buscarAdminPorNombre(String criterio) {
+        java.util.List<modelos.Personal.AdminModelo> resultados = new java.util.ArrayList<>();
+
+        String sqlBusqueda = "SELECT * FROM ADMINISTRADOR WHERE " +
+                "LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ?";
+
+        try (java.sql.PreparedStatement ps = conexion.ConexionDB.conectar().prepareStatement(sqlBusqueda)) {
+            ps.setString(1, "%" + criterio.toLowerCase() + "%");
+            ps.setString(2, "%" + criterio.toLowerCase() + "%");
+
+            java.sql.ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                modelos.Personal.AdminModelo admin = new modelos.Personal.AdminModelo(
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getInt("turno")
+                );
+                admin.id = rs.getString("administrador_id");
+                resultados.add(admin);
+            }
+
+            if (resultados.isEmpty()) {
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION
+                );
+                alerta.setTitle("Sin resultados");
+                alerta.setHeaderText("No se encontraron administradores");
+                alerta.setContentText("No hay administradores que coincidan con: " + criterio);
+                alerta.showAndWait();
+            } else {
+                mostrarResultadosAdmins(resultados);
+            }
+
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.ERROR
+            );
+            alerta.setTitle("Error");
+            alerta.setHeaderText("Error al buscar administradores");
+            alerta.setContentText("Error: " + e.getMessage());
+            alerta.showAndWait();
+        }
+    }
+
+    //METODO PARA MOSTRAR RESULTADOS DE BUSQUEDA TECNICOS
+    private void mostrarResultadosTecnicos(java.util.List<modelos.Personal.TecnicoModelo> tecnicos) {
+        javafx.stage.Stage ventanaResultados = new javafx.stage.Stage();
+        ventanaResultados.setTitle("Resultados de Búsqueda - Técnicos");
+
+        javafx.scene.control.TableView<modelos.Personal.TecnicoModelo> tablaResultados =
+                new javafx.scene.control.TableView<>();
+
+        javafx.collections.ObservableList<modelos.Personal.TecnicoModelo> datos =
+                javafx.collections.FXCollections.observableArrayList(tecnicos);
+
+        // Columnas
+        javafx.scene.control.TableColumn<modelos.Personal.TecnicoModelo, String> columnaId =
+                new javafx.scene.control.TableColumn<>("ID");
+        columnaId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("id"));
+        columnaId.setPrefWidth(80);
+
+        javafx.scene.control.TableColumn<modelos.Personal.TecnicoModelo, String> columnaNombre =
+                new javafx.scene.control.TableColumn<>("Nombre");
+        columnaNombre.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("nombre"));
+        columnaNombre.setPrefWidth(120);
+
+        javafx.scene.control.TableColumn<modelos.Personal.TecnicoModelo, String> columnaApellido =
+                new javafx.scene.control.TableColumn<>("Apellido");
+        columnaApellido.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("apellido"));
+        columnaApellido.setPrefWidth(120);
+
+        javafx.scene.control.TableColumn<modelos.Personal.TecnicoModelo, String> columnaEspecialidad =
+                new javafx.scene.control.TableColumn<>("Especialidad");
+        columnaEspecialidad.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("especialidad"));
+        columnaEspecialidad.setPrefWidth(150);
+
+        tablaResultados.getColumns().addAll(columnaId, columnaNombre, columnaApellido, columnaEspecialidad);
+        tablaResultados.setItems(datos);
+
+        javafx.scene.control.Button btnCerrar = new javafx.scene.control.Button("Cerrar");
+        btnCerrar.setOnAction(e -> ventanaResultados.close());
+
+        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(10);
+        layout.setPadding(new javafx.geometry.Insets(10));
+        layout.getChildren().addAll(tablaResultados, btnCerrar);
+        layout.setAlignment(javafx.geometry.Pos.CENTER);
+
+        javafx.scene.Scene escena = new javafx.scene.Scene(layout, 500, 400);
+        ventanaResultados.setScene(escena);
+        ventanaResultados.show();
+    }
+
+    //METODO PARA MOSTRAR RESULTADOS DE BUSQUEDA ADMINISTRADORES
+    private void mostrarResultadosAdmins(java.util.List<modelos.Personal.AdminModelo> admins) {
+        javafx.stage.Stage ventanaResultados = new javafx.stage.Stage();
+        ventanaResultados.setTitle("Resultados de Búsqueda - Administradores");
+
+        javafx.scene.control.TableView<modelos.Personal.AdminModelo> tablaResultados =
+                new javafx.scene.control.TableView<>();
+
+        javafx.collections.ObservableList<modelos.Personal.AdminModelo> datos =
+                javafx.collections.FXCollections.observableArrayList(admins);
+
+        // Columnas
+        javafx.scene.control.TableColumn<modelos.Personal.AdminModelo, String> columnaId =
+                new javafx.scene.control.TableColumn<>("ID");
+        columnaId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("id"));
+        columnaId.setPrefWidth(80);
+
+        javafx.scene.control.TableColumn<modelos.Personal.AdminModelo, String> columnaNombre =
+                new javafx.scene.control.TableColumn<>("Nombre");
+        columnaNombre.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("nombre"));
+        columnaNombre.setPrefWidth(120);
+
+        javafx.scene.control.TableColumn<modelos.Personal.AdminModelo, String> columnaApellido =
+                new javafx.scene.control.TableColumn<>("Apellido");
+        columnaApellido.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("apellido"));
+        columnaApellido.setPrefWidth(120);
+
+        javafx.scene.control.TableColumn<modelos.Personal.AdminModelo, Integer> columnaTurno =
+                new javafx.scene.control.TableColumn<>("Turno");
+        columnaTurno.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("turno"));
+        columnaTurno.setPrefWidth(80);
+
+        tablaResultados.getColumns().addAll(columnaId, columnaNombre, columnaApellido, columnaTurno);
+        tablaResultados.setItems(datos);
+
+        javafx.scene.control.Button btnCerrar = new javafx.scene.control.Button("Cerrar");
+        btnCerrar.setOnAction(e -> ventanaResultados.close());
+
+        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(10);
+        layout.setPadding(new javafx.geometry.Insets(10));
+        layout.getChildren().addAll(tablaResultados, btnCerrar);
+        layout.setAlignment(javafx.geometry.Pos.CENTER);
+
+        javafx.scene.Scene escena = new javafx.scene.Scene(layout, 450, 400);
+        ventanaResultados.setScene(escena);
+        ventanaResultados.show();
     }
 	
 	public void actualizarCantidadTareas(int nuevaCantidad) {
 		this.cantidadTareas = nuevaCantidad;
 	}
-	
+
+
+
 	//Getters y Setters
 	
 	public String getusuarioId() {

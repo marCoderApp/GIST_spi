@@ -1,7 +1,7 @@
 package modelos.Personal;
 
 public abstract class PersonalBase {
-    protected String id;
+    public String id;
     protected String nombre;
     protected String apellido;
 
@@ -40,4 +40,5 @@ public abstract class PersonalBase {
     public String toString() {
         return this.getNombreCompleto();
     }
+
 }

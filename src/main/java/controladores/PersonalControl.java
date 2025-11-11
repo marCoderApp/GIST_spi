@@ -4,6 +4,8 @@ import modelos.GestionRep.Credenciales;
 import modelos.Personal.AdminModelo;
 import modelos.Personal.TecnicoModelo;
 
+import java.sql.PreparedStatement;
+
 public class PersonalControl {
 
 	private AdminModelo datosAdministrador = null;
@@ -20,7 +22,7 @@ public class PersonalControl {
 		this.setDatosAdministrador(new AdminModelo(null, null, 0));
 		this.tecnicoGuardado = false;
 		this.setContraseñaValida(false);
-		this.setDatosTecnico(new TecnicoModelo(null, null, null, null, 0, 0));
+		this.setDatosTecnico(new TecnicoModelo(null, null, null, 0, 0, 0));
 	}
 	
 	public boolean validarCredenciales(Credenciales credencialIngresada) {
@@ -65,9 +67,31 @@ public class PersonalControl {
 		
 	}
 	
-	public void registrarTecnico(TecnicoModelo tecnico) {
-		
-	}
+	public TecnicoModelo registrarTecnico(TecnicoModelo tecnico) {
+		String sqlSentencia = "INSERT INTO tecnico (tecnico_id, nombre, especialidad, cantidadTareas," +
+                "cantidad_tareas_asignadas, cantidad_tareas_pendientes) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try(PreparedStatement ps = conexion.ConexionDB.conectar().prepareStatement(sqlSentencia)){
+            ps.setString(1, tecnico.getId());
+            ps.setString(2, tecnico.getNombre());
+            ps.setString(3, tecnico.getEspecialidad());
+            ps.setInt(4,tecnico.getCantidadTareasCompletadas());
+            ps.setInt(5,tecnico.getCantidadTareasAsignadas());
+            ps.setInt(6,tecnico.getCantidadTareasPendientes());
+
+            Boolean guardado = tecnico.guardarTecnico(ps);
+            if (guardado) {
+                return tecnico;
+            }
+
+        }catch(Exception e){
+            System.out.println("Error al registrar el tecnico: " + e.getMessage());
+
+        }
+
+        return tecnico;
+    }
 	
 	public void eliminarTecnico() {
         this.setDatosAdministrador(null);
@@ -76,7 +100,7 @@ public class PersonalControl {
 	
 	public void modificarTecnico(String nombre, String especialidad, int experiencia) {
 		if (this.tecnicoGuardado) {
-			this.setDatosTecnico(new TecnicoModelo(nombre, especialidad, especialidad, null, experiencia, experiencia));
+			this.setDatosTecnico(new TecnicoModelo(nombre, especialidad, especialidad, 0,0,0));
 		}
 	}
 	

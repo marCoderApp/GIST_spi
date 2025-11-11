@@ -86,10 +86,6 @@ public class ClienteModelo {
 
 	}
 	
-	public void registrarCliente(String clienteId) {
-
-	}
-	
 	public void actualizarDatos(ClienteModelo datos) {
 		
 	}

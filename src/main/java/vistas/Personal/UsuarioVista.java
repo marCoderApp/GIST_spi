@@ -109,12 +109,4 @@ public class UsuarioVista {
 
     }
 
-    public void mostrarMenuAdmin() {
-        System.out.println("MENU ADMINISTRADORES");
-    }
-
-    public void mostrarMenuTecnicos() {
-
-      System.out.println("MENU TECNICOS");
-    }
 }

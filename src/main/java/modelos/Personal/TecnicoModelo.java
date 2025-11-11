@@ -1,30 +1,82 @@
 package modelos.Personal;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import modelos.Personal.PersonalBase;
 import modelos.Notificacion.TareasModelo;
+import controladores.GestionRepControl;
 
 public class TecnicoModelo extends PersonalBase {
 
 	private String especialidad;
-	private List<TareasModelo> tareasAsignadas;
-	private int tareasCompletadas;
-	private int tareasPendientes;
+	private int cantidadTareasAsignadas;
+	private int cantidadTareasCompletadas;
+	private int cantidadTareasPendientes;
+    private GestionRepControl gestionRepControl = new GestionRepControl();
 	
 	public TecnicoModelo(String nombre, String apellido, String especialidad,
-			List<TareasModelo> tareasAsignadas, int tareasCompletadas, int tareasPendientes) {
+			int tareasAsignadas, int tareasCompletadas, int tareasPendientes) {
 		super(nombre, apellido);
         this.id = generarId();
 		this.especialidad = especialidad;
-		this.tareasAsignadas = tareasAsignadas;
-		this.tareasCompletadas = tareasCompletadas;
-		this.tareasPendientes = tareasPendientes;
+		this.cantidadTareasAsignadas = tareasAsignadas;
+		this.cantidadTareasCompletadas = tareasCompletadas;
+		this.cantidadTareasPendientes = tareasPendientes;
 	}
 	
 	public String generarId() {
-		return "TEC" + System.currentTimeMillis();
+
+        String sql = "SELECT tecnico_id FROM TECNICO ORDER BY tecnico_id DESC LIMIT 1";
+        String ultimoId = null;
+        try (PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                ultimoId = rs.getString("tecnico_id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        int siguienteNumero = 1;
+
+        if (ultimoId != null && ultimoId.startsWith("TEC")) {
+            try {
+                int numeroActual = Integer.parseInt(ultimoId.substring(3));
+                siguienteNumero = numeroActual + 1;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return String.format("TEC%03d", siguienteNumero);
+
 	}
 	
+    public Boolean guardarTecnico(PreparedStatement ps){
+        int rowsAfectadas = 0;
+
+        try {
+            rowsAfectadas = ps.executeUpdate();
+
+            if (rowsAfectadas > 0) {
+                System.out.println("Cliente guardado exitosamente.");
+                return true;
+            } else {
+                System.out.println("No se pudo guardar el cliente.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+
      //Getters and Setters
 	
 	public String getId() {
@@ -63,30 +115,17 @@ public class TecnicoModelo extends PersonalBase {
 	public void setEspecialidad(String especialidad) {
 		this.especialidad = especialidad;
 	}
-	
-	public List<TareasModelo> getTareasAsignadas() {
-		return tareasAsignadas;
-	}
-	
-	public void setTareasAsignadas(List<TareasModelo> tareasAsignadas) {
-		this.tareasAsignadas = tareasAsignadas;
-	}
-	
-	public int getTareasCompletadas() {
-		return tareasCompletadas;
-	}
-	
-	public void setTareasCompletadas(int tareasCompletadas) {
-		this.tareasCompletadas = tareasCompletadas;
-	}
-	
-	public int getTareasPendientes() {
-		return tareasPendientes;
-	}
-	
-	public void setTareasPendientes(int tareasPendientes) {
-		this.tareasPendientes = tareasPendientes;
-	}
-	
-	
+
+    public int getCantidadTareasAsignadas() {
+        return cantidadTareasAsignadas;
+    }
+
+    public int getCantidadTareasCompletadas() {
+        return cantidadTareasCompletadas;
+    }
+
+    public int getCantidadTareasPendientes() {
+    return cantidadTareasPendientes;
+    }
+
 }
