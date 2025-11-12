@@ -1,5 +1,11 @@
 package modelos.GestionRep;
 
+import com.mysql.cj.xdevapi.PreparableStatement;
+import conexion.ConexionDB;
+import controladores.GestionRepControl;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class Credenciales {
@@ -10,7 +16,7 @@ public class Credenciales {
 	    private LocalDateTime fechaCreacion; 
 	    private String admin_id;
 	    private String tecnico_id;
-	    
+	    private GestionRepControl gestionRepControl;
 
 	    public Credenciales(String usuario, String contraseña, RolCredencial rol, LocalDateTime fechaCreacion,
 	    		String admin_id,
@@ -22,6 +28,33 @@ public class Credenciales {
 	        this.setAdmin_id(admin_id);
 	        this.setTecnico_id(tecnico_id);
 	    }
+
+        public boolean crearCredenciales(Credenciales credenciales) {
+
+            String sqlSentencia = "INSERT INTO CREDENCIALES" +
+                    " (usuario, contraseña, fechaCreacion, rol, admin_id, tecnico_id)" +
+                    " VALUES (?, ?, ?, ?, ?, ?);";
+
+            try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sqlSentencia)) {
+
+                ps.setString(1, credenciales.getUsuario());
+                ps.setString(2, credenciales.getContrasena());
+                ps.setTimestamp(3, java.sql.Timestamp.valueOf(credenciales.getFechaCreacion()));
+                ps.setString(4, credenciales.getRol().toString());
+                ps.setString(5, credenciales.getAdmin_id());
+                ps.setString(6, credenciales.getTecnico_id());
+
+                if(ps.executeUpdate() == 1) {
+                    return true;
+                }
+
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+            return false;
+        }
 
 	    public String getUsuario() {
 	        return usuario;

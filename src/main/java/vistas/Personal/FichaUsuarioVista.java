@@ -1,13 +1,19 @@
 package vistas.Personal;
 
 import controladores.PersonalControl;
+import javafx.animation.PauseTransition;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import modelos.GestionRep.Credenciales;
+import modelos.GestionRep.RolCredencial;
 import modelos.Personal.TecnicoModelo;
 import modelos.Notificacion.TareasModelo;
 import controladores.PersonalControl;
 
 import java.awt.*;
+import java.time.LocalDateTime;
+
 import javafx.scene.control.Button;
 
 public class FichaUsuarioVista {
@@ -190,6 +196,14 @@ public class FichaUsuarioVista {
         txtEspecialidad.setPromptText("Especialidad");
         txtEspecialidad.setPrefWidth(250);
 
+        javafx.scene.control.TextField txtContrasenia= new javafx.scene.control.TextField();
+        txtContrasenia.setPromptText("Contraseña");
+        txtContrasenia.setPrefWidth(250);
+
+        javafx.scene.control.TextField txtConfirmarContrasenia= new javafx.scene.control.TextField();
+        txtConfirmarContrasenia.setPromptText("Confirmar contraseña");
+        txtConfirmarContrasenia.setPrefWidth(250);
+
         //BOTONES
         javafx.scene.control.Button btnCrear = new javafx.scene.control.Button("Crear");
         btnCrear.setPrefWidth(250);
@@ -205,19 +219,35 @@ public class FichaUsuarioVista {
         btnCrear.setOnAction(e -> {
             String nombre = txtNombre.getText().trim();
             String especialidad = txtEspecialidad.getText().trim();
+            String contrasenia = txtContrasenia.getText().trim();
+            String confirmarContrasenia = txtConfirmarContrasenia.getText().trim();
 
-            if(nombre.isEmpty() || especialidad.isEmpty()){
+            if(!contrasenia.equals(confirmarContrasenia)){
+                javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.WARNING
+                );
+                alerta.setTitle("Contraseñas no coinciden");
+                alerta.setHeaderText("Las contraseñas ingresadas no coinciden. Por favor, vuelva a intentarlo.");
+                alerta.setContentText("!!!");
+                alerta.showAndWait();
+                return;
+            }
+
+
+            if(nombre.isEmpty() || especialidad.isEmpty() || contrasenia.isEmpty() || confirmarContrasenia.isEmpty()){
                 javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(
                         javafx.scene.control.Alert.AlertType.WARNING
                 );
                 alerta.setTitle("Campos Requeridos");
-                alerta.setHeaderText("Nombre, Apellido y especialidad son obligatorios");
+                alerta.setHeaderText("Todos los campos son obligatorios");
                 alerta.setContentText("Por favor, complete los campos marcados con *");
                 alerta.showAndWait();
                 return;
             }
 
-            //CREAR NUEVO PERSONAL
+
+
+            //CREAR NUEVO TECNICO
             TecnicoModelo nuevoTecnico = new TecnicoModelo(nombre,
                     apellido,
                     especialidad,
@@ -225,8 +255,30 @@ public class FichaUsuarioVista {
                     0,
                     0);
 
+            //CREAR NUEVA CREDENCIAL
+            Credenciales nuevaCredencial = new Credenciales(
+                    nombre,
+                    contrasenia,
+                    RolCredencial.TECNICO,
+                    LocalDateTime.now(),
+                    null,
+                    nuevoTecnico.getId()
+                    );
+
             //GUARDAR TÉCNICO MODELO
             TecnicoModelo guardado = personalControl.registrarTecnico(nuevoTecnico);
+            Credenciales credGuardada = personalControl.crearNuevaCredencial(nuevaCredencial);
+
+
+            if (credGuardada != null) {
+                javafx.scene.control.Alert exitoAlert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION
+                );
+                exitoAlert.setTitle("Éxito");
+                exitoAlert.setHeaderText("Técnico creado exitosamente ✅");
+                exitoAlert.setContentText("ID: " + guardado.getId());
+                exitoAlert.show();
+            }
 
             if (guardado != null) {
                 javafx.scene.control.Alert exitoAlert = new javafx.scene.control.Alert(
@@ -262,15 +314,19 @@ public class FichaUsuarioVista {
         grid.add(txtNombre, 1, 1);
         grid.add(new javafx.scene.control.Label("Especialidad: "), 0, 2);
         grid.add(txtEspecialidad, 1, 2);
+        grid.add(new javafx.scene.control.Label("Contraseña: "), 0, 3);
+        grid.add(txtContrasenia, 1, 3);
+        grid.add(new javafx.scene.control.Label("Confirmar contraseña: "), 0, 4);
+        grid.add(txtConfirmarContrasenia, 1, 4);
 
         javafx.scene.layout.HBox hbox = new javafx.scene.layout.HBox(10);
         hbox.setAlignment(javafx.geometry.Pos.CENTER);
         hbox.getChildren().addAll(btnCrear, btnCancelar);
-        grid.add(hbox, 0, 4, 2, 1);
+        grid.add(hbox, 0, 5, 2, 1);
         grid.setStyle("-fx-background-color: white;");
 
         //MOSTRAR ESCENA
-        javafx.scene.Scene escena = new javafx.scene.Scene(grid, 400, 250);
+        javafx.scene.Scene escena = new javafx.scene.Scene(grid, 400, 275);
         ventanaCrearTecnico.setScene(escena);
         ventanaCrearTecnico.showAndWait();
 

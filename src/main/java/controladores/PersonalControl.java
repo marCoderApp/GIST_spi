@@ -44,7 +44,22 @@ public class PersonalControl {
 		}
 			
     }
-	
+
+    public Credenciales crearNuevaCredencial(Credenciales credencialIngresada){
+
+        try{
+
+           boolean guardado = credencialIngresada.crearCredenciales(credencialIngresada);
+            if (guardado) {
+                return credencialIngresada;
+            }
+
+        }catch(Exception e){
+            System.out.println("Error al crear la credencial: " + e.getMessage());
+        }
+
+        return null;
+    }
 	
 	public void filtrarIdPorRol(Credenciales cred_bdgist, String rolValor) {
 
