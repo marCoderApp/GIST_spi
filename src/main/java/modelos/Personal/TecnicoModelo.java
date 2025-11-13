@@ -3,6 +3,7 @@ package modelos.Personal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import modelos.Personal.PersonalBase;
 import modelos.Notificacion.TareasModelo;
@@ -14,11 +15,11 @@ public class TecnicoModelo extends PersonalBase {
 	private int cantidadTareasAsignadas;
 	private int cantidadTareasCompletadas;
 	private int cantidadTareasPendientes;
-    private GestionRepControl gestionRepControl = new GestionRepControl();
+    private static GestionRepControl gestionRepControl = new GestionRepControl();
 	
 	public TecnicoModelo(String nombre, String apellido, String especialidad,
 			int tareasAsignadas, int tareasCompletadas, int tareasPendientes) {
-		super(nombre, apellido);
+		super(nombre,apellido);
         this.id = generarId();
 		this.especialidad = especialidad;
 		this.cantidadTareasAsignadas = tareasAsignadas;
@@ -76,6 +77,34 @@ public class TecnicoModelo extends PersonalBase {
         return false;
     }
 
+    public static List<TecnicoModelo> obtenerListaTecnicosBD(){
+        String sql = "SELECT * FROM tecnico";
+        List<TecnicoModelo> listaTecnicos = new ArrayList<TecnicoModelo>();
+
+        try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql);){
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                String tecnicoId = rs.getString("tecnico_id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String especialidad = rs.getString("especialidad");
+                int tareasAsignadas = rs.getInt("cantidadTareas");
+                int tareasCompletadas = rs.getInt("cantidad_tareas_asignadas");
+                int tareasPendientes = rs.getInt("cantidad_tareas_pendientes");
+
+                TecnicoModelo tecnico = new TecnicoModelo(nombre, apellido, especialidad, tareasAsignadas, tareasCompletadas, tareasPendientes);
+                tecnico.setTecnicoId(tecnicoId);
+
+                listaTecnicos.add(tecnico);
+            }
+
+            return listaTecnicos;
+        }catch (SQLException e){
+            System.out.println("Error al registrar el tecnico: " + e.getMessage());
+        }
+        return null;
+    }
 
      //Getters and Setters
 	

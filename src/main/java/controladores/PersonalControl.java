@@ -5,6 +5,8 @@ import modelos.Personal.AdminModelo;
 import modelos.Personal.TecnicoModelo;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PersonalControl {
 
@@ -24,7 +26,8 @@ public class PersonalControl {
 		this.setContraseñaValida(false);
 		this.setDatosTecnico(new TecnicoModelo(null, null, null, 0, 0, 0));
 	}
-	
+
+    //VALIDAR CREDENCIALES
 	public boolean validarCredenciales(Credenciales credencialIngresada) {
 		AdminModelo user = new AdminModelo(null, null, 0);
 		
@@ -45,6 +48,7 @@ public class PersonalControl {
 			
     }
 
+    //CREAR NUEVA CREDENCIAL
     public Credenciales crearNuevaCredencial(Credenciales credencialIngresada){
 
         try{
@@ -60,7 +64,8 @@ public class PersonalControl {
 
         return null;
     }
-	
+
+    // FILTRAR ID POR ROL
 	public void filtrarIdPorRol(Credenciales cred_bdgist, String rolValor) {
 
 		if (rolValor == "ADMIN") {
@@ -69,6 +74,17 @@ public class PersonalControl {
 			PersonalControl.tecnicoIdPersonalControl = cred_bdgist.getTecnico_id();
 		}
 	}
+
+    //MOSTRAR LISTA DE TECNICOS, LLAMA METODO QUE REALIZA CONSULTA EN BD
+    public List<TecnicoModelo> obtenerListaTecnicos(){
+
+    List<TecnicoModelo> listaTecnicos = TecnicoModelo.obtenerListaTecnicosBD();
+
+    if(listaTecnicos != null){
+        return listaTecnicos;
+    }
+        return null;
+    }
 	
 	public String obtenerTecnicoId(String usuarioId) {
 

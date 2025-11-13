@@ -16,18 +16,12 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import modelos.Personal.TecnicoModelo;
 import modelos.GestionRep.*;	
@@ -254,7 +248,6 @@ public class OrdenTrabajoVista {
 	}
 	
 	//MOSTRAR LISTA DE ORDENES.
-	//MODIFICAR ESTE MÉTODO.
 	public void mostrarLista() {
 		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
 		            + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
@@ -263,11 +256,15 @@ public class OrdenTrabajoVista {
 		            + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
 		            + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
 		            + "ORDER BY O.ORDEN_TRABAJO_ID";
-		 
+
+         // VENTANA DE LISTAR ORDENES DE TRABAJO
 		  Stage ventana = new Stage();
 	      ventana.setTitle("Lista de Órdenes de Trabajo");
 
+          //TABLA DE FILAS DE STRING
 	      TableView<ObservableList<String>> tabla = new TableView<>();
+
+          //LISTA DE FILAS, CADA FILA ES UNA LISTA DE STRINGS
 	      ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 	      
 	      String[] nombresCampos = {
@@ -276,7 +273,8 @@ public class OrdenTrabajoVista {
 	    		  "Cliente", "Maquina_id", 
 	    		  "Tipo", "Marca", "Modelo"
 	      };
-	      
+
+          //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
 	      for(String nombreCampo : nombresCampos){
 	    	  final int colIndex = tabla.getColumns().size();
 	    	  TableColumn<ObservableList<String>, String> columna = 
@@ -300,10 +298,9 @@ public class OrdenTrabajoVista {
 	    	 tabla.getColumns().add(columna);
 	      }
 
+          //HACER CONSULTA Y CARGAR LAS FILAS
 		    try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
 		        ResultSet resultado = consultaPreparada.executeQuery();
-
-	
 		        
 		        while (resultado.next()) {
 		          ObservableList<String> fila = 
@@ -327,19 +324,70 @@ public class OrdenTrabajoVista {
 		        	  marca = "Máquina";
 		        	  modelo = "Asociada";
 		          }
-		          
+
+                  //INSERTAR VARIABLES EN FILA
 		          fila.addAll(orden_trabajo_id, fecha_ingreso,
 		        		  descripcion_falla, estado,
 		        		  cliente, maquina_id, tipo,
 		        		  marca, modelo);
+
+                  //INSERTAR CADA FILA EN DATOS
 		          datos.add(fila); 
 		        }
-		        
+
+                //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
 		        tabla.setItems(datos);
-		        
+
+                //BOTONES
 		        Button botonEditar = new Button("✏️ Editar");
 		        Button botonEliminar = new Button("Eliminar");
 		        Button botonCerrar = new Button("Cerrar");
+                Button botonVer = new Button("Ver");
+                Button botonCambiarEstado = new Button("Cambiar Estado");
+                Button botonBuscarOrden = new Button("Buscar Orden");
+                Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
+
+                botonBuscarOrden.setOnAction(e -> {
+
+                    //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
+                    buscarOrdenDeTrabajo();
+                });
+
+                botonIngresarDetalleRep.setOnAction(e -> {
+                    ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+                    if(seleccionado != null){
+                        String ordenId = seleccionado.get(0);
+                        ingresarDetalleRep(ordenId);
+                    }else{
+                        mostrarAdvertencia("Debe seleccionar una orden para ingresar detalle de reparación");
+                    }
+
+                });
+
+                botonVer.setOnAction(e -> {
+                    ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+                    if(seleccionado != null) {
+                    	String ordenId = seleccionado.get(0);
+
+                    	verOrdentrabajo(ordenId);
+                    }else {
+                    	mostrarAdvertencia("Debe seleccionar una orden para ver.");
+                    }
+                });
+
+                botonCambiarEstado.setOnAction(e -> {
+                    ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+                    if(seleccionado != null) {
+                        String ordenId = seleccionado.get(0);
+
+                        cambiarEstadoOrden(ordenId);
+                    }else{
+                        mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
+                    }
+                });
 		        
 		        botonEditar.setOnAction(e -> {
 		        	ObservableList<String> seleccionado = 
@@ -384,7 +432,11 @@ public class OrdenTrabajoVista {
 		        
 		        //LAYOUT
 		        
-		        HBox botonesBox = new HBox(10, botonEditar, botonEliminar, 
+		        HBox botonesBox = new HBox(10,botonBuscarOrden,
+                        botonVer,
+                        botonCambiarEstado,
+                        botonIngresarDetalleRep,
+                        botonEditar, botonEliminar,
 		        		botonCerrar);
 		        
 		        botonesBox.setAlignment(Pos.CENTER);
@@ -411,6 +463,95 @@ public class OrdenTrabajoVista {
 	    alerta.setContentText(mensaje);
 	    alerta.showAndWait();
 	}
+
+    //INGRESAR DETALLE DE REPARACIÓN
+    private void ingresarDetalleRep(String ordenId ) {
+
+        Stage ventanaDetalleRep = new Stage();
+        ventanaDetalleRep.setTitle("Ingresar Detalle de Reparación");
+        ventanaDetalleRep.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+        //TITULO
+        Label titulo = new Label("Detalle de Reparación");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUTS
+        TextArea descripcionArea = new TextArea();
+        descripcionArea.setPromptText("Ingrese una descripción detallada...");
+        descripcionArea.setPrefRowCount(5);
+        descripcionArea.setWrapText(true);
+
+        TextArea repuestosArea = new TextArea();
+        repuestosArea.setPromptText("Ingrese los repuestos que necesita para reparar...");
+        repuestosArea.setPrefRowCount(5);
+        repuestosArea.setWrapText(true);
+
+        TextField txtTecnicoId = new TextField();
+        txtTecnicoId.setPromptText("ID de técnico");
+        txtTecnicoId.setPrefWidth(100);
+
+        ComboBox<Integer> nivelService = new ComboBox<>();
+        nivelService.getItems().addAll(1, 2, 3);
+
+        //BOTONES
+        Button btnGuardar = new Button("Guardar");
+        btnGuardar.setStyle("-fx-background-color: #15bb15;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnGuardar.setOnAction(e -> {
+            System.out.println("GUARDAR DETALLE DE " +
+                    "REPARACIÓN");
+        });
+        Button btnCancelar = new Button("Cancelar");
+        btnCancelar.setStyle("-fx-background-color: #da1d38;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnCancelar.setOnAction(e -> ventanaDetalleRep.close());
+
+        //LAYOUR Y GRID
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        grid.add(titulo, 0, 0, 2, 1);
+        grid.add(new javafx.scene.control.Label("Descripción:"), 0, 1);
+        grid.add(descripcionArea, 1, 1);
+        grid.add(new javafx.scene.control.Label("Repuestos"), 0, 2);
+        grid.add(repuestosArea, 1, 2);
+        grid.add(new Label("ID de Técnico"), 0, 3);
+        grid.add(txtTecnicoId, 1, 3);
+        grid.add(new Label("Nivel de Servicio"), 0, 4);
+        grid.add(nivelService, 1, 4);
+
+        //LAYOUT HORIZONTAL DE BOTONES
+        HBox hbox = new HBox(10, btnGuardar, btnCancelar);
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setPadding(new Insets(10));
+        grid.add(hbox, 0, 5, 2, 1);
+
+        //MOSTRAR ESCENA
+        Scene escena = new Scene(grid);
+        ventanaDetalleRep.setScene(escena);
+        ventanaDetalleRep.show();
+
+
+    }
+
+    //BUSCAR UNA ORDEN DE TRABAJO
+    private void buscarOrdenDeTrabajo() {
+        System.out.println("BUSCAR ORDEN");
+    }
+
+    //VER UNA ORDEN DE TRABAJO POR ID
+    private void verOrdentrabajo(String ordenId) {
+        System.out.println("VER ORDEN");
+    }
+
+    //CAMBIAR ESTADO ORDEN POR ID
+    private void cambiarEstadoOrden(String ordenId) {
+        System.out.println("CAMBIAR ESTADO ORDEN");
+    }
 	
 	//EDITAR ORDEN POR ID
 	private void editarOrdenPorId(String ordenId) {

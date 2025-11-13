@@ -125,6 +125,13 @@ public class GestionRepControl {
 
     }
 
+    private boolean cargarDetalleRep(){
+
+
+
+        return true;
+    }
+
     //CLIENTES
 	public ClienteModelo registrarCliente(ClienteModelo cliente) {
 		

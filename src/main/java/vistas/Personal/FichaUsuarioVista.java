@@ -2,17 +2,27 @@ package vistas.Personal;
 
 import controladores.PersonalControl;
 import javafx.animation.PauseTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import modelos.GestionRep.Credenciales;
 import modelos.GestionRep.RolCredencial;
 import modelos.Personal.TecnicoModelo;
-import modelos.Notificacion.TareasModelo;
 import controladores.PersonalControl;
 
 import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javafx.scene.control.Button;
 
@@ -192,6 +202,10 @@ public class FichaUsuarioVista {
         txtNombre.setPromptText("Nombre");
         txtNombre.setPrefWidth(250);
 
+        javafx.scene.control.TextField txtApellido = new javafx.scene.control.TextField();
+        txtApellido.setPromptText("Apellido");
+        txtApellido.setPrefWidth(250);
+
         javafx.scene.control.TextField txtEspecialidad = new javafx.scene.control.TextField();
         txtEspecialidad.setPromptText("Especialidad");
         txtEspecialidad.setPrefWidth(250);
@@ -218,6 +232,7 @@ public class FichaUsuarioVista {
         //ACCIONES DE BOTONES
         btnCrear.setOnAction(e -> {
             String nombre = txtNombre.getText().trim();
+            String apellido = txtApellido.getText().trim() != "" ? txtApellido.getText().trim() : "";
             String especialidad = txtEspecialidad.getText().trim();
             String contrasenia = txtContrasenia.getText().trim();
             String confirmarContrasenia = txtConfirmarContrasenia.getText().trim();
@@ -312,17 +327,19 @@ public class FichaUsuarioVista {
         grid.add(titulo, 0, 0, 2, 1);
         grid.add(new javafx.scene.control.Label("Nombre: "), 0, 1);
         grid.add(txtNombre, 1, 1);
-        grid.add(new javafx.scene.control.Label("Especialidad: "), 0, 2);
-        grid.add(txtEspecialidad, 1, 2);
-        grid.add(new javafx.scene.control.Label("Contraseña: "), 0, 3);
-        grid.add(txtContrasenia, 1, 3);
-        grid.add(new javafx.scene.control.Label("Confirmar contraseña: "), 0, 4);
-        grid.add(txtConfirmarContrasenia, 1, 4);
+        grid.add(new javafx.scene.control.Label("Apellido: "), 0, 2);
+        grid.add(txtApellido, 1, 2);
+        grid.add(new javafx.scene.control.Label("Especialidad: "), 0, 3);
+        grid.add(txtEspecialidad, 1, 3);
+        grid.add(new javafx.scene.control.Label("Contraseña: "), 0, 4);
+        grid.add(txtContrasenia, 1, 4);
+        grid.add(new javafx.scene.control.Label("Confirmar contraseña: "), 0, 5);
+        grid.add(txtConfirmarContrasenia, 1, 5);
 
         javafx.scene.layout.HBox hbox = new javafx.scene.layout.HBox(10);
         hbox.setAlignment(javafx.geometry.Pos.CENTER);
         hbox.getChildren().addAll(btnCrear, btnCancelar);
-        grid.add(hbox, 0, 5, 2, 1);
+        grid.add(hbox, 0, 6, 2, 1);
         grid.setStyle("-fx-background-color: white;");
 
         //MOSTRAR ESCENA
@@ -346,7 +363,90 @@ public class FichaUsuarioVista {
 	}
 	
 	public void mostrarLista() {
-		// Lógica para mostrar la lista de técnicos
+
+        List<TecnicoModelo> listaTecnicos = personalControl.obtenerListaTecnicos();
+        Stage ventanaListarTecnicos = new Stage();
+        ventanaListarTecnicos.setTitle("Lista de Órdenes de Trabajo");
+
+        //VISTA DE TABLA Y FILAS DE TIPO TECNICO MODELO
+        TableView<TecnicoModelo> tablaTecnicos = new TableView<>();
+        ObservableList<TecnicoModelo> datos = FXCollections.observableArrayList();
+
+        //COLUMNAS DE LA TABLA
+        TableColumn<TecnicoModelo, String> columnaId = new TableColumn<>("ID");
+        columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnaId.setPrefWidth(80);
+
+        TableColumn<TecnicoModelo, String> columnaNombre = new TableColumn<>("Nombre");
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaNombre.setPrefWidth(80);
+
+        TableColumn<TecnicoModelo, String> columnaApellido = new TableColumn<>("Apellido");
+        columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        columnaApellido.setPrefWidth(50);
+
+        TableColumn<TecnicoModelo, String> columnaEspecialidad = new TableColumn<>("Especialidad");
+        columnaEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
+        columnaEspecialidad.setPrefWidth(80);
+
+        TableColumn<TecnicoModelo, String> columnaTareasCompletadas = new TableColumn<>("Tareas completadas");
+        columnaTareasCompletadas.setCellValueFactory(new PropertyValueFactory<>("cantidadTareasCompletadas"));
+        columnaTareasCompletadas.setPrefWidth(50);
+
+        TableColumn<TecnicoModelo, String> columnaTareasAsignadas = new TableColumn<>("Tareas asignadas");
+        columnaTareasAsignadas.setCellValueFactory(new PropertyValueFactory<>("cantidadTareasAsignadas"));
+        columnaTareasAsignadas.setPrefWidth(50);
+
+        TableColumn<TecnicoModelo, String> columnaTareasPendientes = new TableColumn<>("Tareas pendientes");
+        columnaTareasPendientes.setCellValueFactory(new PropertyValueFactory<>("cantidadTareasPendientes"));
+        columnaTareasPendientes.setPrefWidth(50);
+
+        tablaTecnicos.getColumns().addAll(columnaId,
+                columnaNombre,
+                columnaApellido,
+                columnaEspecialidad,
+                columnaTareasAsignadas,
+                columnaTareasCompletadas,
+                columnaTareasPendientes);
+
+
+        //ITERAR LA LISTA DE TECNICOS Y AGREGARLAS A LA TABLA
+        for (TecnicoModelo tecnico : listaTecnicos) {
+            datos.add(tecnico);
+        }
+
+        tablaTecnicos.setItems(datos);
+
+        //BOTONES
+        Button btnVer = new Button("Ver");
+        btnVer.setPrefWidth(100);
+        btnVer.setOnAction(e -> {});
+
+        Button btnEditar = new Button("Editar");
+        btnEditar.setPrefWidth(100);
+        btnEditar.setOnAction(e -> {});
+
+        Button btnEliminar = new Button("Eliminar");
+        btnEliminar.setPrefWidth(100);
+        btnEliminar.setOnAction(e -> {});
+
+        Button btnVolver = new Button("Volver");
+        btnVolver.setPrefWidth(100);
+        btnVolver.setOnAction(e -> ventanaListarTecnicos.close());
+
+        //LAYOUT
+        HBox hbox = new HBox(10, btnVer, btnEditar, btnEliminar, btnVolver);
+
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setPadding(new Insets(10));
+
+        VBox layout = new VBox(10, tablaTecnicos, hbox);
+        layout.setPadding(new Insets(10));
+        layout.setAlignment(Pos.CENTER);
+
+        Scene escena = new Scene(layout);
+        ventanaListarTecnicos.setScene(escena);
+        ventanaListarTecnicos.showAndWait();
 	}
 
     //METODO PARA BUSCAR ADMINISTRADOR POR NOMBRE

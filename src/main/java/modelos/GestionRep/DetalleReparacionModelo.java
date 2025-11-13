@@ -1,6 +1,10 @@
 package modelos.GestionRep;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import controladores.GestionRepControl;
 
 public class DetalleReparacionModelo {
 	
@@ -11,35 +15,61 @@ public class DetalleReparacionModelo {
 	private LocalDateTime fecha;
 	private String ordenId;
 	private boolean ordenAsociada;
-	
+    private GestionRepControl gestionRepControl = new GestionRepControl();
+	private int nivelService;
+
 	public DetalleReparacionModelo(String detalleRepId, String descripcion,
 			String repuestos, String tecnicoId,
 			LocalDateTime fecha,
-			String ordenId, boolean ordenAsociada) {
+			String ordenId,
+            int nivelService) {
 		this.detalleRepId = generarDetalleRepId();
 		this.descripcion = descripcion;
 		this.repuestos = repuestos;
 		this.tecnicoId = tecnicoId;
 		this.fecha = fecha;
 		this.ordenId = ordenId;
-		this.ordenAsociada = ordenAsociada;
+        this.nivelService = nivelService;
 	}
 	
 	public String generarDetalleRepId() {
-		return "DR" + System.currentTimeMillis();
+        String sql = "SELECT id FROM DETALLEREPARACION ORDER BY id DESC LIMIT 1";
+        String ultimoId = null;
+        try (PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                ultimoId = rs.getString("id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        int siguienteNumero = 1;
+
+        if (ultimoId != null && ultimoId.startsWith("DTR")) {
+            try {
+                int numeroActual = Integer.parseInt(ultimoId.substring(5));
+                siguienteNumero = numeroActual + 1;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return String.format("DTR%05d", siguienteNumero);
 	}
 	
-	public Boolean guardarDetalles(DetalleReparacionModelo datos) {
+	public static Boolean guardarDetallesBD(DetalleReparacionModelo datos) {
+
+        String sql = "INSERT INTO DETALLEREPARACION VALUES (?,?,?,?,?,?)";
+
 		return true;
 	}
 	
-	public void eliminarDetalle(String detalleRepId) {
-		
-	}
+	public void eliminarDetalle(String detalleRepId) {}
 	
-	public void modificarDetalle(String detalleRepId) {
-		
-	}
+	public void modificarDetalle(String detalleRepId) {}
 	
 
 	// Getters

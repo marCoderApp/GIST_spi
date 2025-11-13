@@ -82,7 +82,7 @@ public class MainFX extends Application {
 			PedidosVista pedidosVista = new PedidosVista(null, null, null, null, 0);
 	        btn8.setOnAction(e -> pedidosVista.mostrarMenuPedidos());
 
-	        Button btn9 = new Button("🔨 Gestionar órdenes de trabajo");
+	        Button btn9 = new Button("🔨 Módulo AI");
 	        btn9.setOnAction(e -> ordenVista.mostrarMenuOrdenesTrabajo());
 
 	        Button btn10 = new Button("🔚 Salir");
