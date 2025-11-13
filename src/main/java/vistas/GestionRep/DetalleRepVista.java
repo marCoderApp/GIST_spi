@@ -25,7 +25,6 @@ public class DetalleRepVista {
 	private int nivelService;
 	private float presupuesto;
 	private boolean ordenAsociada;
-    private GestionRepControl gestionRepControl = new GestionRepControl();
 	
 	//Constructor
 	
@@ -71,8 +70,8 @@ public class DetalleRepVista {
         txtTecnicoId.setPromptText("ID de técnico");
         txtTecnicoId.setPrefWidth(100);
 
-        ComboBox<Integer> nivelService = new ComboBox<>();
-        nivelService.getItems().addAll(1, 2, 3);
+        ComboBox<Integer> nivelServiceBox = new ComboBox<>();
+        nivelServiceBox.getItems().addAll(1, 2, 3);
 
         //NUEVO DETALLE DE REPARACIÓN:
         DetalleReparacionModelo nuevoDetalleRep = new DetalleReparacionModelo(null,
@@ -83,18 +82,43 @@ public class DetalleRepVista {
                 null,
                 0);
 
-
-
         //BOTONES
         Button btnGuardar = new Button("Guardar");
         btnGuardar.setStyle("-fx-background-color: #15bb15;" +
                 " -fx-text-fill: white;" +
                 " -fx-font-weight: bold;");
         btnGuardar.setOnAction(e -> {
-            System.out.println("GUARDAR DETALLE DE " +
-                    "REPARACIÓN");
+            String descripcion = descripcionArea.getText().trim();
+            String repuestos = repuestosArea.getText().trim();
+            String tecnicoId = txtTecnicoId.getText().trim();
+            int nivelService = nivelServiceBox.getValue() != null ? nivelServiceBox.getValue() : nuevoDetalleRep.getNivelService();
 
-            gestionRepControl.cargarDetalleRep(nuevoDetalleRep);
+            if(descripcion == null || repuestos == null || tecnicoId == null){
+                mostrarError("Todos los campos son obligatorios");
+                return;
+            }
+
+            if (nivelService == 0) {
+                mostrarError("Seleccioná un nivel de servicio antes de guardar.");
+                return;
+            }
+
+
+            //CARGAR LOS DATOS EN EL BOTON
+            nuevoDetalleRep.setDescripcion(descripcion);
+            nuevoDetalleRep.setRepuestos(repuestos);
+            nuevoDetalleRep.setTecnicoId(tecnicoId);
+            nuevoDetalleRep.setNivelService(nivelService);
+
+            boolean exito = GestionRepControl.cargarDetalleRep(nuevoDetalleRep, ordenId);
+
+            if(exito){
+                mostrarAlerta("Detalle de reparación guardado correctamente."
+                , ventanaDetalleRep);
+                btnGuardar.setDisable(true);
+            }else{
+                mostrarError("Verificá los datos e intentá nuevamente.");
+            }
 
         });
         Button btnCancelar = new Button("Cancelar");
@@ -106,7 +130,6 @@ public class DetalleRepVista {
 
 
         //LAYOUR Y GRID
-
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -119,7 +142,7 @@ public class DetalleRepVista {
         grid.add(new Label("ID de Técnico"), 0, 3);
         grid.add(txtTecnicoId, 1, 3);
         grid.add(new Label("Nivel de Servicio"), 0, 4);
-        grid.add(nivelService, 1, 4);
+        grid.add(nivelServiceBox, 1, 4);
 
         //LAYOUT HORIZONTAL DE BOTONES
         HBox hbox = new HBox(10, btnGuardar, btnCancelar);
@@ -133,6 +156,26 @@ public class DetalleRepVista {
         ventanaDetalleRep.show();
 
     }
+
+    //MOSTRAR ALERTA EXITO
+    private static void mostrarAlerta(String mensaje, Stage ventanaDetalleRep){
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Éxito");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+
+        ventanaDetalleRep.close();
+    }
+
+    private static void mostrarError(String mensaje){
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setTitle("Error");
+        alerta.setHeaderText("No se pudo guardar");
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+
 
 	//Getters and Setters
 	
@@ -214,17 +257,6 @@ public class DetalleRepVista {
 	
 	public void setOrdenAsociada(boolean ordenAsociada) {
 		this.ordenAsociada = ordenAsociada;
-	}
-	
-	
-	public void abrirFormulario() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	public DetalleReparacionModelo ingresarDetalleReparacion() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }

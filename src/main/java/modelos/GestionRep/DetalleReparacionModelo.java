@@ -16,7 +16,7 @@ public class DetalleReparacionModelo {
 	private String ordenId;
 	private boolean ordenAsociada;
     private GestionRepControl gestionRepControl = new GestionRepControl();
-	private int nivelService;
+	private int nivelService = 0;
 
 	public DetalleReparacionModelo(String detalleRepId, String descripcion,
 			String repuestos, String tecnicoId,
@@ -60,11 +60,30 @@ public class DetalleReparacionModelo {
         return String.format("DTR%05d", siguienteNumero);
 	}
 	
-	public static Boolean guardarDetalleBD(DetalleReparacionModelo datos) {
+	public static Boolean guardarDetalleBD(DetalleReparacionModelo nuevoDetalleRep, String ordenId) {
 
         String sql = "INSERT INTO DETALLEREPARACION VALUES (?,?,?,?,?,?)";
 
-		return true;
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+                ps.setString(1,nuevoDetalleRep.getDetalleRepId());
+                ps.setString(2, nuevoDetalleRep.getDescripcion());
+                ps.setObject(3, nuevoDetalleRep.getFecha());
+                ps.setString(4, ordenId);
+                ps.setString(5, nuevoDetalleRep.getTecnicoId());
+                ps.setInt(6, nuevoDetalleRep.getNivelService());
+
+               int filas = ps.executeUpdate();
+
+                if(filas > 0){
+                    return true;
+                }
+
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+		return false;
 	}
 	
 	public void eliminarDetalle(String detalleRepId) {}
@@ -129,6 +148,14 @@ public class DetalleReparacionModelo {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
+    public void setNivelService(int nivelService){
+        this.nivelService = nivelService;
+    }
+
+    public int getNivelService(){
+        return this.nivelService;
+    }
 
 	
 	

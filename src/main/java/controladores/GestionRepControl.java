@@ -126,10 +126,11 @@ public class GestionRepControl {
 
     }
 
-    public boolean cargarDetalleRep(DetalleReparacionModelo nuevoDetalleRep){
+    public static boolean cargarDetalleRep(DetalleReparacionModelo nuevoDetalleRep, String ordenId){
 
         try{
-            if(DetalleReparacionModelo.guardarDetalleBD(nuevoDetalleRep)){
+            boolean guardada = DetalleReparacionModelo.guardarDetalleBD(nuevoDetalleRep, ordenId);
+            if(guardada){
                 return true;
             }
         }catch(Exception e){
