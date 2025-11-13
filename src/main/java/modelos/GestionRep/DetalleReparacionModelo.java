@@ -60,7 +60,7 @@ public class DetalleReparacionModelo {
         return String.format("DTR%05d", siguienteNumero);
 	}
 	
-	public static Boolean guardarDetallesBD(DetalleReparacionModelo datos) {
+	public static Boolean guardarDetalleBD(DetalleReparacionModelo datos) {
 
         String sql = "INSERT INTO DETALLEREPARACION VALUES (?,?,?,?,?,?)";
 

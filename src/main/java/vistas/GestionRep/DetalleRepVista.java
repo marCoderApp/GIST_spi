@@ -2,6 +2,15 @@ package vistas.GestionRep;
 
 import java.time.LocalDateTime;
 
+import controladores.GestionRepControl;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 import modelos.GestionRep.DetalleReparacionModelo;
 
 public class DetalleRepVista {
@@ -16,6 +25,7 @@ public class DetalleRepVista {
 	private int nivelService;
 	private float presupuesto;
 	private boolean ordenAsociada;
+    private GestionRepControl gestionRepControl = new GestionRepControl();
 	
 	//Constructor
 	
@@ -34,7 +44,96 @@ public class DetalleRepVista {
 		this.presupuesto = presupuesto;
 		this.ordenAsociada = ordenAsociada;
 	}
-	
+
+    //INGRESAR DATOS DE DETALLE REPARACION
+    public static void ingresarDetalleRep(String ordenId){
+
+        Stage ventanaDetalleRep = new Stage();
+        ventanaDetalleRep.setTitle("Ingresar Detalle de Reparación");
+        ventanaDetalleRep.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+        //TITULO
+        Label titulo = new Label("Detalle de Reparación");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUTS
+        TextArea descripcionArea = new TextArea();
+        descripcionArea.setPromptText("Ingrese una descripción detallada...");
+        descripcionArea.setPrefRowCount(5);
+        descripcionArea.setWrapText(true);
+
+        TextArea repuestosArea = new TextArea();
+        repuestosArea.setPromptText("Ingrese los repuestos que necesita para reparar...");
+        repuestosArea.setPrefRowCount(5);
+        repuestosArea.setWrapText(true);
+
+        TextField txtTecnicoId = new TextField();
+        txtTecnicoId.setPromptText("ID de técnico");
+        txtTecnicoId.setPrefWidth(100);
+
+        ComboBox<Integer> nivelService = new ComboBox<>();
+        nivelService.getItems().addAll(1, 2, 3);
+
+        //NUEVO DETALLE DE REPARACIÓN:
+        DetalleReparacionModelo nuevoDetalleRep = new DetalleReparacionModelo(null,
+                null,
+                null,
+                null,
+                LocalDateTime.now(),
+                null,
+                0);
+
+
+
+        //BOTONES
+        Button btnGuardar = new Button("Guardar");
+        btnGuardar.setStyle("-fx-background-color: #15bb15;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnGuardar.setOnAction(e -> {
+            System.out.println("GUARDAR DETALLE DE " +
+                    "REPARACIÓN");
+
+            gestionRepControl.cargarDetalleRep(nuevoDetalleRep);
+
+        });
+        Button btnCancelar = new Button("Cancelar");
+        btnCancelar.setStyle("-fx-background-color: #da1d38;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnCancelar.setOnAction(e -> ventanaDetalleRep.close());
+
+
+
+        //LAYOUR Y GRID
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        grid.add(titulo, 0, 0, 2, 1);
+        grid.add(new javafx.scene.control.Label("Descripción:"), 0, 1);
+        grid.add(descripcionArea, 1, 1);
+        grid.add(new javafx.scene.control.Label("Repuestos"), 0, 2);
+        grid.add(repuestosArea, 1, 2);
+        grid.add(new Label("ID de Técnico"), 0, 3);
+        grid.add(txtTecnicoId, 1, 3);
+        grid.add(new Label("Nivel de Servicio"), 0, 4);
+        grid.add(nivelService, 1, 4);
+
+        //LAYOUT HORIZONTAL DE BOTONES
+        HBox hbox = new HBox(10, btnGuardar, btnCancelar);
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setPadding(new Insets(10));
+        grid.add(hbox, 0, 5, 2, 1);
+
+        //MOSTRAR ESCENA
+        Scene escena = new Scene(grid);
+        ventanaDetalleRep.setScene(escena);
+        ventanaDetalleRep.show();
+
+    }
+
 	//Getters and Setters
 	
 	public String getDetalleRepId() {

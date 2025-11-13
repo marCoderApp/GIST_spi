@@ -23,6 +23,7 @@ import modelos.GestionRep.OrdenTrabajoModelo;
 import modelos.GestionRep.PedidoModelo;
 import modelos.GestionRep.PresupuestoModelo;
 import vistas.GestionRep.ClientesVista;
+import vistas.GestionRep.DetalleRepVista;
 
 public class GestionRepControl {
 
@@ -125,11 +126,17 @@ public class GestionRepControl {
 
     }
 
-    private boolean cargarDetalleRep(){
+    public boolean cargarDetalleRep(DetalleReparacionModelo nuevoDetalleRep){
 
+        try{
+            if(DetalleReparacionModelo.guardarDetalleBD(nuevoDetalleRep)){
+                return true;
+            }
+        }catch(Exception e){
+            System.out.println("Ocurrió un error: " + e.getMessage());
+        }
 
-
-        return true;
+        return false;
     }
 
     //CLIENTES
