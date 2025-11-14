@@ -103,7 +103,6 @@ public class DetalleRepVista {
                 return;
             }
 
-
             //CARGAR LOS DATOS EN EL BOTON
             nuevoDetalleRep.setDescripcion(descripcion);
             nuevoDetalleRep.setRepuestos(repuestos);
