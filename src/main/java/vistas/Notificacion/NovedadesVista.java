@@ -2,8 +2,10 @@ package vistas.Notificacion;
 
 import java.time.LocalDateTime;
 
+import controladores.NotificacionesControlador;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -11,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import modelos.Notificacion.NovedadItem;
 import modelos.Notificacion.NovedadModelo;
 import java.util.*;
 import modelos.GestionRep.OrdenTrabajoModelo;
@@ -38,6 +41,7 @@ public class NovedadesVista {
 
 	}
 
+    //MOSTRAR MENU NOVEDADES
     public void mostrarMenuNovedades(){
 
         //VENTANA
@@ -107,9 +111,8 @@ public class NovedadesVista {
         ventanaMenuNovedades.show();
     };
 
+    //MOSTRAR FORM CREAR NOVEDADES
     public void mostrarFormCrearNovedades(){
-
-        final String[] ordenId = {""};
 
         Stage ventanaFormNovedades = new Stage();
         ventanaFormNovedades.setTitle("Crear Novedad");
@@ -118,24 +121,16 @@ public class NovedadesVista {
         Label titulo = new Label("Crear Novedad - GIST");
         titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
-        //INPUTS
-        /*TextArea comentarioArea = new TextArea();
-        comentarioArea.setPromptText("Ingrese el comentario de la novedad");
-        comentarioArea.setPrefRowCount(5);
-        comentarioArea.setWrapText(true);
-        */
-
         //CONTENEDOR DE ITEMS
         VBox contenedorItems = new VBox(20); // donde se agregan los ítems
 
         //SCROLLPANE
         ScrollPane scrollPaneItems = new ScrollPane(contenedorItems);
         scrollPaneItems.setFitToWidth(true);
-        scrollPaneItems.setPrefHeight(250); // ajustable según tu diseño
+        scrollPaneItems.setPrefHeight(250);
         scrollPaneItems.setStyle("-fx-background-color:transparent;");
 
         //BOTONES
-
         Button btnAgregarItem = new Button("+ Agregar ítem");
         btnAgregarItem.setPrefWidth(250);
 
@@ -144,8 +139,6 @@ public class NovedadesVista {
 
         Button btnCancelar = new Button("Cancelar");
         btnCancelar.setPrefWidth(250);
-
-
 
         //ESTILOS
         String estiloBoton =
@@ -190,8 +183,13 @@ public class NovedadesVista {
             btnSeleccionarOrden.setStyle(estiloBoton);
 
             btnSeleccionarOrden.setOnAction(event -> {
-                    System.out.println("Seleccionando orden");
-                   ordenId[0] = OrdenTrabajoVista.obtenerOrdenesDisponibles();
+
+                OrdenTrabajoVista.obtenerOrdenesDisponibles(idSeleccionado -> {
+                    System.out.println("LA ORDEN ES: " + idSeleccionado);
+                    btnSeleccionarOrden.setUserData(idSeleccionado);
+                    btnSeleccionarOrden.setText(idSeleccionado);
+                    btnSeleccionarOrden.setText("Orden: " + idSeleccionado);
+                });
             });
 
             HBox itemBox = new HBox(10, txtComentarioItem, btnSeleccionarOrden);
@@ -201,6 +199,52 @@ public class NovedadesVista {
         });
 
         btnCrearNovedad.setOnAction(e-> {
+                List<NovedadItem> items = new ArrayList<>();
+
+                for(Node node : contenedorItems.getChildren()){
+                    if(node instanceof HBox itemBox){
+                        TextArea comentarioArea = null;
+                        String ordenId = "";
+
+                        for(Node child : itemBox.getChildren()){
+                            if(child instanceof TextArea area){
+                                comentarioArea = area;
+                            }else if(child instanceof Button btnSeleccionarOrden){
+                                ordenId = btnSeleccionarOrden.getUserData() != null ?
+                                        btnSeleccionarOrden.getUserData().toString() : "";
+                                System.out.println("ORDEN ID EN BOTÓN: " + ordenId);
+                            }
+                        }
+
+                        if(comentarioArea != null || !comentarioArea.getText().trim().isEmpty()){
+                            items.add(new NovedadItem(ordenId, comentarioArea.getText().trim()));
+                        }
+
+                    }
+                }
+            if(items.isEmpty()){
+                mostrarError("Debe agregar al menos un item a la novedad");
+            }
+
+            NovedadModelo nuevaNovedad = new NovedadModelo(
+                    LocalDateTime.now(),
+                    items);
+
+            boolean guardado = NotificacionesControlador.crearNovedad(nuevaNovedad);
+
+            if(guardado){
+                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                alerta.setTitle("Novedad guardada");
+                alerta.setHeaderText(null);
+                alerta.setContentText("La novedad se ha guardado correctamente.");
+                alerta.showAndWait();
+
+                ventanaFormNovedades.close();
+
+            }else{
+                mostrarError("No se pudo guardar la novedad.");
+            }
+
 
         });
 
@@ -222,16 +266,14 @@ public class NovedadesVista {
         ventanaFormNovedades.sizeToScene();
         ventanaFormNovedades.setResizable(true);
         ventanaFormNovedades.show();
-
         }
 
+        //MOSTRAR NOVEDADES
     public void mostrarListaNovedades(){
         System.out.println("LISTA DE NOVEDADES");
-
     }
 
-
-
+    //MOSTRAR ERRORES
     private static void mostrarError(String mensaje){
         Alert alerta = new Alert(Alert.AlertType.ERROR);
         alerta.setTitle("Error");
@@ -239,11 +281,11 @@ public class NovedadesVista {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
-	
+
+    //CREAR TAREA A PARTIR DE NOVEDAD
 	public void crearTareaAPartirDeNovedad(NovedadModelo novedad) {
 		// Lógica para crear una tarea a partir de una novedad
 	}
-	
 	
 	//Getters and Setters
 	

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 import controladores.GestionRepControl;
 import controladores.PersonalControl;
@@ -497,7 +498,7 @@ public class OrdenTrabajoVista {
 	}
 
     //OBTENER ORDENES DISPONIBLES
-    public static String obtenerOrdenesDisponibles() {
+    public static String obtenerOrdenesDisponibles(Consumer<String> callback) {
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
                 + "FROM ORDEN_DE_TRABAJO O "
@@ -631,12 +632,12 @@ public class OrdenTrabajoVista {
             ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
 
             if(seleccionado != null){
-                ordenId[0] = seleccionado.get(0);
-
+                String idSeleccionado = seleccionado.get(0);
+                callback.accept(idSeleccionado);
+                ventana.close();
             }else{
                 mostrarAdvertencia("Debe seleccionar una orden de la tabla.");
             }
-
         });
 
         VBox layout = new VBox(15, tabla, btnSeleccionarOrden);

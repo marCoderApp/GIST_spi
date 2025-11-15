@@ -36,10 +36,21 @@ public class NotificacionesControlador {
 		tareas.add(nuevaTarea);
 	}
 	
-	public boolean crearNovedad(NovedadModelo novedad) {
+	public static boolean crearNovedad(NovedadModelo nuevaNovedad) {
 
+        try{
 
-		return true;
+            boolean guardado = nuevaNovedad.guardarNovedadBD(nuevaNovedad);
+
+            if(guardado){
+                return true;
+            }
+
+        }catch(Exception e){
+            System.out.println("Ocurrio un error: " + e.getMessage());
+        }
+
+		return false;
 	}
 	
 	public void mostrarNotificacion(String notificacionId) {
