@@ -250,209 +250,209 @@ public class OrdenTrabajoVista {
 	//MOSTRAR LISTA DE ORDENES.
 	public void mostrarLista() {
 		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
-		            + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
-		            + "FROM ORDEN_DE_TRABAJO O "
-		            + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-		            + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-		            + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
-		            + "ORDER BY O.ORDEN_TRABAJO_ID";
+                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
+                + "FROM ORDEN_DE_TRABAJO O "
+                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "ORDER BY O.ORDEN_TRABAJO_ID";
 
-         // VENTANA DE LISTAR ORDENES DE TRABAJO
-		  Stage ventana = new Stage();
-	      ventana.setTitle("Lista de Órdenes de Trabajo");
+        // VENTANA DE LISTAR ORDENES DE TRABAJO
+        Stage ventana = new Stage();
+        ventana.setTitle("Lista de Órdenes de Trabajo");
 
-          //TABLA DE FILAS DE STRING
-	      TableView<ObservableList<String>> tabla = new TableView<>();
+        //TABLA DE FILAS DE STRING
+        TableView<ObservableList<String>> tabla = new TableView<>();
 
-          //LISTA DE FILAS, CADA FILA ES UNA LISTA DE STRINGS
-	      ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
-	      
-	      String[] nombresCampos = {
-	    		  "Orden_trabajo_id", "Fecha_ingreso",
-	    		  "Descripcion_falla", "Estado",
-	    		  "Cliente", "Maquina_id", 
-	    		  "Tipo", "Marca", "Modelo"
-	      };
+        //LISTA DE FILAS, CADA FILA ES UNA LISTA DE STRINGS
+        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
-          //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
-	      for(String nombreCampo : nombresCampos){
-	    	  final int colIndex = tabla.getColumns().size();
-	    	  TableColumn<ObservableList<String>, String> columna = 
-	    			  new TableColumn<>(nombreCampo);
-	    	  
-	    	  columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
-	    			  (param.getValue().size() > colIndex) ? 
-	    					  param.getValue().get(colIndex) : ""));
-	    	  columna.setPrefWidth(switch(nombreCampo) {
-	    	  case "Orden_trabajo_id" -> 100;
-	    	  case "Fecha_ingreso" -> 120;
-	    	  case "Descripcion_falla" -> 200;
-	    	  case "Cliente" -> 150;
-	    	  case "Estado" -> 150;
-	    	  case "Maquina_id" -> 100;
-	    	  case "Tipo" -> 150;
-	    	  case "Marca" -> 120;
-	    	  case "Modelo" -> 150;
-	    	  default -> 120;
-	    	  });
-	    	 tabla.getColumns().add(columna);
-	      }
+        String[] nombresCampos = {
+                "Orden_trabajo_id", "Fecha_ingreso",
+                "Descripcion_falla", "Estado",
+                "Cliente", "Maquina_id",
+                "Tipo", "Marca", "Modelo"
+        };
 
-          //HACER CONSULTA Y CARGAR LAS FILAS
-		    try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
-		        ResultSet resultado = consultaPreparada.executeQuery();
-		        
-		        while (resultado.next()) {
-		          ObservableList<String> fila = 
-		        		  FXCollections.observableArrayList();
-		        
-		          String orden_trabajo_id = resultado.getString("orden_trabajo_"
-		          		+ "id");
-		          String fecha_ingreso = resultado.getString("fecha_ingreso");
-		          String descripcion_falla = resultado.getString("descripcion_falla");
-		          String estado = resultado.getString("estado");
-		          String cliente = resultado.getString("nombre") + " " +
-		        		  resultado.getString("apellido");
-		          String maquina_id = resultado.getString("maquina_id");
-		          String tipo = resultado.getString("tipo");
-		          String marca = resultado.getString("marca");
-		          String modelo = resultado.getString("modelo");
-		          
-		          if(maquina_id == null) {
-		        	  maquina_id = "X";
-		        	  tipo = "Sin";
-		        	  marca = "Máquina";
-		        	  modelo = "Asociada";
-		          }
+        //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
+        for(String nombreCampo : nombresCampos){
+            final int colIndex = tabla.getColumns().size();
+            TableColumn<ObservableList<String>, String> columna =
+                    new TableColumn<>(nombreCampo);
 
-                  //INSERTAR VARIABLES EN FILA
-		          fila.addAll(orden_trabajo_id, fecha_ingreso,
-		        		  descripcion_falla, estado,
-		        		  cliente, maquina_id, tipo,
-		        		  marca, modelo);
+            columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
+                    (param.getValue().size() > colIndex) ?
+                            param.getValue().get(colIndex) : ""));
+            columna.setPrefWidth(switch(nombreCampo) {
+                case "Orden_trabajo_id" -> 100;
+                case "Fecha_ingreso" -> 120;
+                case "Descripcion_falla" -> 200;
+                case "Cliente" -> 150;
+                case "Estado" -> 150;
+                case "Maquina_id" -> 100;
+                case "Tipo" -> 150;
+                case "Marca" -> 120;
+                case "Modelo" -> 150;
+                default -> 120;
+            });
+            tabla.getColumns().add(columna);
+        }
 
-                  //INSERTAR CADA FILA EN DATOS
-		          datos.add(fila); 
-		        }
+        //HACER CONSULTA Y CARGAR LAS FILAS
+        try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
+            ResultSet resultado = consultaPreparada.executeQuery();
 
-                //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
-		        tabla.setItems(datos);
+            while (resultado.next()) {
+                ObservableList<String> fila =
+                        FXCollections.observableArrayList();
 
-                //BOTONES
-		        Button botonEditar = new Button("✏️ Editar");
-		        Button botonEliminar = new Button("Eliminar");
-		        Button botonCerrar = new Button("Cerrar");
-                Button botonVer = new Button("Ver");
-                Button botonCambiarEstado = new Button("Cambiar Estado");
-                Button botonBuscarOrden = new Button("Buscar Orden");
-                Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
+                String orden_trabajo_id = resultado.getString("orden_trabajo_"
+                        + "id");
+                String fecha_ingreso = resultado.getString("fecha_ingreso");
+                String descripcion_falla = resultado.getString("descripcion_falla");
+                String estado = resultado.getString("estado");
+                String cliente = resultado.getString("nombre") + " " +
+                        resultado.getString("apellido");
+                String maquina_id = resultado.getString("maquina_id");
+                String tipo = resultado.getString("tipo");
+                String marca = resultado.getString("marca");
+                String modelo = resultado.getString("modelo");
 
-                botonBuscarOrden.setOnAction(e -> {
+                if(maquina_id == null) {
+                    maquina_id = "X";
+                    tipo = "Sin";
+                    marca = "Máquina";
+                    modelo = "Asociada";
+                }
 
-                    //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
-                    buscarOrdenDeTrabajo();
-                });
+                //INSERTAR VARIABLES EN FILA
+                fila.addAll(orden_trabajo_id, fecha_ingreso,
+                        descripcion_falla, estado,
+                        cliente, maquina_id, tipo,
+                        marca, modelo);
 
-                botonIngresarDetalleRep.setOnAction(e -> {
-                    ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+                //INSERTAR CADA FILA EN DATOS
+                datos.add(fila);
+            }
 
-                    if(seleccionado != null){
-                        String ordenId = seleccionado.get(0);
-                        mostrarFormDetalleRep(ordenId);
-                    }else{
-                        mostrarAdvertencia("Debe seleccionar una orden para ingresar detalle de reparación");
-                    }
+            //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
+            tabla.setItems(datos);
 
-                });
+            //BOTONES
+            Button botonEditar = new Button("✏️ Editar");
+            Button botonEliminar = new Button("Eliminar");
+            Button botonCerrar = new Button("Cerrar");
+            Button botonVer = new Button("Ver");
+            Button botonCambiarEstado = new Button("Cambiar Estado");
+            Button botonBuscarOrden = new Button("Buscar Orden");
+            Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
 
-                botonVer.setOnAction(e -> {
-                    ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+            botonBuscarOrden.setOnAction(e -> {
 
-                    if(seleccionado != null) {
-                    	String ordenId = seleccionado.get(0);
+                //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
+                buscarOrdenDeTrabajo();
+            });
 
-                    	verOrdentrabajo(ordenId);
-                    }else {
-                    	mostrarAdvertencia("Debe seleccionar una orden para ver.");
-                    }
-                });
+            botonIngresarDetalleRep.setOnAction(e -> {
+                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
 
-                botonCambiarEstado.setOnAction(e -> {
-                    ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+                if(seleccionado != null){
+                    String ordenId = seleccionado.get(0);
+                    mostrarFormDetalleRep(ordenId);
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una orden para ingresar detalle de reparación");
+                }
 
-                    if(seleccionado != null) {
-                        String ordenId = seleccionado.get(0);
+            });
 
-                        cambiarEstadoOrden(ordenId);
-                    }else{
-                        mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
-                    }
-                });
-		        
-		        botonEditar.setOnAction(e -> {
-		        	ObservableList<String> seleccionado = 
-		        			tabla.getSelectionModel().getSelectedItem();
-		        	
-		        	if(seleccionado != null) {
-		        		String ordenId = seleccionado.get(0);
-		        		editarOrdenPorId(ordenId);
-		        	}else {
-		        		  mostrarAdvertencia("Debe seleccionar una orden para editar.");
-		        	}
-		        	
-		        
-		        });
-		        
-		        botonEliminar.setOnAction(e -> {
-		        	ObservableList<String> seleccionado =
-		        			tabla.getSelectionModel()
-		        			.getSelectedItem();
-		        	
-		        	if(seleccionado != null) {
-		        		String ordenId = seleccionado.get(0);
-		        		
-		        		Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-		        				"¿Eliminar la orden con ID " + ordenId + "?",
-		        				ButtonType.YES, ButtonType.NO);
-		        		confirm.showAndWait().ifPresent(respuesta -> {
-		        			if(respuesta == ButtonType.YES) {
-		        				eliminarOrdenPorId(ordenId);
-		        				datos.remove(seleccionado);
-		        				}
-		        		});	        		
-		        	}else {
-		        		mostrarAdvertencia("Debe seleccionar una orden para"
-		        				+ "eliminar");
-		        	}
-		        	
-		        });
-		        
-		        botonCerrar.setOnAction(e -> 
-		        ventana.close());
-		        
-		        //LAYOUT
-		        
-		        HBox botonesBox = new HBox(10,botonBuscarOrden,
-                        botonVer,
-                        botonCambiarEstado,
-                        botonIngresarDetalleRep,
-                        botonEditar, botonEliminar,
-		        		botonCerrar);
-		        
-		        botonesBox.setAlignment(Pos.CENTER);
-		        botonesBox.setPadding(new Insets(10));
-		        
-		        VBox layout = new VBox(10, tabla, botonesBox);
-		        layout.setPadding(new Insets(10));
-			    
-			      
-		        Scene escena = new Scene(layout);
-		        ventana.setScene(escena);
-		        ventana.show();
-		    } catch (Exception e) {
-		        Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
-		        alerta.showAndWait();
-		    }
+            botonVer.setOnAction(e -> {
+                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionado.get(0);
+
+                    verOrdentrabajo(ordenId);
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para ver.");
+                }
+            });
+
+            botonCambiarEstado.setOnAction(e -> {
+                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionado.get(0);
+
+                    cambiarEstadoOrden(ordenId);
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
+                }
+            });
+
+            botonEditar.setOnAction(e -> {
+                ObservableList<String> seleccionado =
+                        tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionado.get(0);
+                    editarOrdenPorId(ordenId);
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para editar.");
+                }
+
+
+            });
+
+            botonEliminar.setOnAction(e -> {
+                ObservableList<String> seleccionado =
+                        tabla.getSelectionModel()
+                                .getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionado.get(0);
+
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Eliminar la orden con ID " + ordenId + "?",
+                            ButtonType.YES, ButtonType.NO);
+                    confirm.showAndWait().ifPresent(respuesta -> {
+                        if(respuesta == ButtonType.YES) {
+                            eliminarOrdenPorId(ordenId);
+                            datos.remove(seleccionado);
+                        }
+                    });
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para"
+                            + "eliminar");
+                }
+
+            });
+
+            botonCerrar.setOnAction(e ->
+                    ventana.close());
+
+            //LAYOUT
+
+            HBox botonesBox = new HBox(10,botonBuscarOrden,
+                    botonVer,
+                    botonCambiarEstado,
+                    botonIngresarDetalleRep,
+                    botonEditar, botonEliminar,
+                    botonCerrar);
+
+            botonesBox.setAlignment(Pos.CENTER);
+            botonesBox.setPadding(new Insets(10));
+
+            VBox layout = new VBox(10, tabla, botonesBox);
+            layout.setPadding(new Insets(10));
+
+
+            Scene escena = new Scene(layout);
+            ventana.setScene(escena);
+            ventana.show();
+        } catch (Exception e) {
+            Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
+            alerta.showAndWait();
+        }
 	}
 	
 	//MOSTRAR ADVERTENCIA
@@ -495,6 +495,160 @@ public class OrdenTrabajoVista {
 	private void eliminarOrdenPorId(String ordenId) {
 		System.out.println("ELIMINAR ORDEN");
 	}
+
+    //OBTENER ORDENES DISPONIBLES
+    public static String obtenerOrdenesDisponibles() {
+        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
+                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
+                + "FROM ORDEN_DE_TRABAJO O "
+                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "ORDER BY O.ORDEN_TRABAJO_ID";
+
+        final String[] ordenId = {""};
+
+        // VENTANA DE LISTAR ORDENES DE TRABAJO
+        Stage ventana = new Stage();
+        ventana.setTitle("SELECCIONE UNA ORDEN DE TRABAJO");
+
+        //BOTONES
+        Button btnSeleccionarOrden = new Button("Seleccionar");
+        btnSeleccionarOrden.setStyle("-fx-background-color: #15bb15; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        //TABLA DE FILAS DE STRING
+        TableView<ObservableList<String>> tabla = new TableView<>();
+
+        //LISTA DE FILAS, CADA FILA ES UNA LISTA DE STRINGS
+        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+
+        String[] nombresCampos = {
+                "Orden_trabajo_id", "Fecha_ingreso",
+                "Descripcion_falla", "Estado",
+                "Cliente", "Maquina_id",
+                "Tipo", "Marca", "Modelo"
+        };
+
+        //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
+        for(String nombreCampo : nombresCampos){
+            final int colIndex = tabla.getColumns().size();
+            TableColumn<ObservableList<String>, String> columna =
+                    new TableColumn<>(nombreCampo);
+
+            columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
+                    (param.getValue().size() > colIndex) ?
+                            param.getValue().get(colIndex) : ""));
+            columna.setPrefWidth(switch(nombreCampo) {
+                case "Orden_trabajo_id" -> 100;
+                case "Fecha_ingreso" -> 120;
+                case "Descripcion_falla" -> 200;
+                case "Cliente" -> 150;
+                case "Estado" -> 150;
+                case "Maquina_id" -> 100;
+                case "Tipo" -> 150;
+                case "Marca" -> 120;
+                case "Modelo" -> 150;
+                default -> 120;
+            });
+            tabla.getColumns().add(columna);
+        }
+
+        //HACER CONSULTA Y CARGAR LAS FILAS
+        try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
+            ResultSet resultado = consultaPreparada.executeQuery();
+
+            while (resultado.next()) {
+                ObservableList<String> fila =
+                        FXCollections.observableArrayList();
+
+                String orden_trabajo_id = resultado.getString("orden_trabajo_"
+                        + "id");
+                String fecha_ingreso = resultado.getString("fecha_ingreso");
+                String descripcion_falla = resultado.getString("descripcion_falla");
+                String estado = resultado.getString("estado");
+                String cliente = resultado.getString("nombre") + " " +
+                        resultado.getString("apellido");
+                String maquina_id = resultado.getString("maquina_id");
+                String tipo = resultado.getString("tipo");
+                String marca = resultado.getString("marca");
+                String modelo = resultado.getString("modelo");
+
+                if(maquina_id == null) {
+                    maquina_id = "X";
+                    tipo = "Sin";
+                    marca = "Máquina";
+                    modelo = "Asociada";
+                }
+
+                //INSERTAR VARIABLES EN FILA
+                fila.addAll(orden_trabajo_id, fecha_ingreso,
+                        descripcion_falla, estado,
+                        cliente, maquina_id, tipo,
+                        marca, modelo);
+
+                //INSERTAR CADA FILA EN DATOS
+                datos.add(fila);
+            }
+
+            //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
+            tabla.setItems(datos);
+
+            //BOTONES
+            Button botonEditar = new Button("✏️ Editar");
+            Button botonEliminar = new Button("Eliminar");
+            Button botonCerrar = new Button("Cerrar");
+            Button botonVer = new Button("Ver");
+            Button botonCambiarEstado = new Button("Cambiar Estado");
+            Button botonBuscarOrden = new Button("Buscar Orden");
+            Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
+
+
+
+            botonCerrar.setOnAction(e ->
+                    ventana.close());
+
+            //LAYOUT
+
+            HBox botonesBox = new HBox(10,
+                    botonCerrar);
+
+            botonesBox.setAlignment(Pos.CENTER);
+            botonesBox.setPadding(new Insets(10));
+
+            VBox layout = new VBox(10, tabla, botonesBox);
+            layout.setPadding(new Insets(10));
+
+
+            Scene escena = new Scene(layout);
+            ventana.setScene(escena);
+            ventana.show();
+        } catch (Exception e) {
+            Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
+            alerta.showAndWait();
+        }
+
+        btnSeleccionarOrden.setOnAction(event -> {
+            ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+            if(seleccionado != null){
+                ordenId[0] = seleccionado.get(0);
+
+            }else{
+                mostrarAdvertencia("Debe seleccionar una orden de la tabla.");
+            }
+
+        });
+
+        VBox layout = new VBox(15, tabla, btnSeleccionarOrden);
+        layout.setPadding(new Insets(15));
+        layout.setAlignment(Pos.CENTER);
+
+        Scene escena = new Scene(layout);
+        ventana.setScene(escena);
+        ventana.show();
+
+        return ordenId[0];
+    }
 		
 	
 	//Setters and getters

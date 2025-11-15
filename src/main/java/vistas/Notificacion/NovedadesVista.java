@@ -2,9 +2,11 @@ package vistas.Notificacion;
 
 import java.time.LocalDateTime;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -12,6 +14,7 @@ import javafx.stage.Stage;
 import modelos.Notificacion.NovedadModelo;
 import java.util.*;
 import modelos.GestionRep.OrdenTrabajoModelo;
+import vistas.GestionRep.OrdenTrabajoVista;
 
 
 public class NovedadesVista {
@@ -105,11 +108,136 @@ public class NovedadesVista {
     };
 
     public void mostrarFormCrearNovedades(){
-        System.out.println("MENU DE NOVEDADES");
-    }
+
+        final String[] ordenId = {""};
+
+        Stage ventanaFormNovedades = new Stage();
+        ventanaFormNovedades.setTitle("Crear Novedad");
+
+        //TITULO
+        Label titulo = new Label("Crear Novedad - GIST");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        //INPUTS
+        /*TextArea comentarioArea = new TextArea();
+        comentarioArea.setPromptText("Ingrese el comentario de la novedad");
+        comentarioArea.setPrefRowCount(5);
+        comentarioArea.setWrapText(true);
+        */
+
+        //CONTENEDOR DE ITEMS
+        VBox contenedorItems = new VBox(20); // donde se agregan los ítems
+
+        //SCROLLPANE
+        ScrollPane scrollPaneItems = new ScrollPane(contenedorItems);
+        scrollPaneItems.setFitToWidth(true);
+        scrollPaneItems.setPrefHeight(250); // ajustable según tu diseño
+        scrollPaneItems.setStyle("-fx-background-color:transparent;");
+
+        //BOTONES
+
+        Button btnAgregarItem = new Button("+ Agregar ítem");
+        btnAgregarItem.setPrefWidth(250);
+
+        Button btnCrearNovedad = new Button("Crear Novedad");
+        btnCrearNovedad.setPrefWidth(250);
+
+        Button btnCancelar = new Button("Cancelar");
+        btnCancelar.setPrefWidth(250);
+
+
+
+        //ESTILOS
+        String estiloBoton =
+                "-fx-background-color: white;" +
+                        "-fx-text-fill: black;" +
+                        "-fx-border-color: black;" +
+                        "-fx-border-width: 1.5;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-border-radius: 8;" +
+                        "-fx-font-size: 14px;";
+
+        btnCrearNovedad.setStyle(estiloBoton);
+        btnCancelar.setStyle(estiloBoton);
+        btnAgregarItem.setStyle(estiloBoton);
+        btnAgregarItem.setOnMouseEntered(e -> btnAgregarItem.setStyle(estiloBoton + "-fx-background-color: #f5851c;"));
+        btnAgregarItem.setOnMouseExited(e -> btnAgregarItem.setStyle(estiloBoton));
+
+
+        //HOVER EFFECTS
+        Button[] botones = {btnCrearNovedad, btnCancelar};
+        for (Button btn : botones) {
+            btn.setOnMouseEntered(e -> btn.setStyle(estiloBoton + "-fx-background-color: #f5851c;"));
+            btn.setOnMouseExited(e -> btn.setStyle(estiloBoton));
+        }
+
+        //ACCIONES DE BOTONES
+
+        btnAgregarItem.setOnAction(e -> {
+
+            if (contenedorItems.getChildren().size() >= 5) {
+                mostrarError("Solo se permiten hasta 5 ítems por novedad.");
+                return;
+            }
+
+            TextArea txtComentarioItem = new TextArea();
+            txtComentarioItem.setPromptText("Comentario del ítem...");
+            txtComentarioItem.setPrefRowCount(5);
+            txtComentarioItem.setWrapText(true);
+
+            Button btnSeleccionarOrden = new Button("Vincular orden");
+            btnSeleccionarOrden.setPrefWidth(250);
+            btnSeleccionarOrden.setStyle(estiloBoton);
+
+            btnSeleccionarOrden.setOnAction(event -> {
+                    System.out.println("Seleccionando orden");
+                   ordenId[0] = OrdenTrabajoVista.obtenerOrdenesDisponibles();
+            });
+
+            HBox itemBox = new HBox(10, txtComentarioItem, btnSeleccionarOrden);
+            contenedorItems.getChildren().add(itemBox);
+            itemBox.setAlignment(Pos.CENTER);
+
+        });
+
+        btnCrearNovedad.setOnAction(e-> {
+
+        });
+
+        btnCancelar.setOnAction(e->{ventanaFormNovedades.close();});
+
+        VBox botonesBox = new VBox(10,
+                btnAgregarItem, btnCancelar);
+
+        botonesBox.setAlignment(Pos.CENTER);
+        botonesBox.setPadding(new Insets(10));
+
+        VBox layout = new VBox(25, titulo, botonesBox, scrollPaneItems, btnCrearNovedad);
+        layout.setPadding(new Insets(15));
+        layout.setPrefWidth(600);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene escena = new Scene(layout);
+        ventanaFormNovedades.setScene(escena);
+        ventanaFormNovedades.sizeToScene();
+        ventanaFormNovedades.setResizable(true);
+        ventanaFormNovedades.show();
+
+        }
 
     public void mostrarListaNovedades(){
         System.out.println("LISTA DE NOVEDADES");
+
+    }
+
+
+
+    private static void mostrarError(String mensaje){
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setTitle("Error");
+        alerta.setHeaderText("No se pudo guardar");
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 	
 	public void crearTareaAPartirDeNovedad(NovedadModelo novedad) {

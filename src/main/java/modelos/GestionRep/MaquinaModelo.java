@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import conexion.ConexionDB;
 
@@ -28,32 +29,10 @@ public class MaquinaModelo {
 	}
 	
 	public String generarMaquinaId() {
-		String sql = "SELECT id FROM MAQUINAS ORDER BY id DESC LIMIT 1";
-	    String ultimoId = null;
-	    try (PreparedStatement ps = conexion.prepareStatement(sql);
-	         ResultSet rs = ps.executeQuery()) {
+        String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        return "MAQ-" + uuid;
 
-	        if (rs.next()) {
-	            ultimoId = rs.getString("id");
-	        }
-
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-
-	    int siguienteNumero = 1;
-
-	    if (ultimoId != null && ultimoId.startsWith("MAQ")) {
-	        try {
-	            int numeroActual = Integer.parseInt(ultimoId.substring(3));
-	            siguienteNumero = numeroActual + 1;
-	        } catch (NumberFormatException e) {
-	            e.printStackTrace();
-	        }
-	    }
-
-	    return String.format("MAQ%04d", siguienteNumero);
-	}
+    }
 	
 	public static List<MaquinaModelo> listarMaquinas(){
 		List<MaquinaModelo> listaMaquinas = new ArrayList<>();
@@ -90,7 +69,7 @@ public class MaquinaModelo {
 		}
 	}
 	
-	public boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
+	public static boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
 		// Lógica para crear una nueva máquina
 		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color) VALUES (?, ?, ?, ?, ?)";
 		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";

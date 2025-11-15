@@ -285,7 +285,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		        String seleccion = resultado.get();
 
 		        if (seleccion.equals(opcionesSeleccion.get(0))) {
-		            // Llamamos al método separado
+		            // Llamamos al metodo
 		            maquinasSeleccionadas = agregarMaquinasExistentes();
 		            insertarEnOrdenMaquinas(maquinasSeleccionadas);
 
@@ -447,13 +447,6 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             nuevasMaquinas.add(nuevaMaquina);
 
             try {
-                boolean guardado = nuevaMaquina.guardarNuevaMaquina(nuevasMaquinas, ordenId);
-                if (guardado) {
-                    Alert exitoAlert = new Alert(Alert.AlertType.INFORMATION);
-                    exitoAlert.setTitle("Registro Exitoso");
-                    exitoAlert.setHeaderText("Máquina registrada correctamente ✅");
-                    exitoAlert.showAndWait();
-                }
 
                 // Preguntar si desea agregar otra máquina
                 Alert confirmarOtra = new Alert(Alert.AlertType.CONFIRMATION);
@@ -476,6 +469,14 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
                 errorAlert.showAndWait();
                 e.printStackTrace();
             }
+        }
+
+        boolean guardado = MaquinaModelo.guardarNuevaMaquina(nuevasMaquinas, ordenId);
+        if (guardado) {
+            Alert exitoAlert = new Alert(Alert.AlertType.INFORMATION);
+            exitoAlert.setTitle("Registro Exitoso");
+            exitoAlert.setHeaderText("Máquinas registradas correctamente ✅");
+            exitoAlert.showAndWait();
         }
 
         return nuevasMaquinas;

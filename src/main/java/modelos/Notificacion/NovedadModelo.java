@@ -1,6 +1,12 @@
 package modelos.Notificacion;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
+import controladores.GestionRepControl;
 
 public class NovedadModelo {
 	
@@ -9,6 +15,7 @@ public class NovedadModelo {
 	private String descripcion;
 	private LocalDateTime fechaCreacion;
 	private String ordenId;
+    private GestionRepControl gestionRepControl = new GestionRepControl();
 	
 	public NovedadModelo(String titulo, String descripcion, LocalDateTime fechaCreacion,
 			String ordenId) {
@@ -20,9 +27,10 @@ public class NovedadModelo {
 	}
 	
 	public String generarNovedadId() {
-		// Lógica para generar un ID único para la novedad
-		return "NOVEDAD-" + System.currentTimeMillis();
-	}
+        String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String idNovedad = "NVD-" + uuid; // Ej: MAQ-3F9A1B2C
+        return idNovedad;
+    }
 	
 	public void crearTareaAPartirDeNovedad() {
 		// Lógica para crear una tarea a partir de la novedad

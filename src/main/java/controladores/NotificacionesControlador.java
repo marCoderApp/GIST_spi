@@ -37,6 +37,8 @@ public class NotificacionesControlador {
 	}
 	
 	public boolean crearNovedad(NovedadModelo novedad) {
+
+
 		return true;
 	}
 	

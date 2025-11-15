@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import controladores.GestionRepControl;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 //import modelos.GestionRep.EstadoOrden;
 
 
@@ -74,7 +76,8 @@ public class OrdenTrabajoModelo {
 
 	    return String.format("ORDEN%05d", siguienteNumero);
 	}
-	
+
+
 	// 🔹 Getters y Setters
     public String getOrdenId() {
         return ordenId;
