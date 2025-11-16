@@ -185,7 +185,6 @@ public class NovedadesVista {
             btnSeleccionarOrden.setOnAction(event -> {
 
                 OrdenTrabajoVista.obtenerOrdenesDisponibles(idSeleccionado -> {
-                    System.out.println("LA ORDEN ES: " + idSeleccionado);
                     btnSeleccionarOrden.setUserData(idSeleccionado);
                     btnSeleccionarOrden.setText(idSeleccionado);
                     btnSeleccionarOrden.setText("Orden: " + idSeleccionado);

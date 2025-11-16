@@ -490,7 +490,7 @@ public class OrdenTrabajoVista {
         ventanaVerOrden.setTitle("Orden de Trabajo: " + ordenId);
 
         //TITULO
-        Label titulo = new Label("Orden de Trabajo" + ordenId);
+        Label titulo = new Label("Orden de Trabajo - " + ordenId);
         titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
 
         //CONTENEDOR

@@ -181,7 +181,6 @@ public class FichaUsuarioVista {
     //OPCIÓN CREAR TÉCNICO
     public void opcionCrearTecnico() {
         System.out.println("CREANDO TECNICO...");
-
         ingresarDatosTecnico();
 
     }
