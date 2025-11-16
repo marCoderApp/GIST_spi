@@ -343,7 +343,6 @@ public class OrdenTrabajoVista {
 
             //BOTONES
             Button botonEditar = new Button("✏️ Editar");
-            Button botonPresupuesto = new Button("+ Agregar Presupuesto");
             Button botonEliminar = new Button("Eliminar");
             Button botonCerrar = new Button("Cerrar");
             Button botonVer = new Button("Ver");
@@ -351,16 +350,6 @@ public class OrdenTrabajoVista {
             Button botonBuscarOrden = new Button("Buscar Orden");
             Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
 
-            botonPresupuesto.setOnAction(e -> {
-                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
-
-                if(seleccionado != null){
-                    String ordenId = seleccionado.get(0);
-                    PresupuestosVista.mostrarFormCrearPresupuesto(ordenId);
-                }else{
-                    mostrarAdvertencia("Debe seleccionar una orden para agregar presupuesto");
-                }
-            });
 
             botonBuscarOrden.setOnAction(e -> {
 
@@ -447,7 +436,8 @@ public class OrdenTrabajoVista {
 
             //LAYOUT
 
-            HBox botonesBox = new HBox(10,botonBuscarOrden,
+            HBox botonesBox = new HBox(10,
+                    botonBuscarOrden,
                     botonVer,
                     botonCambiarEstado,
                     botonIngresarDetalleRep,
@@ -514,7 +504,8 @@ public class OrdenTrabajoVista {
             Label lblDescripcion = new Label("Descripción falla: " + fila.get("DESCRIPCION_FALLA"));
             Label lblEstado = new Label("Estado: " + fila.get("ESTADO"));
             Label lblCliente = new Label("Cliente: " + fila.get("NOMBRE") + " " + fila.get("APELLIDO"));
-            Label lblMaquina = new Label("Máquina: " + fila.get("TIPO") + " " + fila.get("MARCA") + " " + fila.get("MODELO"));
+            Label lblMaquina = new Label("Máquina: " + "-" + fila.get("MAQUINA_ID") + " "
+                    + fila.get("TIPO") + " " + fila.get("MARCA") + " " + fila.get("MODELO"));
 
             Label lblNovedad = new Label("Novedad ID: " + (fila.get("NOVEDAD_ID")
             != null ? fila.get("NOVEDAD_ID") : "Sin novedades."));
@@ -527,12 +518,38 @@ public class OrdenTrabajoVista {
             comentarioArea.setEditable(false);
             comentarioArea.setPrefRowCount(4);
             comentarioArea.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+            Label lblPresupuesto = new Label("Presupuesto: " +
+                    (fila.get("PRESUPUESTO_TOTAL") != null ? fila.get("PRESUPUESTO_TOTAL") : "Sin presupuesto"));
+
+            Label lblFechaPresupuesto = new Label("Fecha presupuesto: " +
+                    (fila.get("PRESUPUESTO_FECHA") != null ? fila.get("PRESUPUESTO_FECHA") : "Sin fecha"));
+
+            Label lblConFactura = new Label(
+                    ((fila.get("PRESUPUESTO_CON_FACTURA") != null && (Boolean) fila.get("PRESUPUESTO_CON_FACTURA"))
+                            ? "Con factura" : "Sin factura")
+            );
+            lblConFactura.setStyle(
+                    (fila.get("PRESUPUESTO_CON_FACTURA") != null && (Boolean) fila.get("PRESUPUESTO_CON_FACTURA"))
+                            ? "-fx-text-fill: green;" : "-fx-text-fill: red;"
+            );
+
+            Button btnAgregarPresupuesto = new Button("Agregar Presupuesto");
+            btnAgregarPresupuesto.setOnAction(e -> {
+                String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
+                if (maquinaId != null) {
+                    PresupuestosVista.mostrarFormCrearPresupuesto(maquinaId);
+                } else {
+                    mostrarAdvertencia("El id de máquina es nulo");
+                }
+            });
+
 
 
             contenedor.getChildren().addAll(
                     numMaquina, lblFecha, lblDescripcion, lblEstado, lblCliente, lblMaquina,
                     new Separator(),
                     lblNovedad, lblFechaNovedad, lblAdmin, lblItem, comentarioArea,
+                    btnAgregarPresupuesto, lblPresupuesto, lblFechaPresupuesto, lblConFactura,
                     new Separator(),
                     new Separator()
             );

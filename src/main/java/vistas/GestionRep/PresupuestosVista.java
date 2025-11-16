@@ -20,17 +20,9 @@ public class PresupuestosVista {
 		this.filtroCodigoOrden = filtroCodigoOrden;
 	}
 
-    public static void mostrarFormCrearPresupuesto(String ordenId) {
-                Stage ventana = new Stage();
-                ventana.setTitle("Crear Presupuesto");
-
-                //TITULO
-                Label titulo = new Label("Crear Presupuesto");
-                titulo.setStyle("-fx-font-weight: bold");
-
-                //INPUTS
-
-
+    public static void mostrarFormCrearPresupuesto(String maquinaId) {
+        System.out.println("ID DE MAQUINA: " + maquinaId);
+            FormPresupVista.ingresarPresupuesto(maquinaId);
     }
 	
 	public void opcionCrearPresupuesto() {

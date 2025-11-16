@@ -202,13 +202,15 @@ public class OrdenTrabajoModelo {
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, "
                 + "N.ID AS NOVEDAD_ID, N.FECHA AS FECHA_NOVEDAD, N.ADMIN_ID, "
-                + "NI.ITEMID, NI.COMENTARIOITEM "
+                + "NI.ITEMID, NI.COMENTARIOITEM, P.total AS PRESUPUESTO_TOTAL, P.fecha_creacion " +
+                "AS PRESUPUESTO_FECHA, P.PRESUPUESTO_ID, P.CON_FACTURA "
                 + "FROM ORDEN_DE_TRABAJO O "
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
                 + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
                 + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
                 + "LEFT JOIN NOVEDAD_ITEM NI ON NI.ORDENID = O.ORDEN_TRABAJO_ID "
                 + "LEFT JOIN NOVEDADES N ON N.ID = NI.NOVEDADID "
+                + "LEFT JOIN PRESUPUESTO P ON P.MAQUINA_ID = M.ID "
                 + "WHERE O.ORDEN_TRABAJO_ID = ? "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 
@@ -232,6 +234,10 @@ public class OrdenTrabajoModelo {
                     fila.put("ADMIN_ID", rs.getString("ADMIN_ID"));
                     fila.put("ITEMID", rs.getString("ITEMID"));
                     fila.put("COMENTARIOITEM", rs.getString("COMENTARIOITEM"));
+                    fila.put("PRESUPUESTO_ID", rs.getString("presupuesto_id"));
+                    fila.put("PRESUPUESTO_TOTAL", rs.getDouble("PRESUPUESTO_TOTAL"));
+                    fila.put("PRESUPUESTO_FECHA", rs.getTimestamp("PRESUPUESTO_FECHA"));
+                    fila.put("CON_FACTURA", rs.getBoolean("CON_FACTURA"));
                     resultados.add(fila);
                 }
             }
