@@ -1,7 +1,6 @@
 package modelos.GestionRep;
 
 import java.time.LocalDateTime;
-import modelos.GestionRep.EstadoPedido;
 
 public class PedidoModelo {
 	
@@ -22,7 +21,8 @@ public class PedidoModelo {
 		this.adminId = adminId;
 		this.estado = estado;
 	}
-	
+
+    //GENERAR ID DE PEDIDO
 	public String generarPedidoId() {
 		return "PED" + System.currentTimeMillis();
 	}

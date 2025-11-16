@@ -7,19 +7,21 @@ public class NovedadItem {
     private String comentario;
     private String id;
 
+    //METODO CONSTRUCTOR
     public NovedadItem(String ordenId, String comentario){
         this.ordenId = ordenId;
         this.comentario = comentario;
         this.id = generarNovedadId();
     }
 
-
+//GENERAR ID DE ITEM DE NOVEDAD UTILIZANDO UUID
     public String generarNovedadId() {
         String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String id = "ITNVD-" + uuid;
         return id;
     }
 
+    //GETTERS Y SETTERS
     public String getId(){
         return this.id;
     }

@@ -13,8 +13,6 @@ import java.util.Map;
 import controladores.GestionRepControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-//import modelos.GestionRep.EstadoOrden;
-
 
 public class OrdenTrabajoModelo {
 	private String ordenId;
@@ -48,7 +46,8 @@ public class OrdenTrabajoModelo {
 	    this.tecnicoId = setTecnicoId(tecnicoId);
 	    this.setDespacho(despacho);
 	}
-	
+
+    //GENERAR ID DE ORDEN REALIZANDO UNA CONSULTA A LA BASE DE DATOS.
 	public String generarNumeroOrden() {
 		String sql = "SELECT orden_trabajo_id FROM orden_de_trabajo ORDER BY orden_trabajo_id DESC LIMIT 1";
 	    String ultimoId = null;
@@ -79,99 +78,7 @@ public class OrdenTrabajoModelo {
 	    return String.format("ORDEN%05d", siguienteNumero);
 	}
 
-
-	// 🔹 Getters y Setters
-    public String getOrdenId() {
-        return ordenId;
-    }
-
-    public void setOrdenId(String ordenId) {
-        this.ordenId = ordenId;
-    }
-
-    public String getCliente_id() {
-        return cliente_id;
-    }
-
-    public void setCliente_id(String cliente_id) {
-        this.cliente_id = cliente_id;
-    }
-
-    public List<MaquinaModelo> getMaquinas() {
-        return maquinas;
-    }
-
-    public void setMaquinas(List<MaquinaModelo> maquinas) {
-        this.maquinas = maquinas;
-    }
-
-    public String getDescripcion_falla() {
-        return descripcion_falla;
-    }
-
-    public void setDescripcion_falla(String descripcion_falla) {
-        this.descripcion_falla = descripcion_falla;
-    }
-
-    public String getDetalleRepId() {
-        return detalleRepId;
-    }
-
-    public void setDetalleRepId(String detalleRepId) {
-        this.detalleRepId = detalleRepId;
-    }
-
-    public LocalDate getFechaIngreso() {
-        return fechaIngreso;
-    }
-
-    public void setFechaIngreso(LocalDate localDate) {
-        this.fechaIngreso = localDate;
-    }
-
-    public LocalDateTime getFechaRetiro() {
-        return fechaRetiro;
-    }
-
-    public void setFechaRetiro(LocalDateTime fechaRetiro) {
-        this.fechaRetiro = fechaRetiro;
-    }
-
-    public String getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(String adminId) {
-        this.adminId = adminId;
-    }
-
-    public String getPresupuesto_id() {
-        return presupuesto_id;
-    }
-
-    public void setPresupuesto_id(String presupuesto_id) {
-        this.presupuesto_id = presupuesto_id;
-    }
-    
-    public Boolean crearOrden(OrdenTrabajoModelo orden) {
-    	return true;
-    }
-    
-    public List<OrdenTrabajoModelo> filtrarPorCriterio(String criterio){
-    	
-    	List<OrdenTrabajoModelo> listaDeOrdenes = new ArrayList<>();
-    	return listaDeOrdenes;
-    }
-    
-    public Boolean asociarOrden(String ordenId) {
-    	return true;
-    }
-    
-    public List<OrdenTrabajoModelo> listarOrdenes(){
-    	List<OrdenTrabajoModelo> listarOrdenes = new ArrayList<>();
-    	return listarOrdenes;
-    }
-    
+    //ACTUALIZA EL ESTADO DE UNA ORDEN DE TRABAJO, RECIBE ESTADO Y ORDEN ID POR PARÁMETRO
     public static Boolean actualizarEstado(String ordenIdParam, EstadoOrden estado) {
     	String sqlActualizar = "UPDATE ORDEN_DE_TRABAJO SET estado = ?"
     			+ " WHERE ORDEN_TRABAJO_ID = ? AND ESTADO = 'Lista'";
@@ -196,7 +103,7 @@ public class OrdenTrabajoModelo {
     	return true;
     }
 
-    //OBTENER DATOS DE ORDEN BD
+    //OBTENER DATOS DE ORDEN BD, REALIZANDO UNA CONSULTA PERSONALIZADA
     public static List<Map<String, Object>> obtenerDatosOrdenBD(String ordenId) {
         List<Map<String,Object>> resultados = new ArrayList<>();
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
@@ -284,7 +191,100 @@ public class OrdenTrabajoModelo {
 		this.despacho = despacho;
 	}
 
-    
+    // 🔹 Getters y Setters
+    public String getOrdenId() {
+        return ordenId;
     }
+
+    public void setOrdenId(String ordenId) {
+        this.ordenId = ordenId;
+    }
+
+    public String getCliente_id() {
+        return cliente_id;
+    }
+
+    public void setCliente_id(String cliente_id) {
+        this.cliente_id = cliente_id;
+    }
+
+    public List<MaquinaModelo> getMaquinas() {
+        return maquinas;
+    }
+
+    public void setMaquinas(List<MaquinaModelo> maquinas) {
+        this.maquinas = maquinas;
+    }
+
+    public String getDescripcion_falla() {
+        return descripcion_falla;
+    }
+
+    public void setDescripcion_falla(String descripcion_falla) {
+        this.descripcion_falla = descripcion_falla;
+    }
+
+    public String getDetalleRepId() {
+        return detalleRepId;
+    }
+
+    public void setDetalleRepId(String detalleRepId) {
+        this.detalleRepId = detalleRepId;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate localDate) {
+        this.fechaIngreso = localDate;
+    }
+
+    public LocalDateTime getFechaRetiro() {
+        return fechaRetiro;
+    }
+
+    public void setFechaRetiro(LocalDateTime fechaRetiro) {
+        this.fechaRetiro = fechaRetiro;
+    }
+
+    public String getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(String adminId) {
+        this.adminId = adminId;
+    }
+
+    public String getPresupuesto_id() {
+        return presupuesto_id;
+    }
+
+    public void setPresupuesto_id(String presupuesto_id) {
+        this.presupuesto_id = presupuesto_id;
+    }
+
+    public Boolean crearOrden(OrdenTrabajoModelo orden) {
+        return true;
+    }
+
+    public List<OrdenTrabajoModelo> filtrarPorCriterio(String criterio){
+
+        List<OrdenTrabajoModelo> listaDeOrdenes = new ArrayList<>();
+        return listaDeOrdenes;
+    }
+
+    public Boolean asociarOrden(String ordenId) {
+        return true;
+    }
+
+    public List<OrdenTrabajoModelo> listarOrdenes(){
+        List<OrdenTrabajoModelo> listarOrdenes = new ArrayList<>();
+        return listarOrdenes;
+    }
+
+
+
+}
     
 

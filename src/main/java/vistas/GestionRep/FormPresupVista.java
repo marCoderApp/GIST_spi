@@ -27,7 +27,8 @@ public class FormPresupVista {
 		this.ordenTrabajoId = ordenTrabajoId;
 		this.total = total;
 	}
-	
+
+    //INGRESAR PRESUPUESTO. FORMULARIO PARA INGRESAR DATOS DE PRESUPUESTO.
 	public static void ingresarPresupuesto(String maquinaId) {
         Stage ventana = new Stage();
         ventana.setTitle("Crear Presupuesto");
@@ -89,20 +90,16 @@ public class FormPresupVista {
     }
 
     public void abrirFormulario() {
-		// Lógica para abrir el formulario de presupuesto
 	}
 	
 	public void mostrarPresupuesto(float total) {
-		// Lógica para mostrar el presupuesto
 	}
 	
 	public boolean confirmarPresupuesto() {
-		// Lógica para confirmar el presupuesto
 		return true;
 	}
-	
-	//Getters y Setters
-	
+
+    //GETTERS Y SETTERS
 	public String getPresupuestoId() {
 		return presupuestoId;
 	}
@@ -143,7 +140,5 @@ public class FormPresupVista {
 	public void setTotal(float total) {
 		this.total = total;
 	}
-	
-	
 
 }

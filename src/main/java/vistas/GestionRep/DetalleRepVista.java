@@ -26,8 +26,7 @@ public class DetalleRepVista {
 	private float presupuesto;
 	private boolean ordenAsociada;
 	
-	//Constructor
-	
+	//CONSTRUCTOR
 	public DetalleRepVista(String detalleRepId, String descripcion, String repuestos, String tecnicoId,
 			LocalDateTime fechaCreacion, LocalDateTime fechaEstimada, String ordenId, String ecnicoId, int nivelService,
 			float presupuesto, boolean ordenAsociada) {
@@ -128,7 +127,7 @@ public class DetalleRepVista {
 
 
 
-        //LAYOUR Y GRID
+        //LAYOUT Y GRID
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -167,6 +166,7 @@ public class DetalleRepVista {
         ventanaDetalleRep.close();
     }
 
+    //MOSTRAR ALERTA ERROR. RECIVE MENSAJE POR PARÁMETRO
     private static void mostrarError(String mensaje){
         Alert alerta = new Alert(Alert.AlertType.ERROR);
         alerta.setTitle("Error");
@@ -175,9 +175,7 @@ public class DetalleRepVista {
         alerta.showAndWait();
     }
 
-
-	//Getters and Setters
-	
+    //GETTERS Y SETTERS
 	public String getDetalleRepId() {
 		return detalleRepId;
 	}

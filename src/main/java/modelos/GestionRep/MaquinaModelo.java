@@ -27,13 +27,15 @@ public class MaquinaModelo {
 		this.modelo = modelo;
 		this.color = color;
 	}
-	
+
+    //GENERAR ID DE MAQUINA USANDO UUID
 	public String generarMaquinaId() {
         String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         return "MAQ-" + uuid;
 
     }
-	
+
+    //LISTAR MAQUINAS DESDE LA BASE DE DATOS
 	public static List<MaquinaModelo> listarMaquinas(){
 		List<MaquinaModelo> listaMaquinas = new ArrayList<>();
 		
@@ -56,7 +58,8 @@ public class MaquinaModelo {
 		
 		return listaMaquinas;
 	}
-	
+
+    //MOSTRAR LISTA DE MAQUINAS
 	public static void mostrarListaMaquinas(List<MaquinaModelo> maquinas) {
 		for (MaquinaModelo maquina : maquinas) {
 			System.out.println("ID: " + maquina.getMaquinaId() +
@@ -68,9 +71,10 @@ public class MaquinaModelo {
 					+ ", Orden ID: ");
 		}
 	}
-	
+
+
+    //GUARDAR NUEVA MAQUINA EN LA BASE DE DATOS
 	public static boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
-		// Lógica para crear una nueva máquina
 		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color) VALUES (?, ?, ?, ?, ?)";
 		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";
 	    
@@ -144,14 +148,5 @@ public class MaquinaModelo {
 	public void setColor(String color) {
 		this.color = color;
 	}
-	
-	
-	// Methods
-	
-	public Boolean crearMaquina(MaquinaModelo datos) {
-		return true;
-	}
-	
-	
-	
+
 }

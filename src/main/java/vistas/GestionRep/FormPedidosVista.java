@@ -14,10 +14,10 @@ public class FormPedidosVista {
 	private String adminNombre;
 	private float total;
 	private String estado;
-	
+
+    //CONSTRUCTOR
 	public FormPedidosVista(String presupuestoId, LocalDateTime fechaCreacion, String repuestos, String ordenTrabajoId,
 			String adminNombre, float total, String estado) {
-		// Constructor
 		this.presupuestoId = presupuestoId;
 		this.fechaCreacion = fechaCreacion;
 		this.repuestos = repuestos;
@@ -26,9 +26,26 @@ public class FormPedidosVista {
 		this.total = total;
 		this.estado = estado;
 	}
-	
-	//Getters y Setters
-	
+
+    //METODOS
+    public PedidoModelo ingresarPedido() {
+        return new PedidoModelo(presupuestoId, fechaCreacion, repuestos, ordenTrabajoId, null);
+    }
+
+    public void abrirForm() {
+        System.out.println("Abriendo formulario de pedidos...");
+    }
+
+    public void modificarPedido(PedidoModelo pedido) {
+        System.out.println("Modificando pedido: " + pedido);
+    }
+
+    public void cambiarEstado(PedidoModelo pedido, EstadoPedido nuevoEstado) {
+        pedido.setEstado(nuevoEstado);
+        System.out.println("Cambiando estado del pedido: " + pedido + " a " + nuevoEstado);
+    }
+
+    //GETTERS Y SETTERS
 	public String getPresupuestoId() {
 		return presupuestoId;
 	}
@@ -84,27 +101,5 @@ public class FormPedidosVista {
 	public void setEstado(String estado) {
 		this.estado = estado;
 }
-	
-public PedidoModelo ingresarPedido() {
-	// Lógica para ingresar un nuevo pedido
-	return new PedidoModelo(presupuestoId, fechaCreacion, repuestos, ordenTrabajoId, null);
-}
 
-public void abrirForm() {
-	// Lógica para abrir el formulario de pedidos
-	System.out.println("Abriendo formulario de pedidos...");
-}
-
-public void modificarPedido(PedidoModelo pedido) {
-    // Lógica para modificar un pedido existente
-    System.out.println("Modificando pedido: " + pedido);
-}
-
-public void cambiarEstado(PedidoModelo pedido, EstadoPedido nuevoEstado) {
-    // Lógica para cambiar el estado de un pedido
-    pedido.setEstado(nuevoEstado);
-    System.out.println("Cambiando estado del pedido: " + pedido + " a " + nuevoEstado);
-}
-
-	
 }

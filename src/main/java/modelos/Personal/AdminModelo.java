@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import conexion.ConexionDB;
 import modelos.GestionRep.Credenciales;
-import modelos.Personal.PersonalBase;
 
 public class AdminModelo extends PersonalBase {
 
@@ -18,7 +17,8 @@ public class AdminModelo extends PersonalBase {
         this.id = generarId();
         this.turno = turno;
 	}
-	
+
+    //GENERAR ID DE ADMINISTRADOR REALIZANDO CONSULTA A BASE DE DATOS.
 	public String generarId() {
 		String sql = "SELECT administrador_id FROM ADMINISTRADOR ORDER BY administrador_id DESC LIMIT 1";
 	    String ultimoId = null;
@@ -47,10 +47,8 @@ public class AdminModelo extends PersonalBase {
 	    return String.format("ADM%03d", siguienteNumero);
 	}
 	
-	
+	//BUSCA USUARIO EN LA BASE DE DATOS SEGÚN NOMBRE DE USUARIO DE PARÁMETRO.
 	public Credenciales buscarUsuario(String nombreUsuario) {
-		// Lógica para buscar un administrador por su nombre de usuario
-		
 		String sqlConsulta = "SELECT * FROM credenciales WHERE usuario = ?";
 		
 		  try (PreparedStatement ps = conexion.prepareStatement(sqlConsulta)) {

@@ -97,7 +97,9 @@ public class PersonalControl {
 		return usuarioId;
 		
 	}
-	
+
+
+    //REGISTRAR TECNICO
 	public TecnicoModelo registrarTecnico(TecnicoModelo tecnico) {
 		String sqlSentencia = "INSERT INTO tecnico (tecnico_id, nombre, especialidad, cantidadTareas," +
                 "cantidad_tareas_asignadas, cantidad_tareas_pendientes) " +

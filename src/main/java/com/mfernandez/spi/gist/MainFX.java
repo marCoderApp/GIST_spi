@@ -41,7 +41,7 @@ public class MainFX extends Application {
 	            return;
 	        }
 
-	     // --- Título --
+	     //TITULO
 	        Text titulo = new Text("💻 GIST");
 	        titulo.setFont(Font.font("Readex Pro", FontWeight.BOLD, 36));
 
@@ -52,7 +52,7 @@ public class MainFX extends Application {
 	        grid.setVgap(15);
 	        grid.setPadding(new Insets(20));
 
-	        // --- Botones con sus acciones originales ---
+	        //BOTONES DE ACCESO
 	        Button btn1 = new Button("📋 Registrar nueva orden de trabajo");
 	        btn1.setOnAction(e -> ordenVista.opcionCrearOrden());
 
@@ -88,7 +88,7 @@ public class MainFX extends Application {
 	        Button btn10 = new Button("🔚 Salir");
 	        btn10.setOnAction(e -> stage.close());
 
-	        // --- Estilo visual uniforme para los botones ---
+	        //ESTILO PARA BOTONES
 	        Button[] botones = {btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn10};
 	        for (Button b : botones) {
 	            b.setPrefWidth(280);
@@ -119,26 +119,27 @@ public class MainFX extends Application {
 	            ));
 	        }
 
-	        // --- Distribución en cuadrícula 2x5 ---
+	        // GRID DE 2X5
 	        int cols = 2;
 	        for (int i = 0; i < botones.length; i++) {
 	            grid.add(botones[i], i % cols, i / cols);
 	        }
 
-	        // --- Layout principal ---
+	        // LAYOUT
 	        VBox root = new VBox(25);
 	        root.setAlignment(Pos.TOP_CENTER);
 	        root.setPadding(new Insets(30));
 	        root.getChildren().addAll(titulo, grid);
 	        root.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
 
-	        // --- Escena principal ---
+	        //ESCENA
 	        Scene scene = new Scene(root, 650, 520);
 	        stage.setTitle("Menú Principal - GIST");
 	        stage.setScene(scene);
 	        stage.show();
 	    }
 
+        //METODO MAIN
 	    public static void main(String[] args) {
 	    	 try {
 	    	        launch(args);

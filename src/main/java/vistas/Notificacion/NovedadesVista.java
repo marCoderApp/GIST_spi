@@ -21,18 +21,16 @@ import vistas.GestionRep.OrdenTrabajoVista;
 
 
 public class NovedadesVista {
-
 	
 	private String novedadId;
 	private String titulo;
 	private String descripcion;
 	private LocalDateTime fechaCreacion;
 	private List<OrdenTrabajoModelo> ordenesAsociadas = new ArrayList<>();
-	 
+
+    //METODO CONSTRUCTOR
 	public NovedadesVista(String novedadId, String titulo, String descripcion, LocalDateTime fechaCreacion,
 			List<OrdenTrabajoModelo> ordenesAsociadas) {
-		// Constructor por defecto
-
 		this.novedadId = novedadId;
 		this.titulo = titulo;
 		this.descripcion = descripcion;
@@ -122,7 +120,7 @@ public class NovedadesVista {
         titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
         //CONTENEDOR DE ITEMS
-        VBox contenedorItems = new VBox(20); // donde se agregan los ítems
+        VBox contenedorItems = new VBox(20);
 
         //SCROLLPANE
         ScrollPane scrollPaneItems = new ScrollPane(contenedorItems);
@@ -283,7 +281,6 @@ public class NovedadesVista {
 
     //CREAR TAREA A PARTIR DE NOVEDAD
 	public void crearTareaAPartirDeNovedad(NovedadModelo novedad) {
-		// Lógica para crear una tarea a partir de una novedad
 	}
 	
 	//Getters and Setters

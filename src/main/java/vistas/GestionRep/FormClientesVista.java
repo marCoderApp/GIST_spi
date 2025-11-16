@@ -6,15 +6,14 @@ import modelos.GestionRep.OrdenTrabajoModelo;
 import modelos.GestionRep.PedidoModelo;
 
 public class FormClientesVista {
-
-	
 	private String clienteId;
 	private String nombre;
 	private String empresa;
 	private int cantidadOrdenesCliente;
 	private String dni;
 	private List<OrdenTrabajoModelo> listaOrdenesCliente = new ArrayList<>();
-	
+
+    //METODO CONSTRUCTOR
 	public FormClientesVista(String clienteId, String nombre, String empresa, int cantidadOrdenesCliente, 
 			String dni, List<OrdenTrabajoModelo> listaOrdenesCliente) {
         
@@ -45,7 +44,7 @@ public class FormClientesVista {
 		return listaOrdenesCliente;
 	}
 	
-	//Getters and Setters
+	//GETTERS Y SETTERS
 	
 	public String getClienteId() {
 		return clienteId;

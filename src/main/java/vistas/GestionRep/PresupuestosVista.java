@@ -1,5 +1,6 @@
 package vistas.GestionRep;
 
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import modelos.GestionRep.PresupuestoModelo;
@@ -20,14 +21,22 @@ public class PresupuestosVista {
 		this.filtroCodigoOrden = filtroCodigoOrden;
 	}
 
+    //MUESTRA FORMULARIO PARA CREAR PRESUPUESTO
     public static void mostrarFormCrearPresupuesto(String maquinaId) {
-        System.out.println("ID DE MAQUINA: " + maquinaId);
             FormPresupVista.ingresarPresupuesto(maquinaId);
     }
-	
-	public void opcionCrearPresupuesto() {
-		
-	}
+
+    //MOSTRA MENU EN PRESPUESTO
+    public void mostrarMenuPresupuestos() {
+
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Aviso");
+        alerta.setHeaderText(null);
+        alerta.setContentText("Módulo en construcción");
+        alerta.showAndWait();
+
+
+    }
 	
 	public void mostrarMensaje(String mensaje) {
 		System.out.println("Mensaje: " + mensaje);
@@ -62,13 +71,5 @@ public class PresupuestosVista {
 	public void setFiltroCodigoOrden(String filtroCodigoOrden) {
 		this.filtroCodigoOrden = filtroCodigoOrden;
 	}
-
-
-	public void mostrarMenuPresupuestos() {
-	
-		System.out.println("Menú de Presupuestos");
-		
-	}
-	
 
 }

@@ -33,15 +33,6 @@ public class UsuarioVista {
 
     }
 
-    //Getters and Setters
-    public List<TecnicoModelo> getListaTecnicos() {
-        return listaTecnicos;
-    }
-
-    public void setListaTecnicos(List<TecnicoModelo> listaTecnicos) {
-        this.listaTecnicos = listaTecnicos;
-    }
-
     public void mostrarMenuUsuarios() {
 
         //VENTANA
@@ -108,5 +99,15 @@ public class UsuarioVista {
         gestionUsuariosVentana.show();
 
     }
+
+    //GETTERS Y SETTERS
+    public List<TecnicoModelo> getListaTecnicos() {
+        return listaTecnicos;
+    }
+
+    public void setListaTecnicos(List<TecnicoModelo> listaTecnicos) {
+        this.listaTecnicos = listaTecnicos;
+    }
+
 
 }

@@ -579,13 +579,14 @@ public class FichaUsuarioVista {
         javafx.stage.Stage ventanaResultados = new javafx.stage.Stage();
         ventanaResultados.setTitle("Resultados de Búsqueda - Técnicos");
 
+        //CREAR TABLA
         javafx.scene.control.TableView<modelos.Personal.TecnicoModelo> tablaResultados =
                 new javafx.scene.control.TableView<>();
 
         javafx.collections.ObservableList<modelos.Personal.TecnicoModelo> datos =
                 javafx.collections.FXCollections.observableArrayList(tecnicos);
 
-        // Columnas
+        //CREAR COLUMNAS
         javafx.scene.control.TableColumn<modelos.Personal.TecnicoModelo, String> columnaId =
                 new javafx.scene.control.TableColumn<>("ID");
         columnaId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("id"));
@@ -606,6 +607,7 @@ public class FichaUsuarioVista {
         columnaEspecialidad.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("especialidad"));
         columnaEspecialidad.setPrefWidth(150);
 
+        //AÑADIR COLUMNAS A LA TABLA
         tablaResultados.getColumns().addAll(columnaId, columnaNombre, columnaApellido, columnaEspecialidad);
         tablaResultados.setItems(datos);
 
@@ -624,16 +626,19 @@ public class FichaUsuarioVista {
 
     //METODO PARA MOSTRAR RESULTADOS DE BUSQUEDA ADMINISTRADORES
     private void mostrarResultadosAdmins(java.util.List<modelos.Personal.AdminModelo> admins) {
+
+        //VENTANA PRINCIPAL
         javafx.stage.Stage ventanaResultados = new javafx.stage.Stage();
         ventanaResultados.setTitle("Resultados de Búsqueda - Administradores");
 
+        //CREAR TABLA
         javafx.scene.control.TableView<modelos.Personal.AdminModelo> tablaResultados =
                 new javafx.scene.control.TableView<>();
 
         javafx.collections.ObservableList<modelos.Personal.AdminModelo> datos =
                 javafx.collections.FXCollections.observableArrayList(admins);
 
-        // Columnas
+        //CREAR COLUMNAS
         javafx.scene.control.TableColumn<modelos.Personal.AdminModelo, String> columnaId =
                 new javafx.scene.control.TableColumn<>("ID");
         columnaId.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("id"));
@@ -654,12 +659,14 @@ public class FichaUsuarioVista {
         columnaTurno.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("turno"));
         columnaTurno.setPrefWidth(80);
 
+        //AÑADIR COLUMNAS A LA TABLA
         tablaResultados.getColumns().addAll(columnaId, columnaNombre, columnaApellido, columnaTurno);
         tablaResultados.setItems(datos);
 
         javafx.scene.control.Button btnCerrar = new javafx.scene.control.Button("Cerrar");
         btnCerrar.setOnAction(e -> ventanaResultados.close());
 
+        //CREAR LA LAYOUT
         javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(10);
         layout.setPadding(new javafx.geometry.Insets(10));
         layout.getChildren().addAll(tablaResultados, btnCerrar);
@@ -669,15 +676,13 @@ public class FichaUsuarioVista {
         ventanaResultados.setScene(escena);
         ventanaResultados.show();
     }
-	
+
+    //ACTUALIZA LA CANTIDA DE TAREAS
 	public void actualizarCantidadTareas(int nuevaCantidad) {
 		this.cantidadTareas = nuevaCantidad;
 	}
 
-
-
-	//Getters y Setters
-	
+    //GETTERS Y SETTERS
 	public String getusuarioId() {
 		return usuarioId;
 	}

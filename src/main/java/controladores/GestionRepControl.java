@@ -85,7 +85,7 @@ public class GestionRepControl {
             psInsertarOrdenBase.setString(2, clienteIdGestionRep);
             psInsertarOrdenBase.setString(3, orden.getDescripcion_falla());
             if (orden.getFechaIngreso() == null) {
-                orden.setFechaIngreso(LocalDate.now()); // o LocalDateTime.now() si usás fecha+hora
+                orden.setFechaIngreso(LocalDate.now());
             }
             psInsertarOrdenBase.setDate(4, java.sql.Date.valueOf(orden.getFechaIngreso()));
             psInsertarOrdenBase.setString(5, orden.getEstado().getValor());
@@ -96,7 +96,7 @@ public class GestionRepControl {
 
         }catch(Exception e) {
             System.out.println("Error al insertar Orden: " + e.getMessage());
-            e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
+            e.printStackTrace();
         }
     }
 
@@ -139,7 +139,7 @@ public class GestionRepControl {
                 System.out.println("\n⚠️ No se encontró una orden LISTA con ese ID.\n");
             }
         }catch(Exception e) {
-            e.printStackTrace(); // <-- esto muestra el tipo de error y la línea exacta
+            e.printStackTrace();
         }
         return false;
 

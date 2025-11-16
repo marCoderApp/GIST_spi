@@ -39,7 +39,8 @@ public class ClientesVista {
 		this.filtroCodigoOrden = "";
 		this.cantidadTotalOrdenes = 0;
 	}
-	
+
+    //MOSTRAR EL MENU DE LOS CLIENTES Y LAS OPCIONES DISPONIBLES.
 	public void mostrarMenuClientes() {
 
         //Ventana
@@ -253,7 +254,6 @@ public class ClientesVista {
 
         return resultado[0];
 	}
-
 
 	//BUSCAR CLIENTE
     public ClienteModelo buscarCliente(){

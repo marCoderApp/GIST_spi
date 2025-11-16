@@ -2,6 +2,8 @@ package vistas.GestionRep;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javafx.scene.control.Alert;
 import modelos.GestionRep.*;
 
 public class PedidosVista {
@@ -11,11 +13,10 @@ public class PedidosVista {
 	private PedidoModelo pedidoSeleccionado;
 	private String filtroCodigoOrden;
 	private int cantidadTotal;
-	
+
+    //METODO CONSTRUCTOR
 	public PedidosVista(String pedidoId, List<PedidoModelo> listaPedidos, PedidoModelo pedidoSeleccionado,
 			String filtroCodigoOrden, int cantidadTotal) {
-		// Constructor
-		
 		this.pedidoId = pedidoId;
 		this.listaPedidos = listaPedidos;
 		this.pedidoSeleccionado = pedidoSeleccionado;
@@ -23,18 +24,20 @@ public class PedidosVista {
 		this.cantidadTotal = cantidadTotal;
 		
 	}
-	
+
+    //CREAR PEDIDO
 	public PedidoModelo opcionCrearPedido() {
 		// Lógica para crear un nuevo pedido
 		return new PedidoModelo(filtroCodigoOrden, null, filtroCodigoOrden, filtroCodigoOrden, null);
 	}
 	
-	
+	//MOSTRAR MENSAJE
 	public void mostrarMensaje(String mensaje) {
 		// Lógica para mostrar un mensaje al usuario
 		System.out.println(mensaje);
 	}
-	
+
+    //MOSTRAR LISTA DE PEDIDOS
 	public void mostrarListaPedidos(List<PedidoModelo> listaPedidos) {
 		// Lógica para mostrar la lista de pedidos
 		for (PedidoModelo pedido : listaPedidos) {
@@ -42,8 +45,7 @@ public class PedidosVista {
 		}
 	}
 	
-	//Getters y Setters
-	
+	//GETTERS AND SETTERS
 	public String getPedidoId() {
 		return pedidoId;
 	}
@@ -84,9 +86,13 @@ public class PedidosVista {
 		this.cantidadTotal = cantidadTotal;
 	}
 
+    //MENU PARA REALIZAR FUNCIONALIDADES DE PEDIDOS.
 	public void mostrarMenuPedidos() {
-		// TODO Auto-generated method stub
-		System.out.println("Menú de Pedidos");
-	}
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle("Aviso");
+        alerta.setHeaderText(null);
+        alerta.setContentText("Módulo en construcción");
+        alerta.showAndWait();
+    }
 	
 }

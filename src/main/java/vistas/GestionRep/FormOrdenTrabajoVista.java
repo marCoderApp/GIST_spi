@@ -18,7 +18,8 @@ public class FormOrdenTrabajoVista {
 	public FormOrdenTrabajoVista(String ordenId) {
 		this.setOrdenId(ordenId);
 	}
-	
+
+    // ABRIR FORM REGISTRAR RETIRO DE ORDEN.
 	public void abrirForm(String ordenIdParam, String adminId) {
 		GestionRepControl gestionRepControl = new GestionRepControl();
 
@@ -47,7 +48,6 @@ public class FormOrdenTrabajoVista {
 	                exito.setContentText("Orden ID: " + ordenIdParam);
 	                exito.showAndWait();
 	            } else {
-	                // Mostrar mensaje de error
 	                Alert error = new Alert(Alert.AlertType.ERROR);
 	                error.setTitle("Error al Retirar Orden");
 	                error.setHeaderText("❌ No se pudo registrar el retiro");
@@ -56,9 +56,7 @@ public class FormOrdenTrabajoVista {
 	            }
 
 	        } else if (resultado.get().getButtonData() == ButtonData.NO) {
-	            // Canceló el retiro, no hacemos nada
 	        } else {
-	            // Caso improbable, botón inválido
 	            Alert error = new Alert(Alert.AlertType.ERROR);
 	            error.setTitle("Opción inválida");
 	            error.setHeaderText("Opción inválida seleccionada");
@@ -66,10 +64,6 @@ public class FormOrdenTrabajoVista {
 	            error.showAndWait();
 	        }
 	    }
-	}
-	
-	public void ingresarEntrega() {
-		
 	}
 	
 	public String getOrdenId() {

@@ -13,11 +13,10 @@ public class TareasVista {
 	private String estado = "Pendiente";
 	private String prioridad;
 	private String tipo;
-	
+
+    //METODO CONSTRUCTOR
 	public TareasVista(String tareaId, String titulo, String descripcion, LocalDateTime fechaCreacion,
 			LocalDateTime fechaVencimiento, String estado, String prioridad, String tipo) {
-		// Constructor por defecto
-		
 		this.tareaId = tareaId;
 		this.titulo = titulo;
 		this.descripcion = descripcion;
@@ -41,8 +40,7 @@ public class TareasVista {
 
 	}
 	
-	//Getters and Setters
-	
+	//GETTERS Y SETTERS.
 	public String getTareaId() {
 		return tareaId;
 	}

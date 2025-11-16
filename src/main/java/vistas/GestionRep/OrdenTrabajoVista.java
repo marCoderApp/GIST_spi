@@ -733,9 +733,7 @@ public class OrdenTrabajoVista {
         return ordenId[0];
     }
 		
-	
-	//Setters and getters
-	
+    //SETTERS Y GETTERS
 	public String getId() {
 		return id;
 	}

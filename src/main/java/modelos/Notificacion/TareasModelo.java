@@ -20,12 +20,10 @@ public class TareasModelo {
 	}
 	
 	public String generarTareaId() {
-		// Lógica para generar un ID único para la tarea
 		return "TAREA-" + System.currentTimeMillis();
 	}
 	
 	public void listarTareas() {
-		// Lógica para listar tareas
 	}
 	
 	public void actualizarEstadoTarea(String nuevoEstado) {
@@ -33,7 +31,6 @@ public class TareasModelo {
 	}
 	
 	public void agregarTarea(TareasModelo datos) {
-		// Lógica para agregar una nueva tarea
 	}
 	
 	public void finalizarTarea() {

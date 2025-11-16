@@ -20,7 +20,6 @@ public class PresupuestoModelo {
 	private String estado;
     private String maquinaId;
     private boolean conFactura;
-	//private List<RepuestoModelo> repuestos = new ArrayList<>();
 
 	public PresupuestoModelo(
 			String adminId,
@@ -37,6 +36,7 @@ public class PresupuestoModelo {
         this.conFactura = conFactura;
 	}
 
+    //INSERTA NUEVO PRESUPUESTO EN LA BASE DE DATOS. UTILIZA LOS DATOS CORRESPONDIENTES
     public static boolean ingresarPresupuestoBD(PresupuestoModelo presupuesto) {
         String sql = "INSERT INTO presupuesto " +
                 "(presupuesto_id, maquina_id, total, con_factura, fecha_creacion, admin_id) " +
@@ -60,14 +60,14 @@ public class PresupuestoModelo {
 
     }
 
-
-
+    //GENERAR ID DE PRESUPUESTO
     public String generarPresupuestoId() {
         String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        String idPresupuesto = "PRE-" + uuid; // Ej: MAQ-3F9A1B2C
+        String idPresupuesto = "PRE-" + uuid;
         return idPresupuesto;
 	}
-	
+
+    //SETTERS Y GETTERS
 	public String getPresupuestoId() {
         return presupuestoId;
     }
@@ -107,12 +107,6 @@ public class PresupuestoModelo {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-    
-    public Boolean guardarPresupuesto(PresupuestoModelo presupuesto) {
-    	
-    	return true;
-    	
-    }
 
     public String getMaquinaId() {
          return maquinaId;
@@ -129,25 +123,4 @@ public class PresupuestoModelo {
     public void setConFactura(Boolean conFactura) {
         this.conFactura = conFactura;
     }
-
-    public Double calcularTotal() {
-    	return 1.000001;
-    }
-    
-    public void aprobar() {
-    	
-    }
-    
-    public void rechazar() {
-    	
-    }
-    
-    public Boolean estaAprobado() {
-    	return true;
-    }
-    
-    public String obtenerResumen() {
-    	return "Hello World";
-    }
-	
 }

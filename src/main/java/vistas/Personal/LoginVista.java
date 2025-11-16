@@ -19,7 +19,7 @@ public class LoginVista {
 	        this.stage = stage;
 	    }
 
-	    // Misma firma que tu versión por consola
+	    //FORM PARA INGRESAR CREDENCIALES.
 	    public boolean ingresarCredenciales(Credenciales credenciales) {
 	        Stage loginStage = new Stage();
 	        loginStage.setTitle("Inicio de Sesión - GIST");
@@ -35,6 +35,7 @@ public class LoginVista {
 
 	        lblMensaje = new Label();
 
+            //BOTONES
 	        Button btnIngresar = new Button("Ingresar");
 	        Button btnCancelar = new Button("Cancelar");
 
