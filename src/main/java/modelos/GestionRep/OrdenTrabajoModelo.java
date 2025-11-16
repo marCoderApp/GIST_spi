@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import controladores.GestionRepControl;
 import javafx.collections.FXCollections;
@@ -193,7 +195,53 @@ public class OrdenTrabajoModelo {
     	
     	return true;
     }
-    
+
+    //OBTENER DATOS DE ORDEN BD
+    public static List<Map<String, Object>> obtenerDatosOrdenBD(String ordenId) {
+        List<Map<String,Object>> resultados = new ArrayList<>();
+        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
+                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, "
+                + "N.ID AS NOVEDAD_ID, N.FECHA AS FECHA_NOVEDAD, N.ADMIN_ID, "
+                + "NI.ITEMID, NI.COMENTARIOITEM "
+                + "FROM ORDEN_DE_TRABAJO O "
+                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "LEFT JOIN NOVEDAD_ITEM NI ON NI.ORDENID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN NOVEDADES N ON N.ID = NI.NOVEDADID "
+                + "WHERE O.ORDEN_TRABAJO_ID = ? "
+                + "ORDER BY O.ORDEN_TRABAJO_ID";
+
+        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
+            ps.setString(1, ordenId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String,Object> fila = new HashMap<>();
+                    fila.put("ORDEN_TRABAJO_ID", rs.getString("ORDEN_TRABAJO_ID"));
+                    fila.put("FECHA_INGRESO", rs.getDate("FECHA_INGRESO"));
+                    fila.put("DESCRIPCION_FALLA", rs.getString("DESCRIPCION_FALLA"));
+                    fila.put("ESTADO", rs.getString("ESTADO"));
+                    fila.put("NOMBRE", rs.getString("NOMBRE"));
+                    fila.put("APELLIDO", rs.getString("APELLIDO"));
+                    fila.put("MAQUINA_ID", rs.getString("MAQUINA_ID"));
+                    fila.put("TIPO", rs.getString("TIPO"));
+                    fila.put("MARCA", rs.getString("MARCA"));
+                    fila.put("MODELO", rs.getString("MODELO"));
+                    fila.put("NOVEDAD_ID", rs.getString("NOVEDAD_ID"));
+                    fila.put("FECHA_NOVEDAD", rs.getDate("FECHA_NOVEDAD"));
+                    fila.put("ADMIN_ID", rs.getString("ADMIN_ID"));
+                    fila.put("ITEMID", rs.getString("ITEMID"));
+                    fila.put("COMENTARIOITEM", rs.getString("COMENTARIOITEM"));
+                    resultados.add(fila);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultados;
+
+    }
+
     public Boolean agregarMaquinaAlista(MaquinaModelo maquina) {
     	return true;
     }

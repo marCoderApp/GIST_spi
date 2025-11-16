@@ -4,10 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 import conexion.ConexionDB;
 import javafx.scene.control.Alert;
@@ -44,6 +41,25 @@ public class GestionRepControl {
         this.setOrdenCreada(true);
         return true;
     }
+
+    //OBTENER DATOS DE ORDEN
+
+    public static List<Map<String, Object>> obtenerDatosOrdenPorId(String ordenId){
+
+        List<Map<String, Object>> resultados = new ArrayList<>();
+        try {
+            resultados = OrdenTrabajoModelo.obtenerDatosOrdenBD(ordenId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alerta = new Alert(Alert.AlertType.WARNING);
+            alerta.setTitle("Error al traer datos");
+            alerta.setHeaderText("Problema al obtener la orden");
+            alerta.setContentText("Hubo un error al intentar recuperar los datos de la orden. Verifique la conexión o intente nuevamente.");
+            alerta.showAndWait();
+        }
+        return resultados;
+
+    }
 	
 	public OrdenTrabajoModelo buscarOrdenCriterio(String criterio) {
 		for (OrdenTrabajoModelo orden : ordenesTrabajo) {
@@ -55,6 +71,7 @@ public class GestionRepControl {
 		return null; // Retorna null si no se encuentra la orden
 	}
 
+    // INSERTAR ORDEN BASE
     public void insertarOrdenBase(OrdenTrabajoModelo orden) {
 
         ordenId = orden.getOrdenId();
@@ -83,6 +100,7 @@ public class GestionRepControl {
         }
     }
 
+    //CHEQUEAR ID ORDEN
     public static boolean chequearIdOrden(String ordenId) {
         String sqlCheckOrdenId = "SELECT * FROM orden_de_trabajo WHERE orden_trabajo_id = ?";
         boolean esGuardado = false;
@@ -101,6 +119,7 @@ public class GestionRepControl {
 
     }
 
+    //REGISTRAR ENTREGA
     public boolean registrarEntrega(String ordenIdParam, String adminId) {
 
         String sqlRetirarEntrega = "UPDATE ORDEN_DE_TRABAJO SET despacho = ?, "
@@ -126,6 +145,7 @@ public class GestionRepControl {
 
     }
 
+    //CARGAR DETALLE DE REPARACION
     public static boolean cargarDetalleRep(DetalleReparacionModelo nuevoDetalleRep, String ordenId){
 
         try{
@@ -140,7 +160,7 @@ public class GestionRepControl {
         return false;
     }
 
-    //CLIENTES
+    //REGISTRAR CLIENTE
 	public ClienteModelo registrarCliente(ClienteModelo cliente) {
 		
 String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empresa, telefono, dni, cuit) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -185,7 +205,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		}
 		return null;
 	}
-	
+
+    //ELEGIR CLIENTE
 	public String elegirCliente() {
 		ClientesVista clientesVista = new ClientesVista();
 
@@ -237,7 +258,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	        Optional<String> seleccion = dialogoClientes.showAndWait();
 
 	        if (seleccion.isPresent()) {
-	            String clienteId = seleccion.get().split(" - ")[0]; // obtener solo el ID
+	            String clienteId = seleccion.get().split(" - ")[0];
 	            System.out.println("Cliente seleccionado: " + clienteId);
 	            clienteIdGestionRep = clienteId;
 	            return clienteId;
@@ -262,7 +283,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	    return "";
     }
 
-    //MAQUINAS
+    //SELECCIONAR MAQUINAS
 	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
 		 String ordenId = orden.getOrdenId();
 		    List<MaquinaModelo> maquinasSeleccionadas = null;
@@ -324,7 +345,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 		    return null;
 	}
-	
+
+    //AGREGAR MAQUINAS EXISTENTES
 	public List<MaquinaModelo> agregarMaquinasExistentes() {
 		List<MaquinaModelo> listaMaquinas = MaquinaModelo.listarMaquinas();
 	    List<MaquinaModelo> maquinasSeleccionadas = new ArrayList<>();
@@ -384,7 +406,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	    return maquinasSeleccionadas;
 		
 	}
-	
+
+    //INSERTAR EN ORDEN MAQUINAS
 	private void insertarEnOrdenMaquinas(List <MaquinaModelo> maquinasSeleccionadas) {
 		
 		String sqlInsertarEnOrdenMaquinas = "INSERT INTO orden_maquinas"
@@ -405,7 +428,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		}
 		
 	}
-	
+
+    //BUSCAR MAQUINA POR ID
 	private MaquinaModelo buscarMaquinaPorId(String id) {
 		
 		String sqlConsulta = "SELECT * FROM MAQUINAS WHERE id = ?";
@@ -431,6 +455,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		return null;
 	}
 
+    //AGREGAR MÁQUINAS NUEVAS
     private List<MaquinaModelo> agregarMaquinasNuevas(String ordenId) {
         List<MaquinaModelo> nuevasMaquinas = new ArrayList<>();
         boolean agregarOtra = true;
@@ -482,6 +507,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         return nuevasMaquinas;
     }
 
+    //MOSTRAR FORMULARIO DE NUEVA MÁQUINA
     private MaquinaModelo mostrarFormularioNuevaMaquina() {
         // Crear un Stage personalizado para el formulario
         Stage ventanaFormulario = new Stage();

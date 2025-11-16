@@ -7,33 +7,22 @@ import java.util.List;
 public class PresupuestoModelo {
 
 	private String presupuestoId;
-	private String ordenId;
 	private LocalDateTime fechaCreacion;
 	private String adminId;
-	private LocalDateTime fechaEstimada;
 	private float total;
 	private String estado;
-	private List<RepuestoModelo> repuestos = new ArrayList<>();
-
+	//private List<RepuestoModelo> repuestos = new ArrayList<>();
 
 	public PresupuestoModelo(
-			String ordenId,
 			LocalDateTime fechaCreacion,
 			String adminId,
-			String detalleRepId,
-			LocalDateTime fechaEstimada,
-			float total,
-			String estado, List<RepuestoModelo> repuestos
+			float total
 			) {
 		
 		this.presupuestoId = generarPresupuestoId();
-		this.ordenId = ordenId;
 		this.adminId = adminId;
 		this.fechaCreacion = fechaCreacion;
-		this.fechaEstimada = fechaEstimada;
 		this.total = total;
-		this.estado = estado;	
-		this.repuestos = repuestos;
 	}
 	
 	public String generarPresupuestoId() {
@@ -46,14 +35,6 @@ public class PresupuestoModelo {
 
     public void setPresupuestoId(String presupuestoId) {
         this.presupuestoId = presupuestoId;
-    }
-
-    public String getOrdenId() {
-        return ordenId;
-    }
-
-    public void setOrdenId(String ordenId) {
-        this.ordenId = ordenId;
     }
 
     public LocalDateTime getFechaCreacion() {
@@ -70,14 +51,6 @@ public class PresupuestoModelo {
 
     public void setAdminId(String adminId) {
         this.adminId = adminId;
-    }
-
-    public LocalDateTime getFechaEstimada() {
-        return fechaEstimada;
-    }
-
-    public void setFechaEstimada(LocalDateTime fechaEstimada) {
-        this.fechaEstimada = fechaEstimada;
     }
 
     public float getTotal() {

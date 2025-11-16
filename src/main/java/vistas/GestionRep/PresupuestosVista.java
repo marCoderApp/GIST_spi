@@ -1,5 +1,7 @@
 package vistas.GestionRep;
 
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import modelos.GestionRep.PresupuestoModelo;
 import java.util.*;
 
@@ -17,7 +19,19 @@ public class PresupuestosVista {
 		this.presupuestoSeleccionado = presupuestoSeleccionado;
 		this.filtroCodigoOrden = filtroCodigoOrden;
 	}
-	
+
+    public static void mostrarFormCrearPresupuesto(String ordenId) {
+                Stage ventana = new Stage();
+                ventana.setTitle("Crear Presupuesto");
+
+                //TITULO
+                Label titulo = new Label("Crear Presupuesto");
+                titulo.setStyle("-fx-font-weight: bold");
+
+                //INPUTS
+
+
+    }
 	
 	public void opcionCrearPresupuesto() {
 		

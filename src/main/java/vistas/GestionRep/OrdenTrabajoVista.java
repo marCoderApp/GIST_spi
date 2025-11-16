@@ -3,8 +3,10 @@ package vistas.GestionRep;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 //import java.time.LocalDate;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Consumer;
@@ -341,12 +343,24 @@ public class OrdenTrabajoVista {
 
             //BOTONES
             Button botonEditar = new Button("✏️ Editar");
+            Button botonPresupuesto = new Button("+ Agregar Presupuesto");
             Button botonEliminar = new Button("Eliminar");
             Button botonCerrar = new Button("Cerrar");
             Button botonVer = new Button("Ver");
             Button botonCambiarEstado = new Button("Cambiar Estado");
             Button botonBuscarOrden = new Button("Buscar Orden");
             Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
+
+            botonPresupuesto.setOnAction(e -> {
+                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null){
+                    String ordenId = seleccionado.get(0);
+                    PresupuestosVista.mostrarFormCrearPresupuesto(ordenId);
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una orden para agregar presupuesto");
+                }
+            });
 
             botonBuscarOrden.setOnAction(e -> {
 
@@ -479,7 +493,58 @@ public class OrdenTrabajoVista {
 
     //VER UNA ORDEN DE TRABAJO POR ID
     private void verOrdentrabajo(String ordenId) {
-        System.out.println("VER ORDEN");
+
+        List<Map<String, Object>> datos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
+
+        Stage ventanaVerOrden = new Stage();
+        ventanaVerOrden.setTitle("Orden de Trabajo: " + ordenId);
+
+        //TITULO
+        Label titulo = new Label("Orden de Trabajo" + ordenId);
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        //CONTENEDOR
+        VBox contenedor = new VBox(10);
+        contenedor.setPadding(new Insets(15));
+        contenedor.getChildren().add(titulo);
+        int contador = 1;
+        for (Map<String, Object> fila : datos) {
+            Label numMaquina = new Label("Máquina número: " + contador);
+            Label lblFecha = new Label("Fecha ingreso: " + (fila.get("FECHA_INGRESO")));
+            Label lblDescripcion = new Label("Descripción falla: " + fila.get("DESCRIPCION_FALLA"));
+            Label lblEstado = new Label("Estado: " + fila.get("ESTADO"));
+            Label lblCliente = new Label("Cliente: " + fila.get("NOMBRE") + " " + fila.get("APELLIDO"));
+            Label lblMaquina = new Label("Máquina: " + fila.get("TIPO") + " " + fila.get("MARCA") + " " + fila.get("MODELO"));
+
+            Label lblNovedad = new Label("Novedad ID: " + (fila.get("NOVEDAD_ID")
+            != null ? fila.get("NOVEDAD_ID") : "Sin novedades."));
+            Label lblFechaNovedad = new Label("Fecha novedad: " + (fila.get("FECHA_NOVEDAD")
+            != null ? fila.get("FECHA_NOVEDAD") : "Sin novedades."));
+            Label lblAdmin = new Label("Admin ID: " + (fila.get("ADMIN_ID") != null ? fila.get("ADMIN_ID") : "Sin administrador."));
+            Label lblItem = new Label("Item ID: " + (fila.get("ITEMID") != null ? fila.get("ITEMID") : "Sin item."));
+            TextArea comentarioArea = new TextArea((String) fila.get("COMENTARIOITEM"));
+            comentarioArea.setWrapText(true);
+            comentarioArea.setEditable(false);
+            comentarioArea.setPrefRowCount(4);
+            comentarioArea.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+
+
+            contenedor.getChildren().addAll(
+                    numMaquina, lblFecha, lblDescripcion, lblEstado, lblCliente, lblMaquina,
+                    new Separator(),
+                    lblNovedad, lblFechaNovedad, lblAdmin, lblItem, comentarioArea,
+                    new Separator(),
+                    new Separator()
+            );
+            contador++;
+        }
+        ScrollPane scrollPane = new ScrollPane(contenedor);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(500);
+
+        Scene scene = new Scene(scrollPane, 600, 650);
+        ventanaVerOrden.setScene(scene);
+        ventanaVerOrden.show();
     }
 
     //CAMBIAR ESTADO ORDEN POR ID
