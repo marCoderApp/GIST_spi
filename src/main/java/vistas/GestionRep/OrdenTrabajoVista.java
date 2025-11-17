@@ -525,11 +525,11 @@ public class OrdenTrabajoVista {
                     (fila.get("PRESUPUESTO_FECHA") != null ? fila.get("PRESUPUESTO_FECHA") : "Sin fecha"));
 
             Label lblConFactura = new Label(
-                    ((fila.get("PRESUPUESTO_CON_FACTURA") != null && (Boolean) fila.get("PRESUPUESTO_CON_FACTURA"))
+                    ((fila.get("CON_FACTURA") != null && (Boolean) fila.get("CON_FACTURA"))
                             ? "Con factura" : "Sin factura")
             );
             lblConFactura.setStyle(
-                    (fila.get("PRESUPUESTO_CON_FACTURA") != null && (Boolean) fila.get("PRESUPUESTO_CON_FACTURA"))
+                    (fila.get("CON_FACTURA") != null && (Boolean) fila.get("CON_FACTURA"))
                             ? "-fx-text-fill: green;" : "-fx-text-fill: red;"
             );
 

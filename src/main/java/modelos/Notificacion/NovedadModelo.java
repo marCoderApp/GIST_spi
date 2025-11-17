@@ -37,7 +37,7 @@ public class NovedadModelo {
         String sqlConsulta = "INSERT INTO NOVEDADES (id, fecha, admin_id)" +
                 " VALUES (?, ?, ?)";
 
-        try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sqlConsulta)){
+        try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sqlConsulta)) {
             gestionRepControl.conexion.setAutoCommit(false);
             ps.setString(1, nuevaNovedad.getNovedadId());
             ps.setObject(2, nuevaNovedad.getFechaCreacion());
