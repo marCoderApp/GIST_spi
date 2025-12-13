@@ -479,6 +479,15 @@ public class OrdenTrabajoVista {
     //BUSCAR UNA ORDEN DE TRABAJO
     private void buscarOrdenDeTrabajo() {
         System.out.println("BUSCAR ORDEN");
+
+        //VENTANA
+        Stage ventana = new Stage();
+        ventana.setTitle("Busqueda de Orden");
+
+        //TITULO
+        Label titulo = new Label("Buscar Orden");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
     }
 
     //VER UNA ORDEN DE TRABAJO POR ID
