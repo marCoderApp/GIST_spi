@@ -499,7 +499,7 @@ public class OrdenTrabajoVista {
         criterioOpciones.setPrefWidth(200);
 
         //BOTONES
-        Button botonBuscar = new Button("Buscar");
+        Button botonBuscar = new Button("Aceptar");
         Button botonCancelar = new Button("Cancelar");
 
         botonBuscar.setOnAction(e-> {
@@ -509,7 +509,7 @@ public class OrdenTrabajoVista {
                 criterio = "ORDEN_TRABAJO_ID";
                 GestionRepControl.buscarOrdenCriterio(criterio);
                 System.out.println("ORDEN TRABAJO");
-            }else if(criterioSeleccionado.equals("Cliente")) {
+            }else if(criterioSeleccionado.equals("Apellido Cliente")) {
                 criterio = "APELLIDO";
                 GestionRepControl.buscarOrdenCriterio(criterio);
                 System.out.println("APELLIDO");

@@ -10,6 +10,9 @@ import java.util.List;
 
 import conexion.ConexionDB;
 import daos.GestioRep.OrdenTrabajoDao;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -18,7 +21,10 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
@@ -29,6 +35,7 @@ import modelos.GestionRep.PedidoModelo;
 import modelos.GestionRep.PresupuestoModelo;
 import vistas.GestionRep.ClientesVista;
 import vistas.GestionRep.DetalleRepVista;
+import vistas.GestionRep.OrdenTrabajoVista;
 
 public class GestionRepControl {
 
@@ -73,6 +80,7 @@ public class GestionRepControl {
 
 		Stage ventana = new Stage();
 		ventana.setTitle("Busqueda de orden avanzada");
+		ventana.initModality(Modality.APPLICATION_MODAL);
 
 		//TITULO
 		Label titulo = new Label("Busqueda de orden avanzada");
@@ -85,7 +93,11 @@ public class GestionRepControl {
 
 		//BOTON BUSCAR
 		Button botonBuscar = new Button("Buscar");
-		botonBuscar.setOnAction(e -> {});
+		botonBuscar.setOnAction(e -> {
+			if (inputDato.getText().trim().isEmpty()) {
+				OrdenTrabajoVista.mostrarAdvertencia
+			}
+		});
 		botonBuscar.setPrefWidth(100);
 		botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
@@ -94,7 +106,17 @@ public class GestionRepControl {
 		botonCancelar.setPrefWidth(100);
 		botonCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
 
-		
+		//LAYOUT
+		HBox layoutBotones = new HBox(10, botonBuscar, botonCancelar);
+		layoutBotones.setAlignment(Pos.CENTER);
+
+		VBox layout = new VBox(10, titulo, inputDato, layoutBotones);
+		layout.setAlignment(Pos.CENTER);
+		layout.setPadding(new Insets(10));
+
+		Scene escena = new Scene(layout, 300, 150);
+		ventana.setScene(escena);
+		ventana.show();
 
 		return true;
 	}
