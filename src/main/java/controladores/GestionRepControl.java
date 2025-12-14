@@ -1,16 +1,24 @@
 package controladores;
 
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
 
 import conexion.ConexionDB;
+import daos.GestioRep.OrdenTrabajoDao;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
@@ -61,14 +69,34 @@ public class GestionRepControl {
 
     }
 	
-	public OrdenTrabajoModelo buscarOrdenCriterio(String criterio) {
-		for (OrdenTrabajoModelo orden : ordenesTrabajo) {
-			if (orden.getOrdenId().equalsIgnoreCase(criterio) || orden.getCliente_id().equalsIgnoreCase(criterio)
-					|| orden.getAdminId().equalsIgnoreCase(criterio)) {
-				return orden; // Retorna la orden si se encuentra una coincidencia
-			}
-		}
-		return null; // Retorna null si no se encuentra la orden
+	public static boolean buscarOrdenCriterio(String criterio) {
+
+		Stage ventana = new Stage();
+		ventana.setTitle("Busqueda de orden avanzada");
+
+		//TITULO
+		Label titulo = new Label("Busqueda de orden avanzada");
+		titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+		//INPUT
+		TextField inputDato = new TextField();
+		inputDato.setPromptText("Ingrese dato de busqueda");
+		inputDato.setPrefWidth(20);
+
+		//BOTON BUSCAR
+		Button botonBuscar = new Button("Buscar");
+		botonBuscar.setOnAction(e -> {});
+		botonBuscar.setPrefWidth(100);
+		botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+		Button botonCancelar = new Button("Cancelar");
+		botonCancelar.setOnAction(e -> ventana.close());
+		botonCancelar.setPrefWidth(100);
+		botonCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+
+		
+
+		return true;
 	}
 
     // INSERTAR ORDEN BASE

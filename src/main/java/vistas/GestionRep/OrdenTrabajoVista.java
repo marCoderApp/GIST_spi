@@ -350,7 +350,6 @@ public class OrdenTrabajoVista {
             Button botonBuscarOrden = new Button("Buscar Orden");
             Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
 
-
             botonBuscarOrden.setOnAction(e -> {
 
                 //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
@@ -485,8 +484,70 @@ public class OrdenTrabajoVista {
         ventana.setTitle("Busqueda de Orden");
 
         //TITULO
-        Label titulo = new Label("Buscar Orden");
+        Label titulo = new Label("Elija criterio de búsqueda");
         titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        //DROPDOWN
+        ComboBox<String> criterioOpciones = new ComboBox<>();
+        criterioOpciones.getItems().addAll("Orden ID",
+                "Cliente",
+                "Estado",
+                "Fecha ingreso",
+                "Empresa",
+                "Telefono");
+        criterioOpciones.setPromptText("Seleccione un criterio");
+        criterioOpciones.setPrefWidth(200);
+
+        //BOTONES
+        Button botonBuscar = new Button("Buscar");
+        Button botonCancelar = new Button("Cancelar");
+
+        botonBuscar.setOnAction(e-> {
+            String criterioSeleccionado = criterioOpciones.getValue();
+            String criterio = "";
+            if(criterioSeleccionado.equals("Orden ID")) {
+                criterio = "ORDEN_TRABAJO_ID";
+                GestionRepControl.buscarOrdenCriterio(criterio);
+                System.out.println("ORDEN TRABAJO");
+            }else if(criterioSeleccionado.equals("Cliente")) {
+                criterio = "APELLIDO";
+                GestionRepControl.buscarOrdenCriterio(criterio);
+                System.out.println("APELLIDO");
+            }else if(criterioSeleccionado.equals("Estado")) {
+                criterio = "ESTADO";
+                GestionRepControl.buscarOrdenCriterio(criterio);
+                System.out.println("ESTADO");
+            }else if(criterioSeleccionado.equals("Fecha ingreso")) {
+                criterio = "FECHA_INGRESO";
+                GestionRepControl.buscarOrdenCriterio(criterio);
+                System.out.println("FECHA DE INGRESO");
+            }else if(criterioSeleccionado.equals("Empresa")) {
+                criterio = "EMPRESA";
+                GestionRepControl.buscarOrdenCriterio(criterio);
+                System.out.println("EMPRESA");
+            }else if(criterioSeleccionado.equals("Telefono")) {
+                criterio = "TELEFONO";
+                GestionRepControl.buscarOrdenCriterio(criterio);
+                System.out.println("TELEFONO");
+            }
+        });
+        botonBuscar.setStyle("-fx-base: #008000;");
+
+        botonCancelar.setOnAction(e -> ventana.close());
+        botonCancelar.setStyle("-fx-base: #FF0000;");
+
+        //BOTON LAYOUT
+        HBox botonLayout = new HBox(10, botonBuscar, botonCancelar);
+        botonLayout.setAlignment(Pos.CENTER);
+
+
+        //LAYOUT
+        VBox layout = new VBox(10, titulo, criterioOpciones, botonLayout);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout);
+        ventana.setScene(escena);
+        ventana.show();
 
     }
 
