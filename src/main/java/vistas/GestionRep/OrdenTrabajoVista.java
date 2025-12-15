@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 
 import controladores.GestionRepControl;
 import controladores.PersonalControl;
+import daos.GestioRep.OrdenTrabajoDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelos.Personal.TecnicoModelo;
 import modelos.GestionRep.*;	
@@ -490,7 +492,7 @@ public class OrdenTrabajoVista {
         //DROPDOWN
         ComboBox<String> criterioOpciones = new ComboBox<>();
         criterioOpciones.getItems().addAll("Orden ID",
-                "Cliente",
+                "Apellido Cliente",
                 "Estado",
                 "Fecha ingreso",
                 "Empresa",
@@ -506,29 +508,29 @@ public class OrdenTrabajoVista {
             String criterioSeleccionado = criterioOpciones.getValue();
             String criterio = "";
             if(criterioSeleccionado.equals("Orden ID")) {
-                criterio = "ORDEN_TRABAJO_ID";
-                GestionRepControl.buscarOrdenCriterio(criterio);
+                criterio = "O.ORDEN_TRABAJO_ID";
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
                 System.out.println("ORDEN TRABAJO");
             }else if(criterioSeleccionado.equals("Apellido Cliente")) {
-                criterio = "APELLIDO";
-                GestionRepControl.buscarOrdenCriterio(criterio);
+                criterio = "C.APELLIDO";
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
                 System.out.println("APELLIDO");
             }else if(criterioSeleccionado.equals("Estado")) {
-                criterio = "ESTADO";
-                GestionRepControl.buscarOrdenCriterio(criterio);
+                criterio = "O.ESTADO";
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
                 System.out.println("ESTADO");
             }else if(criterioSeleccionado.equals("Fecha ingreso")) {
-                criterio = "FECHA_INGRESO";
-                GestionRepControl.buscarOrdenCriterio(criterio);
+                criterio = "O.FECHA_INGRESO";
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
                 System.out.println("FECHA DE INGRESO");
             }else if(criterioSeleccionado.equals("Empresa")) {
                 criterio = "EMPRESA";
-                GestionRepControl.buscarOrdenCriterio(criterio);
-                System.out.println("EMPRESA");
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
+                System.out.println("C.EMPRESA");
             }else if(criterioSeleccionado.equals("Telefono")) {
                 criterio = "TELEFONO";
-                GestionRepControl.buscarOrdenCriterio(criterio);
-                System.out.println("TELEFONO");
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
+                System.out.println("C.TELEFONO");
             }
         });
         botonBuscar.setStyle("-fx-base: #008000;");
@@ -551,7 +553,63 @@ public class OrdenTrabajoVista {
 
     }
 
-    public void mostrarFormDeBusqueda(String Criterio, String )
+    public void mostrarFormDeBusqueda(String criterio, String seleccionado){
+        Stage ventana = new Stage();
+        ventana.setTitle("Busqueda de orden avanzada por:");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        //TITULO
+        Label titulo = new Label("Busqueda de orden avanzada");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUT
+        TextField inputDato = new TextField();
+        inputDato.setPromptText("Ingrese dato de busqueda");
+        inputDato.setPrefWidth(20);
+
+        //BOTON BUSCAR
+        Button botonBuscar = new Button("Buscar");
+        botonBuscar.setOnAction(e -> {
+            String dato = inputDato.getText();
+            ObservableList<ObservableList<String>> resultado = GestionRepControl.buscarOrdenCriterio(criterio, dato);
+            if (resultado == null || resultado.isEmpty()) {
+                Alert a = new Alert(Alert.AlertType.INFORMATION, "No se encontraron resultados.");
+                a.setHeaderText("Búsqueda");
+                a.showAndWait();
+                return;
+            }
+
+            StringBuilder ids = new StringBuilder("Order IDs encontrados:\n\n");
+            for (ObservableList<String> fila : resultado) {
+                // normalmente el ID de la orden viene en la primera columna (índice 0)
+                String orderId = (fila != null && !fila.isEmpty()) ? fila.get(0) : "(sin id)";
+                ids.append(orderId).append("\n");
+            }
+
+            Alert a = new Alert(Alert.AlertType.INFORMATION, ids.toString());
+            a.setHeaderText("Resultados (debug)");
+            a.showAndWait();
+        });
+        botonBuscar.setPrefWidth(100);
+        botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+        Button botonCancelar = new Button("Cancelar");
+        botonCancelar.setOnAction(e -> ventana.close());
+        botonCancelar.setPrefWidth(100);
+        botonCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+
+        //LAYOUT
+        HBox layoutBotones = new HBox(10, botonBuscar, botonCancelar);
+        layoutBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10, titulo, inputDato, layoutBotones);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout, 300, 150);
+        ventana.setScene(escena);
+        ventana.show();
+    }
 
     //VER UNA ORDEN DE TRABAJO POR ID
     private void verOrdentrabajo(String ordenId) {

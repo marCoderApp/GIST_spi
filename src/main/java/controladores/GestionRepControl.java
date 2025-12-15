@@ -78,51 +78,15 @@ public class GestionRepControl {
 
     }
 	
-	public static ObservableList<ObservableList<String>> buscarOrdenCriterio(String criterio) {
+	public static ObservableList<ObservableList<String>> buscarOrdenCriterio(String criterio,
+																			 String inputDato) {
 
-		Stage ventana = new Stage();
-		ventana.setTitle("Busqueda de orden avanzada");
-		ventana.initModality(Modality.APPLICATION_MODAL);
-
-		//TITULO
-		Label titulo = new Label("Busqueda de orden avanzada");
-		titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
-
-		//INPUT
-		TextField inputDato = new TextField();
-		inputDato.setPromptText("Ingrese dato de busqueda");
-		inputDato.setPrefWidth(20);
-
-		//BOTON BUSCAR
-		Button botonBuscar = new Button("Buscar");
-		botonBuscar.setOnAction(e -> {
-			if (inputDato.getText().trim().isEmpty()) {
-				OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un dato de busqueda");
-			}else{
-                ObservableList<ObservableList<String>> resultado = OrdenTrabajoDao.traerResultadoBusquedaSQL(criterio, inputDato.getText());
-                return resultado;
-            }
-		});
-		botonBuscar.setPrefWidth(100);
-		botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-
-		Button botonCancelar = new Button("Cancelar");
-		botonCancelar.setOnAction(e -> ventana.close());
-		botonCancelar.setPrefWidth(100);
-		botonCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
-
-		//LAYOUT
-		HBox layoutBotones = new HBox(10, botonBuscar, botonCancelar);
-		layoutBotones.setAlignment(Pos.CENTER);
-
-		VBox layout = new VBox(10, titulo, inputDato, layoutBotones);
-		layout.setAlignment(Pos.CENTER);
-		layout.setPadding(new Insets(10));
-
-		Scene escena = new Scene(layout, 300, 150);
-		ventana.setScene(escena);
-		ventana.show();
-
+		if (inputDato.isEmpty()) {
+			OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un dato de busqueda");
+		}else{
+			ObservableList<ObservableList<String>> resultado = OrdenTrabajoDao.traerResultadoBusquedaSQL(criterio, inputDato);
+			return resultado;
+		}
 		return null;
 	}
 
