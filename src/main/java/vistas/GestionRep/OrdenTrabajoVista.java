@@ -460,7 +460,7 @@ public class OrdenTrabajoVista {
 	}
 	
 	//MOSTRAR ADVERTENCIA
-	private static void mostrarAdvertencia(String mensaje) {
+	public static void mostrarAdvertencia(String mensaje) {
 	    Alert alerta = new Alert(Alert.AlertType.WARNING);
 	    alerta.setTitle("Advertencia");
 	    alerta.setHeaderText(null);
@@ -551,10 +551,13 @@ public class OrdenTrabajoVista {
 
     }
 
+    public void mostrarFormDeBusqueda(String Criterio, String )
+
     //VER UNA ORDEN DE TRABAJO POR ID
     private void verOrdentrabajo(String ordenId) {
 
         List<Map<String, Object>> datos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
+
 
         Stage ventanaVerOrden = new Stage();
         ventanaVerOrden.setTitle("Orden de Trabajo: " + ordenId);

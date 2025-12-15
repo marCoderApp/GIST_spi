@@ -10,6 +10,8 @@ import java.util.List;
 
 import conexion.ConexionDB;
 import daos.GestioRep.OrdenTrabajoDao;
+import javafx.beans.Observable;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -76,7 +78,7 @@ public class GestionRepControl {
 
     }
 	
-	public static boolean buscarOrdenCriterio(String criterio) {
+	public static ObservableList<ObservableList<String>> buscarOrdenCriterio(String criterio) {
 
 		Stage ventana = new Stage();
 		ventana.setTitle("Busqueda de orden avanzada");
@@ -95,8 +97,11 @@ public class GestionRepControl {
 		Button botonBuscar = new Button("Buscar");
 		botonBuscar.setOnAction(e -> {
 			if (inputDato.getText().trim().isEmpty()) {
-				OrdenTrabajoVista.mostrarAdvertencia
-			}
+				OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un dato de busqueda");
+			}else{
+                ObservableList<ObservableList<String>> resultado = OrdenTrabajoDao.traerResultadoBusquedaSQL(criterio, inputDato.getText());
+                return resultado;
+            }
 		});
 		botonBuscar.setPrefWidth(100);
 		botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
@@ -118,7 +123,7 @@ public class GestionRepControl {
 		ventana.setScene(escena);
 		ventana.show();
 
-		return true;
+		return null;
 	}
 
     // INSERTAR ORDEN BASE
