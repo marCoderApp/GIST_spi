@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -487,7 +488,7 @@ public class OrdenTrabajoVista {
 
         //TITULO
         Label titulo = new Label("Elija criterio de búsqueda");
-        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         //DROPDOWN
         ComboBox<String> criterioOpciones = new ComboBox<>();
@@ -496,6 +497,7 @@ public class OrdenTrabajoVista {
                 "Estado",
                 "Fecha ingreso",
                 "Empresa",
+                "Marca",
                 "Telefono");
         criterioOpciones.setPromptText("Seleccione un criterio");
         criterioOpciones.setPrefWidth(200);
@@ -510,27 +512,24 @@ public class OrdenTrabajoVista {
             if(criterioSeleccionado.equals("Orden ID")) {
                 criterio = "O.ORDEN_TRABAJO_ID";
                 mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-                System.out.println("ORDEN TRABAJO");
             }else if(criterioSeleccionado.equals("Apellido Cliente")) {
                 criterio = "C.APELLIDO";
                 mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-                System.out.println("APELLIDO");
             }else if(criterioSeleccionado.equals("Estado")) {
                 criterio = "O.ESTADO";
                 mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-                System.out.println("ESTADO");
             }else if(criterioSeleccionado.equals("Fecha ingreso")) {
                 criterio = "O.FECHA_INGRESO";
                 mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-                System.out.println("FECHA DE INGRESO");
             }else if(criterioSeleccionado.equals("Empresa")) {
                 criterio = "EMPRESA";
                 mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-                System.out.println("C.EMPRESA");
             }else if(criterioSeleccionado.equals("Telefono")) {
                 criterio = "TELEFONO";
                 mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-                System.out.println("C.TELEFONO");
+            } else if (criterioSeleccionado.equals("Marca")) {
+                criterio = "MARCA";
+                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
             }
         });
         botonBuscar.setStyle("-fx-base: #008000;");
@@ -560,7 +559,7 @@ public class OrdenTrabajoVista {
 
         //TITULO
         Label titulo = new Label("Busqueda de orden avanzada");
-        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         //INPUT
         TextField inputDato = new TextField();
@@ -579,16 +578,73 @@ public class OrdenTrabajoVista {
                 return;
             }
 
-            StringBuilder ids = new StringBuilder("Order IDs encontrados:\n\n");
-            for (ObservableList<String> fila : resultado) {
-                // normalmente el ID de la orden viene en la primera columna (índice 0)
-                String orderId = (fila != null && !fila.isEmpty()) ? fila.get(0) : "(sin id)";
-                ids.append(orderId).append("\n");
+            //TABLA DE RESULTADOS DE BUSQUEDA
+            TableView<ObservableList<String>> tabla =
+                    new TableView<>();
+            tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            
+            String[] nombresCampos = {
+                    "Orden_Trabajo_ID",
+                    "Fecha_Ingreso",
+                    "Descripcion_Fallas",
+                    "Estado",
+                    "Cliente",
+                    "Empresa",
+                    "Telefono",
+                    "Maquina_ID",
+                    "Tipo",
+                    "Marca",
+                    "Modelo"
+            };
+            
+            //AGREGAR NOMBRES A COLUMNAS DINAMICAMENTE
+            for(String nombreCampo : nombresCampos) {
+                final int colIndex = tabla.getColumns().size();
+                TableColumn<ObservableList<String>, String> columna = new TableColumn<>(nombreCampo);
+                
+                columna.setCellValueFactory(param ->
+                        new ReadOnlyStringWrapper(param.getValue().size() > colIndex ?
+                        param.getValue().get(colIndex) : ""));
+                columna.setPrefWidth(switch(nombreCampo){
+                    case "Orden_trabajo_id" -> 100;
+                    case "Fecha_ingreso" -> 100;
+                    case "Descripcion_fallas" -> 100;
+                    case "Estado" -> 100;
+                    case "Cliente" -> 100;
+                    case "Empresa" -> 100;
+                    case "Telefono" -> 100;
+                    case "Maquina_ID" -> 100;
+                    case "Tipo" -> 100;
+                    case "Marca" -> 100;
+                    case "Modelo" -> 100;
+                    default -> 120;
+                });
+                tabla.getColumns().add(columna);
             }
 
-            Alert a = new Alert(Alert.AlertType.INFORMATION, ids.toString());
-            a.setHeaderText("Resultados (debug)");
-            a.showAndWait();
+            //AGREGAR DATOS A LA TABLA
+            tabla.setItems(resultado);
+
+            // Ventana resultados
+            Stage ventanaResultados = new Stage();
+            ventanaResultados.setTitle("Resultados de búsqueda");
+
+            Label tituloResultados = new Label("Resultados para: " + seleccionado + " = " + dato);
+            tituloResultados.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
+
+            Button btnCerrar = new Button("Cerrar");
+            btnCerrar.setOnAction(ev -> ventanaResultados.close());
+
+            HBox barra = new HBox(10, btnCerrar);
+            barra.setAlignment(Pos.CENTER_RIGHT);
+            barra.setPadding(new Insets(10));
+
+            VBox layoutResultados = new VBox(10, tituloResultados, tabla, barra);
+            layoutResultados.setPadding(new Insets(10));
+
+            ventanaResultados.setScene(new Scene(layoutResultados, 700, 400));
+            ventanaResultados.initOwner(ventana);
+            ventanaResultados.show();
         });
         botonBuscar.setPrefWidth(100);
         botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
@@ -622,7 +678,7 @@ public class OrdenTrabajoVista {
 
         //TITULO
         Label titulo = new Label("Orden de Trabajo - " + ordenId);
-        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         //CONTENEDOR
         VBox contenedor = new VBox(10);
