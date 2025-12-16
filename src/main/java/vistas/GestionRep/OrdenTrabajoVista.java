@@ -480,7 +480,6 @@ public class OrdenTrabajoVista {
 
     //BUSCAR UNA ORDEN DE TRABAJO
     private void buscarOrdenDeTrabajo() {
-        System.out.println("BUSCAR ORDEN");
 
         //VENTANA
         Stage ventana = new Stage();
@@ -497,6 +496,7 @@ public class OrdenTrabajoVista {
                 "Estado",
                 "Fecha ingreso",
                 "Empresa",
+                "Tipo de máquina",
                 "Marca",
                 "Telefono");
         criterioOpciones.setPromptText("Seleccione un criterio");
@@ -508,29 +508,31 @@ public class OrdenTrabajoVista {
 
         botonBuscar.setOnAction(e-> {
             String criterioSeleccionado = criterioOpciones.getValue();
-            String criterio = "";
-            if(criterioSeleccionado.equals("Orden ID")) {
-                criterio = "O.ORDEN_TRABAJO_ID";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-            }else if(criterioSeleccionado.equals("Apellido Cliente")) {
-                criterio = "C.APELLIDO";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-            }else if(criterioSeleccionado.equals("Estado")) {
-                criterio = "O.ESTADO";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-            }else if(criterioSeleccionado.equals("Fecha ingreso")) {
-                criterio = "O.FECHA_INGRESO";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-            }else if(criterioSeleccionado.equals("Empresa")) {
-                criterio = "EMPRESA";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-            }else if(criterioSeleccionado.equals("Telefono")) {
-                criterio = "TELEFONO";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
-            } else if (criterioSeleccionado.equals("Marca")) {
-                criterio = "MARCA";
-                mostrarFormDeBusqueda(criterio, criterioSeleccionado);
+
+            if(criterioSeleccionado == null){
+                mostrarAdvertencia("Debe seleccionar un criterio de busqueda para continuar!!");
+                return;
             }
+
+            String criterio = switch (criterioSeleccionado) {
+                case "Orden ID" -> "O.ORDEN_TRABAJO_ID";
+                case "Apellido Cliente" -> "C.APELLIDO";
+                case "Estado" -> "O.ESTADO";
+                case "Fecha ingreso" -> "O.FECHA_INGRESO";
+                case "Empresa" -> "EMPRESA";
+                case "Tipo de máquina" -> "M.TIPO";
+                case "Marca" -> "MARCA";
+                case "Telefono" -> "TELEFONO";
+                default -> null;
+            };
+
+            if(criterio == null) {
+                mostrarAdvertencia("Criterio de búsqueda no reconocido: " + criterioSeleccionado);
+                return;
+            }
+
+            mostrarFormDeBusqueda(criterio, criterioSeleccionado);
+
         });
         botonBuscar.setStyle("-fx-base: #008000;");
 
@@ -541,7 +543,6 @@ public class OrdenTrabajoVista {
         HBox botonLayout = new HBox(10, botonBuscar, botonCancelar);
         botonLayout.setAlignment(Pos.CENTER);
 
-
         //LAYOUT
         VBox layout = new VBox(10, titulo, criterioOpciones, botonLayout);
         layout.setPadding(new Insets(10));
@@ -549,7 +550,6 @@ public class OrdenTrabajoVista {
         Scene escena = new Scene(layout);
         ventana.setScene(escena);
         ventana.show();
-
     }
 
     public void mostrarFormDeBusqueda(String criterio, String seleccionado){

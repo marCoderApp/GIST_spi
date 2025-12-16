@@ -24,11 +24,11 @@ public class OrdenTrabajoDao {
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
                 + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
                 + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
-                + "WHERE " + criterio + " = ? "
+                + "WHERE " + criterio + " LIKE ? "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(consultaSQL)){
-                ps.setString(1, dato);
+                ps.setString(1, "%" + dato + "%");
 
                 ResultSet rs = ps.executeQuery();
 
