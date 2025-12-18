@@ -632,10 +632,89 @@ public class OrdenTrabajoVista {
             Label tituloResultados = new Label("Resultados para: " + seleccionado + " = " + dato);
             tituloResultados.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
 
+            Button botonEditar = new Button("✏️ Editar");
+            Button botonEliminar = new Button("Eliminar");
+            Button botonVer = new Button("Ver");
+            Button botonCambiarEstado = new Button("Cambiar Estado");
+            Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
+
+            botonIngresarDetalleRep.setOnAction(event -> {
+                ObservableList<String> seleccionadoBusqueda = tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null){
+                    String ordenId = seleccionadoBusqueda.get(0);
+                    mostrarFormDetalleRep(ordenId);
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una orden para ingresar detalle de reparación");
+                }
+
+            });
+
+            botonVer.setOnAction(event -> {
+                ObservableList<String> seleccionadoBusqueda = tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionadoBusqueda.get(0);
+
+                    verOrdentrabajo(ordenId);
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para ver.");
+                }
+            });
+
+            botonCambiarEstado.setOnAction(event -> {
+                ObservableList<String> seleccionadoBusqueda = tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionadoBusqueda.get(0);
+
+                    cambiarEstadoOrden(ordenId);
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
+                }
+            });
+
+            botonEditar.setOnAction(event -> {
+                ObservableList<String> seleccionadoBusqueda =
+                        tabla.getSelectionModel().getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionadoBusqueda.get(0);
+                    editarOrdenPorId(ordenId);
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para editar.");
+                }
+
+
+            });
+
+            botonEliminar.setOnAction(event -> {
+                ObservableList<String> seleccionadoBusqueda =
+                        tabla.getSelectionModel()
+                                .getSelectedItem();
+
+                if(seleccionado != null) {
+                    String ordenId = seleccionadoBusqueda.get(0);
+
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Eliminar la orden con ID " + ordenId + "?",
+                            ButtonType.YES, ButtonType.NO);
+                    confirm.showAndWait().ifPresent(respuesta -> {
+                        if(respuesta == ButtonType.YES) {
+                            eliminarOrdenPorId(ordenId);
+                            resultado.remove(seleccionadoBusqueda);
+                        }
+                    });
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para"
+                            + "eliminar");
+                }
+
+            });
             Button btnCerrar = new Button("Cerrar");
             btnCerrar.setOnAction(ev -> ventanaResultados.close());
 
-            HBox barra = new HBox(10, btnCerrar);
+            HBox barra = new HBox(10, botonEditar, botonVer, botonEliminar, botonCambiarEstado, botonIngresarDetalleRep, btnCerrar);
             barra.setAlignment(Pos.CENTER_RIGHT);
             barra.setPadding(new Insets(10));
 
@@ -671,7 +750,6 @@ public class OrdenTrabajoVista {
     private void verOrdentrabajo(String ordenId) {
 
         List<Map<String, Object>> datos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
-
 
         Stage ventanaVerOrden = new Stage();
         ventanaVerOrden.setTitle("Orden de Trabajo: " + ordenId);
