@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import Enums.MaquinaEstado;
 import conexion.ConexionDB;
 
 public class MaquinaModelo {
@@ -17,15 +18,17 @@ public class MaquinaModelo {
 	private String marca;
 	private String modelo;
 	private String color;
+	private String estado;
 	private static Connection conexion = ConexionDB.conectar();
 	// Constructors
 	
-	public MaquinaModelo(String tipo, String marca, String modelo, String color) {
+	public MaquinaModelo(String tipo, String marca, String modelo, String color, String estado) {
 		this.maquinaId = generarMaquinaId();
 		this.tipo = tipo;
 		this.marca = marca;
 		this.modelo = modelo;
 		this.color = color;
+		this.estado = (estado != null) ? estado : MaquinaEstado.EN_LISTA.getStatus();
 	}
 
     //GENERAR ID DE MAQUINA USANDO UUID
@@ -44,10 +47,11 @@ public class MaquinaModelo {
 		try (PreparedStatement ps = conexion.prepareStatement(sqlConsulta); ResultSet rs = ps.executeQuery()) {
 
 			while (rs.next()) {
-				MaquinaModelo maquina = new MaquinaModelo(rs.getString("tipo"), 
+				MaquinaModelo maquina = new MaquinaModelo(rs.getString("tipo"),
 						rs.getString("marca"),
 						rs.getString("modelo"),
-						rs.getString("color"));
+						rs.getString("color"),
+						rs.getString("estado"));
 				maquina.setMaquinaId(rs.getString("id"));
 				listaMaquinas.add(maquina);
 			}
@@ -75,7 +79,7 @@ public class MaquinaModelo {
 
     //GUARDAR NUEVA MAQUINA EN LA BASE DE DATOS
 	public static boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
-		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color) VALUES (?, ?, ?, ?, ?)";
+		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color, estado_maquina) VALUES (?, ?, ?, ?, ?, ?)";
 		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";
 	    
 	    try (Connection conexion = ConexionDB.conectar();
@@ -88,6 +92,7 @@ public class MaquinaModelo {
 	            ps.setString(3, m.getMarca());
 	            ps.setString(4, m.getModelo());
 	            ps.setString(5, m.getColor());
+				ps.setString(6, m.getEstado());
 	            ps.addBatch();
 	            
 	            psOrdenMaquina.setString(1, ordenId);
@@ -126,6 +131,9 @@ public class MaquinaModelo {
 		return color;
 	}
 
+	public String getEstado() {
+		return estado;
+	}
 	
 	// Setters
 	
@@ -147,6 +155,10 @@ public class MaquinaModelo {
 	
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
 
 }

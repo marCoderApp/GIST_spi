@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
+import Enums.MaquinaEstado;
 import conexion.ConexionDB;
 import daos.GestioRep.OrdenTrabajoDao;
 import javafx.beans.Observable;
@@ -462,7 +463,8 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
                         rs.getString("tipo"),
                         rs.getString("marca"),
                         rs.getString("modelo"),
-                        rs.getString("color"));
+                        rs.getString("color"),
+						rs.getString("estado"));
                 maquina.setMaquinaId(rs.getString("id"));
                 return maquina;
             }
@@ -569,6 +571,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             String marca = txtMarca.getText().trim();
             String modelo = txtModelo.getText().trim();
             String color = txtColor.getText().trim();
+			String estado = MaquinaEstado.EN_LISTA.getStatus();
 
             // Validación
             if (tipo == null || tipo.isEmpty()) {
@@ -588,7 +591,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             }
 
             // Crear nueva máquina
-            resultado[0] = new MaquinaModelo(tipo, marca, modelo, color);
+            resultado[0] = new MaquinaModelo(tipo, marca, modelo, color, estado);
             ventanaFormulario.close();
         });
 

@@ -112,7 +112,8 @@ public class OrdenTrabajoVista {
 	        maquinasTexto.append(" - ")
 	        .append(maquina.getTipo()).append(" - ")
 	        .append(maquina.getMarca()).append(" (ID: ")
-	        .append(maquina.getMaquinaId()).append(")\n");
+	        .append(maquina.getMaquinaId()).append(") Estado: \n")
+                    .append(maquina.getEstado()).append(")\n");
 	    }
 
 	    Alert maquinasAlert = new Alert(Alert.AlertType.INFORMATION, maquinasTexto.toString());
@@ -765,13 +766,15 @@ public class OrdenTrabajoVista {
         int contador = 1;
         for (Map<String, Object> fila : datos) {
             Label numMaquina = new Label("Máquina número: " + contador);
+            numMaquina.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+            Label lblMaquina = new Label("Máquina: " + "-" + fila.get("MAQUINA_ID") + " "
+                    + fila.get("TIPO") + " " + fila.get("MARCA") + " " + fila.get("MODELO"));
+            lblMaquina.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            Label lblEstadoMaquina = new Label("Estado de Máquina: " + fila.get("ESTADO_MAQUINA"));
             Label lblFecha = new Label("Fecha ingreso: " + (fila.get("FECHA_INGRESO")));
             Label lblDescripcion = new Label("Descripción falla: " + fila.get("DESCRIPCION_FALLA"));
             Label lblEstado = new Label("Estado: " + fila.get("ESTADO"));
             Label lblCliente = new Label("Cliente: " + fila.get("NOMBRE") + " " + fila.get("APELLIDO"));
-            Label lblMaquina = new Label("Máquina: " + "-" + fila.get("MAQUINA_ID") + " "
-                    + fila.get("TIPO") + " " + fila.get("MARCA") + " " + fila.get("MODELO"));
-
             Label lblNovedad = new Label("Novedad ID: " + (fila.get("NOVEDAD_ID")
             != null ? fila.get("NOVEDAD_ID") : "Sin novedades."));
             Label lblFechaNovedad = new Label("Fecha novedad: " + (fila.get("FECHA_NOVEDAD")
@@ -783,6 +786,11 @@ public class OrdenTrabajoVista {
             comentarioArea.setEditable(false);
             comentarioArea.setPrefRowCount(4);
             comentarioArea.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+            Label lblDetalleRep = new Label("Detalle de reparación: ");
+            TextArea detalleReparacionArea = new TextArea((String) fila.get("DESCRIPCION"));
+            detalleReparacionArea.setWrapText(true);
+            detalleReparacionArea.setEditable(false);
+            detalleReparacionArea.setPrefRowCount(5);
             Label lblPresupuesto = new Label("Presupuesto: " +
                     (fila.get("PRESUPUESTO_TOTAL") != null ? fila.get("PRESUPUESTO_TOTAL") : "Sin presupuesto"));
 
@@ -811,9 +819,9 @@ public class OrdenTrabajoVista {
 
 
             contenedor.getChildren().addAll(
-                    numMaquina, lblFecha, lblDescripcion, lblEstado, lblCliente, lblMaquina,
+                    numMaquina, lblMaquina, lblEstadoMaquina, lblFecha, lblEstado, lblCliente,
                     new Separator(),
-                    lblNovedad, lblFechaNovedad, lblAdmin, lblItem, comentarioArea,
+                    lblNovedad, lblFechaNovedad, lblAdmin, lblDescripcion, lblDetalleRep, detalleReparacionArea, lblItem, comentarioArea,
                     btnAgregarPresupuesto, lblPresupuesto, lblFechaPresupuesto, lblConFactura,
                     new Separator(),
                     new Separator()
