@@ -60,7 +60,7 @@ public class DetalleReparacionModelo {
         return String.format("DTR%05d", siguienteNumero);
 	}
 	
-	public static Boolean guardarDetalleBD(DetalleReparacionModelo nuevoDetalleRep, String ordenId) {
+	public static Boolean guardarDetalleBD(DetalleReparacionModelo nuevoDetalleRep, String maquinaId) {
 
         String sql = "INSERT INTO DETALLEREPARACION VALUES (?,?,?,?,?,?)";
 
@@ -68,9 +68,9 @@ public class DetalleReparacionModelo {
                 ps.setString(1,nuevoDetalleRep.getDetalleRepId());
                 ps.setString(2, nuevoDetalleRep.getDescripcion());
                 ps.setObject(3, nuevoDetalleRep.getFecha());
-                ps.setString(4, ordenId);
-                ps.setString(5, nuevoDetalleRep.getTecnicoId());
-                ps.setInt(6, nuevoDetalleRep.getNivelService());
+                ps.setString(4, nuevoDetalleRep.getTecnicoId());
+                ps.setInt(5, nuevoDetalleRep.getNivelService());
+                ps.setString(6, maquinaId);
 
                int filas = ps.executeUpdate();
 

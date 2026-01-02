@@ -352,24 +352,11 @@ public class OrdenTrabajoVista {
             Button botonVer = new Button("Ver");
             Button botonCambiarEstado = new Button("Cambiar Estado");
             Button botonBuscarOrden = new Button("Buscar Orden");
-            Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
 
             botonBuscarOrden.setOnAction(e -> {
 
                 //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
                 buscarOrdenDeTrabajo();
-            });
-
-            botonIngresarDetalleRep.setOnAction(e -> {
-                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
-
-                if(seleccionado != null){
-                    String ordenId = seleccionado.get(0);
-                    mostrarFormDetalleRep(ordenId);
-                }else{
-                    mostrarAdvertencia("Debe seleccionar una orden para ingresar detalle de reparación");
-                }
-
             });
 
             botonVer.setOnAction(e -> {
@@ -406,8 +393,6 @@ public class OrdenTrabajoVista {
                 }else {
                     mostrarAdvertencia("Debe seleccionar una orden para editar.");
                 }
-
-
             });
 
             botonEliminar.setOnAction(e -> {
@@ -438,12 +423,10 @@ public class OrdenTrabajoVista {
                     ventana.close());
 
             //LAYOUT
-
             HBox botonesBox = new HBox(10,
                     botonBuscarOrden,
                     botonVer,
                     botonCambiarEstado,
-                    botonIngresarDetalleRep,
                     botonEditar, botonEliminar,
                     botonCerrar);
 
@@ -452,7 +435,6 @@ public class OrdenTrabajoVista {
 
             VBox layout = new VBox(10, tabla, botonesBox);
             layout.setPadding(new Insets(10));
-
 
             Scene escena = new Scene(layout);
             ventana.setScene(escena);
@@ -473,9 +455,9 @@ public class OrdenTrabajoVista {
 	}
 
     //INGRESAR DETALLE DE REPARACIÓN
-    private void mostrarFormDetalleRep(String ordenId) {
+    private void mostrarFormDetalleRep(String maquina_id) {
 
-    DetalleRepVista.ingresarDetalleRep(ordenId);
+    DetalleRepVista.ingresarDetalleRep(maquina_id);
 
 }
 
@@ -806,6 +788,19 @@ public class OrdenTrabajoVista {
                             ? "-fx-text-fill: green;" : "-fx-text-fill: red;"
             );
 
+            Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
+
+            botonIngresarDetalleRep.setOnAction(e -> {
+                String seleccionado = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
+
+                if(seleccionado != null){
+                    mostrarFormDetalleRep(seleccionado);
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una máquina para ingresar detalle de reparación");
+                }
+
+            });
+
             Button btnAgregarPresupuesto = new Button("Agregar Presupuesto");
             btnAgregarPresupuesto.setOnAction(e -> {
                 String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
@@ -822,7 +817,7 @@ public class OrdenTrabajoVista {
                     numMaquina, lblMaquina, lblEstadoMaquina, lblFecha, lblEstado, lblCliente,
                     new Separator(),
                     lblNovedad, lblFechaNovedad, lblAdmin, lblDescripcion, lblDetalleRep, detalleReparacionArea, lblItem, comentarioArea,
-                    btnAgregarPresupuesto, lblPresupuesto, lblFechaPresupuesto, lblConFactura,
+                    btnAgregarPresupuesto, botonIngresarDetalleRep, lblPresupuesto, lblFechaPresupuesto, lblConFactura,
                     new Separator(),
                     new Separator()
             );
@@ -958,13 +953,11 @@ public class OrdenTrabajoVista {
             Button botonBuscarOrden = new Button("Buscar Orden");
             Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
 
-
-
+            //BOTON CERRAR
             botonCerrar.setOnAction(e ->
                     ventana.close());
 
             //LAYOUT
-
             HBox botonesBox = new HBox(10,
                     botonCerrar);
 

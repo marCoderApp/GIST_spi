@@ -44,7 +44,7 @@ public class DetalleRepVista {
 	}
 
     //INGRESAR DATOS DE DETALLE REPARACION
-    public static void ingresarDetalleRep(String ordenId){
+    public static void ingresarDetalleRep(String maquinaId){
 
         Stage ventanaDetalleRep = new Stage();
         ventanaDetalleRep.setTitle("Ingresar Detalle de Reparación");
@@ -108,7 +108,7 @@ public class DetalleRepVista {
             nuevoDetalleRep.setTecnicoId(tecnicoId);
             nuevoDetalleRep.setNivelService(nivelService);
 
-            boolean exito = GestionRepControl.cargarDetalleRep(nuevoDetalleRep, ordenId);
+            boolean exito = GestionRepControl.cargarDetalleRep(nuevoDetalleRep, maquinaId);
 
             if(exito){
                 mostrarAlerta("Detalle de reparación guardado correctamente."

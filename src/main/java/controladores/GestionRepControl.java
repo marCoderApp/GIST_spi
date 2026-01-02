@@ -166,10 +166,10 @@ public class GestionRepControl {
     }
 
     //CARGAR DETALLE DE REPARACION
-    public static boolean cargarDetalleRep(DetalleReparacionModelo nuevoDetalleRep, String ordenId){
+    public static boolean cargarDetalleRep(DetalleReparacionModelo nuevoDetalleRep, String maquinaId){
 
         try{
-            boolean guardada = DetalleReparacionModelo.guardarDetalleBD(nuevoDetalleRep, ordenId);
+            boolean guardada = DetalleReparacionModelo.guardarDetalleBD(nuevoDetalleRep, maquinaId);
             if(guardada){
                 return true;
             }
