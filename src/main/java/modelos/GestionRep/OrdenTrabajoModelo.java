@@ -119,7 +119,7 @@ public class OrdenTrabajoModelo {
                 + "LEFT JOIN NOVEDAD_ITEM NI ON NI.ORDENID = O.ORDEN_TRABAJO_ID "
                 + "LEFT JOIN NOVEDADES N ON N.ID = NI.NOVEDADID "
                 + "LEFT JOIN PRESUPUESTO P ON P.MAQUINA_ID = M.ID "
-                + "LEFT JOIN DETALLEREPARACION DR ON DR.ORDENID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN DETALLEREPARACION DR ON DR.MAQUINA_ID= M.ID "
                 + "WHERE O.ORDEN_TRABAJO_ID = ? "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 
