@@ -1,33 +1,21 @@
 package controladores;
 
-import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 
 import Enums.MaquinaEstado;
 import conexion.ConexionDB;
 import daos.GestioRep.OrdenTrabajoDao;
-import javafx.beans.Observable;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.FontWeight;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
 import modelos.GestionRep.DetalleReparacionModelo;
@@ -37,7 +25,6 @@ import modelos.GestionRep.OrdenTrabajoModelo;
 import modelos.GestionRep.PedidoModelo;
 import modelos.GestionRep.PresupuestoModelo;
 import vistas.GestionRep.ClientesVista;
-import vistas.GestionRep.DetalleRepVista;
 import vistas.GestionRep.OrdenTrabajoVista;
 
 public class GestionRepControl {
@@ -97,20 +84,19 @@ public class GestionRepControl {
         ordenId = orden.getOrdenId();
 
         String sqlInsertarOrdenBase = "INSERT INTO "
-                + "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, descripcion_falla, fecha_ingreso, estado, admin_id, tecnico_id) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                + "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, fecha_ingreso, estado, admin_id, tecnico_id) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try(PreparedStatement psInsertarOrdenBase = conexion.prepareStatement(sqlInsertarOrdenBase)){
             psInsertarOrdenBase.setString(1, orden.getOrdenId());
             psInsertarOrdenBase.setString(2, clienteIdGestionRep);
-            psInsertarOrdenBase.setString(3, orden.getDescripcion_falla());
             if (orden.getFechaIngreso() == null) {
                 orden.setFechaIngreso(LocalDate.now());
             }
-            psInsertarOrdenBase.setDate(4, java.sql.Date.valueOf(orden.getFechaIngreso()));
-            psInsertarOrdenBase.setString(5, orden.getEstado().getValor());
-            psInsertarOrdenBase.setString(6, PersonalControl.adminIdPersonalControl);
-            psInsertarOrdenBase.setString(7, PersonalControl.tecnicoIdPersonalControl);
+            psInsertarOrdenBase.setDate(3, java.sql.Date.valueOf(orden.getFechaIngreso()));
+            psInsertarOrdenBase.setString(4, orden.getEstado().getValor());
+            psInsertarOrdenBase.setString(5, PersonalControl.adminIdPersonalControl);
+            psInsertarOrdenBase.setString(6, PersonalControl.tecnicoIdPersonalControl);
 
             psInsertarOrdenBase.executeUpdate();
 
@@ -305,65 +291,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
     //SELECCIONAR MAQUINAS
 	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
-		 String ordenId = orden.getOrdenId();
-		    List<MaquinaModelo> maquinasSeleccionadas = null;
-
-		    List<String> opcionesSeleccion = List.of(
-		            "Seleccionar máquina/s existente/s",
-		            "Añadir máquina/s nueva/s"
-		    );
-
-		    ChoiceDialog<String> dialogoOpciones = new ChoiceDialog<>(
-		            opcionesSeleccion.get(0), opcionesSeleccion
-		    );
-		    dialogoOpciones.setTitle("Selección de Máquinas");
-		    dialogoOpciones.setHeaderText("Seleccione una opción");
-		    dialogoOpciones.setContentText("Elija una opción:");
-
-		    Optional<String> resultado = dialogoOpciones.showAndWait();
-
-		    if (resultado.isPresent()) {
-		        String seleccion = resultado.get();
-
-		        if (seleccion.equals(opcionesSeleccion.get(0))) {
-		            // Llamamos al metodo
-		            maquinasSeleccionadas = agregarMaquinasExistentes();
-		            insertarEnOrdenMaquinas(maquinasSeleccionadas);
-
-		            // Preguntar si quiere agregar nuevas máquinas
-		            Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
-		            alerta.setTitle("Agregar Máquina");
-		            alerta.setHeaderText("¿Desea añadir una nueva máquina?");
-		            alerta.getButtonTypes().setAll(
-		                    new ButtonType("Sí", ButtonData.YES),
-		                    new ButtonType("No", ButtonData.NO)
-		            );
-
-		            Optional<ButtonType> respuesta = alerta.showAndWait();
-
-		            if (respuesta.isPresent() &&
-		                respuesta.get().getButtonData() == ButtonData.YES) {
-
-		                List<MaquinaModelo> nuevasMaquinas = agregarMaquinasNuevas(ordenId);
-		                maquinasSeleccionadas.addAll(nuevasMaquinas);
-		            }
-
-		            return maquinasSeleccionadas;
-
-		        } else if (seleccion.equals(opcionesSeleccion.get(1))) {
-		            // Solo agregar máquinas nuevas
-		            return agregarMaquinasNuevas(ordenId);
-		        }
-		    }
-
-		    // Si se cierra el diálogo o selección inválida
-		    Alert error = new Alert(Alert.AlertType.ERROR);
-		    error.setTitle("Error");
-		    error.setHeaderText("Opción inválida");
-		    error.setContentText("Debe seleccionar una opción válida.");
-		    error.showAndWait();
-
-		    return null;
+		 return agregarMaquinasNuevas(orden.getOrdenId());
 	}
 
     //AGREGAR MAQUINAS EXISTENTES
@@ -459,12 +387,28 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
+
+                // Mapeo correcto de DATETIME a LocalDateTime
+                LocalDateTime createdAt = null;
+                if (rs.getTimestamp("CREATED_AT") != null) {
+                    createdAt = rs.getTimestamp("CREATED_AT").toLocalDateTime();
+                }
+
+                LocalDateTime updatedAt = null;
+                if (rs.getTimestamp("UPDATED_AT") != null) {
+                    updatedAt = rs.getTimestamp("UPDATED_AT").toLocalDateTime();
+                }
+
+
                 MaquinaModelo maquina = new MaquinaModelo(
                         rs.getString("tipo"),
                         rs.getString("marca"),
                         rs.getString("modelo"),
                         rs.getString("color"),
-						rs.getString("estado"));
+						rs.getString("estado"),
+                        rs.getBoolean("REINGRESO"),
+                        createdAt,
+                        updatedAt);
                 maquina.setMaquinaId(rs.getString("id"));
                 return maquina;
             }
@@ -482,49 +426,42 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         boolean agregarOtra = true;
 
         while (agregarOtra) {
-            // Crear ventana de diálogo personalizada
             MaquinaModelo nuevaMaquina = mostrarFormularioNuevaMaquina();
 
-            if (nuevaMaquina == null) {
-                // Usuario canceló
-                break;
-            }
+            if (nuevaMaquina != null) {
+                nuevasMaquinas.add(nuevaMaquina);
 
-            nuevasMaquinas.add(nuevaMaquina);
-
-            try {
-
-                // Preguntar si desea agregar otra máquina
+                // Preguntar si desea agregar otra máquina antes de guardar todo el lote
                 Alert confirmarOtra = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmarOtra.setTitle("Agregar Otra Máquina");
-                confirmarOtra.setHeaderText("¿Desea agregar otra máquina?");
+                confirmarOtra.setHeaderText("¿Desea agregar otra máquina a esta misma orden?");
                 confirmarOtra.getButtonTypes().setAll(
                         new ButtonType("Sí", ButtonData.YES),
                         new ButtonType("No", ButtonData.NO)
                 );
 
                 Optional<ButtonType> respuesta = confirmarOtra.showAndWait();
-                agregarOtra = respuesta.isPresent() &&
-                        respuesta.get().getButtonData() == ButtonData.YES;
+                agregarOtra = respuesta.isPresent() && respuesta.get().getButtonData() == ButtonData.YES;
+            } else {
+                agregarOtra = false;
+            }
 
-            } catch (Exception e) {
+        }
+
+        if (!nuevasMaquinas.isEmpty()) {
+            boolean guardado = MaquinaModelo.guardarNuevaMaquina(nuevasMaquinas, ordenId);
+            if (guardado) {
+                Alert exitoAlert = new Alert(Alert.AlertType.INFORMATION);
+                exitoAlert.setTitle("Registro Exitoso");
+                exitoAlert.setHeaderText("Máquinas registradas correctamente ✅");
+                exitoAlert.showAndWait();
+            }else{
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                 errorAlert.setTitle("Error");
                 errorAlert.setHeaderText("Error al guardar la máquina");
-                errorAlert.setContentText(e.getMessage());
                 errorAlert.showAndWait();
-                e.printStackTrace();
             }
         }
-
-        boolean guardado = MaquinaModelo.guardarNuevaMaquina(nuevasMaquinas, ordenId);
-        if (guardado) {
-            Alert exitoAlert = new Alert(Alert.AlertType.INFORMATION);
-            exitoAlert.setTitle("Registro Exitoso");
-            exitoAlert.setHeaderText("Máquinas registradas correctamente ✅");
-            exitoAlert.showAndWait();
-        }
-
         return nuevasMaquinas;
     }
 
@@ -559,6 +496,12 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         txtColor.setPromptText("Ingrese color");
         txtColor.setPrefWidth(250);
 
+        javafx.scene.control.Label lblReingreso = new javafx.scene.control.Label("Es reingreso?:");
+        javafx.scene.control.CheckBox chkReingreso = new javafx.scene.control.CheckBox();
+        chkReingreso.setSelected(false);
+        chkReingreso.setPadding(new javafx.geometry.Insets(5, 0, 5, 0));
+
+
         // Botones
         javafx.scene.control.Button btnGuardar = new javafx.scene.control.Button("Guardar");
         javafx.scene.control.Button btnCancelar = new javafx.scene.control.Button("Cancelar");
@@ -572,6 +515,9 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             String modelo = txtModelo.getText().trim();
             String color = txtColor.getText().trim();
 			String estado = MaquinaEstado.EN_LISTA.getStatus();
+            boolean esReingreso = chkReingreso.isSelected();
+            LocalDateTime created_at = LocalDateTime.now();
+            LocalDateTime updated_at = LocalDateTime.now();
 
             // Validación
             if (tipo == null || tipo.isEmpty()) {
@@ -591,7 +537,14 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             }
 
             // Crear nueva máquina
-            resultado[0] = new MaquinaModelo(tipo, marca, modelo, color, estado);
+            resultado[0] = new MaquinaModelo(tipo,
+                    marca,
+                    modelo,
+                    color,
+                    estado,
+                    esReingreso,
+                    created_at,
+                    updated_at);
             ventanaFormulario.close();
         });
 
@@ -621,11 +574,13 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         grid.add(txtModelo, 1, 3);
         grid.add(lblColor, 0, 4);
         grid.add(txtColor, 1, 4);
+        grid.add(lblReingreso, 0, 5);
+        grid.add(chkReingreso, 1, 5);
 
         javafx.scene.layout.HBox botonesBox = new javafx.scene.layout.HBox(10);
         botonesBox.setAlignment(javafx.geometry.Pos.CENTER);
         botonesBox.getChildren().addAll(btnGuardar, btnCancelar);
-        grid.add(botonesBox, 0, 5, 2, 1);
+        grid.add(botonesBox, 0, 6, 2, 1);
 
         javafx.scene.Scene escena = new javafx.scene.Scene(grid, 400, 350);
         ventanaFormulario.setScene(escena);
@@ -636,7 +591,7 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
     //DEMAS MÉTODOS
 	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
-		
+
 		return detalle; 
 	}
 	

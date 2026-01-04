@@ -106,7 +106,7 @@ public class OrdenTrabajoModelo {
     //OBTENER DATOS DE ORDEN BD, REALIZANDO UNA CONSULTA PERSONALIZADA
     public static List<Map<String, Object>> obtenerDatosOrdenBD(String ordenId) {
         List<Map<String,Object>> resultados = new ArrayList<>();
-        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
+        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, "
                 + "N.ID AS NOVEDAD_ID, N.FECHA AS FECHA_NOVEDAD, N.ADMIN_ID, "
                 + "NI.ITEMID, NI.COMENTARIOITEM, P.total AS PRESUPUESTO_TOTAL, P.fecha_creacion " +
@@ -130,7 +130,6 @@ public class OrdenTrabajoModelo {
                     Map<String,Object> fila = new HashMap<>();
                     fila.put("ORDEN_TRABAJO_ID", rs.getString("ORDEN_TRABAJO_ID"));
                     fila.put("FECHA_INGRESO", rs.getDate("FECHA_INGRESO"));
-                    fila.put("DESCRIPCION_FALLA", rs.getString("DESCRIPCION_FALLA"));
                     fila.put("ESTADO", rs.getString("ESTADO"));
                     fila.put("NOMBRE", rs.getString("NOMBRE"));
                     fila.put("APELLIDO", rs.getString("APELLIDO"));

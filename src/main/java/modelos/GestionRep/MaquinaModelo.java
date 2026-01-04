@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,19 +20,29 @@ public class MaquinaModelo {
 	private String modelo;
 	private String color;
 	private String estado;
+	private boolean esReingreso;
+	private LocalDateTime created_at;
+	private LocalDateTime updated_at;
 	private static Connection conexion = ConexionDB.conectar();
 	// Constructors
 	
-	public MaquinaModelo(String tipo, String marca, String modelo, String color, String estado) {
+	public MaquinaModelo(String tipo, String marca,
+						 String modelo, String color,
+						 String estado, boolean esReingreso,
+						 LocalDateTime created_at,
+						 LocalDateTime updated_at) {
 		this.maquinaId = generarMaquinaId();
 		this.tipo = tipo;
 		this.marca = marca;
 		this.modelo = modelo;
 		this.color = color;
 		this.estado = (estado != null) ? estado : MaquinaEstado.EN_LISTA.getStatus();
+		this.esReingreso = esReingreso;
+		this.created_at = created_at;
+		this.updated_at = updated_at;
 	}
 
-    //GENERAR ID DE MAQUINA USANDO UUID
+	//GENERAR ID DE MAQUINA USANDO UUID
 	public String generarMaquinaId() {
         String uuid = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         return "MAQ-" + uuid;
@@ -47,11 +58,27 @@ public class MaquinaModelo {
 		try (PreparedStatement ps = conexion.prepareStatement(sqlConsulta); ResultSet rs = ps.executeQuery()) {
 
 			while (rs.next()) {
+
+				// Mapeo correcto de DATETIME a LocalDateTime
+				LocalDateTime createdAt = null;
+				if (rs.getTimestamp("CREATED_AT") != null) {
+					createdAt = rs.getTimestamp("CREATED_AT").toLocalDateTime();
+				}
+
+				LocalDateTime updatedAt = null;
+				if (rs.getTimestamp("UPDATED_AT") != null) {
+					updatedAt = rs.getTimestamp("UPDATED_AT").toLocalDateTime();
+				}
+
+
 				MaquinaModelo maquina = new MaquinaModelo(rs.getString("tipo"),
 						rs.getString("marca"),
 						rs.getString("modelo"),
 						rs.getString("color"),
-						rs.getString("estado"));
+						rs.getString("estado"),
+						rs.getBoolean("REINGRESO"),
+						createdAt,
+					    updatedAt);
 				maquina.setMaquinaId(rs.getString("id"));
 				listaMaquinas.add(maquina);
 			}
@@ -76,10 +103,17 @@ public class MaquinaModelo {
 		}
 	}
 
-
     //GUARDAR NUEVA MAQUINA EN LA BASE DE DATOS
 	public static boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
-		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id, tipo, marca, modelo, color, estado_maquina) VALUES (?, ?, ?, ?, ?, ?)";
+		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id," +
+				" tipo," +
+				" marca," +
+				" modelo," +
+				" color," +
+				" estado_maquina," +
+				" reingreso," +
+				"created_at," +
+				"updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";
 	    
 	    try (Connection conexion = ConexionDB.conectar();
@@ -93,6 +127,9 @@ public class MaquinaModelo {
 	            ps.setString(4, m.getModelo());
 	            ps.setString(5, m.getColor());
 				ps.setString(6, m.getEstado());
+				ps.setBoolean(7, m.esReingreso);
+				ps.setTimestamp(8, java.sql.Timestamp.valueOf(m.created_at));
+				ps.setTimestamp(9, java.sql.Timestamp.valueOf(m.updated_at));
 	            ps.addBatch();
 	            
 	            psOrdenMaquina.setString(1, ordenId);

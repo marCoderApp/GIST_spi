@@ -68,7 +68,11 @@ public class OrdenTrabajoVista {
 	//INGRESAR DATOS DE LA ORDEN
 	public void ingresarDatos() {
 		GestionRepControl gestionRepControl = new GestionRepControl();
-	    OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null, null, null, null, null, null, null, null, null, null, null);
+	    OrdenTrabajoModelo orden = new OrdenTrabajoModelo(null,
+                null, null, null,
+                null,
+                null, null, null,
+                null, null, null);
 
 	    // Ventana para seleccionar cliente
 	    gestionRepControl.elegirCliente();
@@ -80,23 +84,10 @@ public class OrdenTrabajoVista {
 	        return;
 	    }
 
-	    // Solicitar descripción de falla
-	    TextInputDialog dialogoDescripcion = new TextInputDialog();
-	    dialogoDescripcion.setTitle("Nueva Orden de Trabajo");
-	    dialogoDescripcion.setHeaderText("Descripción de la falla");
-	    dialogoDescripcion.setContentText("Ingrese la descripción:");
-
-	    Optional<String> descripcionResultado = dialogoDescripcion.showAndWait();
-	    if (!descripcionResultado.isPresent() || descripcionResultado.get().trim().isEmpty()) {
-	        return;
-	    }
-
-	    String descripcion_falla = descripcionResultado.get();
 	    String tecnicoId = PersonalControl.tecnicoIdPersonalControl;
 	    String adminId = PersonalControl.adminIdPersonalControl;
 
 	    orden.setCliente_id(clienteId);
-	    orden.setDescripcion_falla(descripcion_falla);
 	    orden.setTecnicoId(tecnicoId);
 	    orden.setAdminId(adminId);
 	    orden.setEstado(EstadoOrden.PENDIENTE);
@@ -256,7 +247,7 @@ public class OrdenTrabajoVista {
 	
 	//MOSTRAR LISTA DE ORDENES.
 	public void mostrarLista() {
-		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
+		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
                 + "FROM ORDEN_DE_TRABAJO O "
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
@@ -275,8 +266,7 @@ public class OrdenTrabajoVista {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
         String[] nombresCampos = {
-                "Orden_trabajo_id", "Fecha_ingreso",
-                "Descripcion_falla", "Estado",
+                "Orden_trabajo_id", "Fecha_ingreso", "Estado",
                 "Cliente", "Maquina_id",
                 "Tipo", "Marca", "Modelo"
         };
@@ -293,7 +283,6 @@ public class OrdenTrabajoVista {
             columna.setPrefWidth(switch(nombreCampo) {
                 case "Orden_trabajo_id" -> 100;
                 case "Fecha_ingreso" -> 120;
-                case "Descripcion_falla" -> 200;
                 case "Cliente" -> 150;
                 case "Estado" -> 150;
                 case "Maquina_id" -> 100;
@@ -316,7 +305,6 @@ public class OrdenTrabajoVista {
                 String orden_trabajo_id = resultado.getString("orden_trabajo_"
                         + "id");
                 String fecha_ingreso = resultado.getString("fecha_ingreso");
-                String descripcion_falla = resultado.getString("descripcion_falla");
                 String estado = resultado.getString("estado");
                 String cliente = resultado.getString("nombre") + " " +
                         resultado.getString("apellido");
@@ -333,8 +321,7 @@ public class OrdenTrabajoVista {
                 }
 
                 //INSERTAR VARIABLES EN FILA
-                fila.addAll(orden_trabajo_id, fecha_ingreso,
-                        descripcion_falla, estado,
+                fila.addAll(orden_trabajo_id, fecha_ingreso, estado,
                         cliente, maquina_id, tipo,
                         marca, modelo);
 
@@ -752,7 +739,8 @@ public class OrdenTrabajoVista {
             Label lblMaquina = new Label("Máquina: " + "-" + fila.get("MAQUINA_ID") + " "
                     + fila.get("TIPO") + " " + fila.get("MARCA") + " " + fila.get("MODELO"));
             lblMaquina.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            Label lblEstadoMaquina = new Label("Estado de Máquina: " + fila.get("ESTADO_MAQUINA"));
+            Label lblEstadoMaquina = new Label("Estado de Máquina: " +
+                    (fila.get("ESTADO_MAQUINA") != null ? fila.get("ESTADO_MAQUINA") : "Sin estado."));
             Label lblFecha = new Label("Fecha ingreso: " + (fila.get("FECHA_INGRESO")));
             Label lblDescripcion = new Label("Descripción falla: " + fila.get("DESCRIPCION_FALLA"));
             Label lblEstado = new Label("Estado: " + fila.get("ESTADO"));
@@ -763,6 +751,7 @@ public class OrdenTrabajoVista {
             != null ? fila.get("FECHA_NOVEDAD") : "Sin novedades."));
             Label lblAdmin = new Label("Admin ID: " + (fila.get("ADMIN_ID") != null ? fila.get("ADMIN_ID") : "Sin administrador."));
             Label lblItem = new Label("Item ID: " + (fila.get("ITEMID") != null ? fila.get("ITEMID") : "Sin item."));
+           Label lblComentario = new Label("Comentario: " + (fila.get("COMENTARIOITEM") != null ? fila.get("COMENTARIOITEM") : "Sin comentario."));
             TextArea comentarioArea = new TextArea((String) fila.get("COMENTARIOITEM"));
             comentarioArea.setWrapText(true);
             comentarioArea.setEditable(false);
@@ -816,8 +805,10 @@ public class OrdenTrabajoVista {
             contenedor.getChildren().addAll(
                     numMaquina, lblMaquina, lblEstadoMaquina, lblFecha, lblEstado, lblCliente,
                     new Separator(),
-                    lblNovedad, lblFechaNovedad, lblAdmin, lblDescripcion, lblDetalleRep, detalleReparacionArea, lblItem, comentarioArea,
-                    btnAgregarPresupuesto, botonIngresarDetalleRep, lblPresupuesto, lblFechaPresupuesto, lblConFactura,
+                    lblNovedad, lblFechaNovedad, lblAdmin, lblDescripcion, lblDetalleRep,
+                    detalleReparacionArea, lblItem, comentarioArea,
+                    btnAgregarPresupuesto, botonIngresarDetalleRep, lblPresupuesto,
+                    lblFechaPresupuesto, lblConFactura,
                     new Separator(),
                     new Separator()
             );
