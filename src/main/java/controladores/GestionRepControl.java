@@ -10,6 +10,7 @@ import java.util.List;
 
 import Enums.MaquinaEstado;
 import conexion.ConexionDB;
+import daos.GestioRep.MaquinaDao;
 import daos.GestioRep.OrdenTrabajoDao;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -625,6 +626,11 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 		return detalle; 
 	}
+
+    //DAR DE BAJA MAQUINA
+    public static Boolean darBajaMaquina(String idMaquina) {
+        return MaquinaDao.darDeBajaMaquinaBD(idMaquina);
+    }
 	
 	public void crearPresupuesto(PresupuestoModelo presupuesto) {
 		// Lógica para crear un presupuesto

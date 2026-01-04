@@ -693,6 +693,7 @@ public class OrdenTrabajoVista {
             ventanaResultados.initOwner(ventana);
             ventanaResultados.show();
         });
+
         botonBuscar.setPrefWidth(100);
         botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
@@ -803,6 +804,7 @@ public class OrdenTrabajoVista {
 
             });
 
+            //BOTON DE AGREGAR PRESUPUESTO
             Button btnAgregarPresupuesto = new Button("Agregar Presupuesto");
             btnAgregarPresupuesto.setOnAction(e -> {
                 String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
@@ -813,16 +815,28 @@ public class OrdenTrabajoVista {
                 }
             });
 
+            //DAR DE BAJA LA MAQUINA
             Button btnDarDeBaja = new Button("Dar de baja");
-
             btnDarDeBaja.setOnAction(e -> {
-               String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
-               if(maquinaId != null){
-                   
-               }
-            });
+                String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
 
-
+                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                                "¿Eliminar la orden con ID " + ordenId + "?",
+                                ButtonType.YES, ButtonType.NO);
+                        confirm.showAndWait().ifPresent(respuesta -> {
+                            if(respuesta == ButtonType.YES) {
+                                if(maquinaId != null){
+                                    Boolean borrado = GestionRepControl.darBajaMaquina(maquinaId);
+                                    if (borrado){
+                                        mostrarAlertaExito("Operación exitosa", "Se ha dado de baja correctamente la MAQUINA!");
+                                    }else{
+                                        mostrarAdvertencia("No se ha podido dar de baja la orden!");
+                                    }
+                                }
+                            }
+                        })
+            ;}
+            );
 
             contenedor.getChildren().addAll(
                     numMaquina, lblMaquina, lblEstadoMaquina, lblActivo,
@@ -831,7 +845,7 @@ public class OrdenTrabajoVista {
                     lblNovedad, lblFechaNovedad, lblAdmin, lblDetalleRep,
                     detalleReparacionArea, lblItem, lblComentario, comentarioArea,
                     lblDescripcion, descripcionArea,
-                    btnAgregarPresupuesto, botonIngresarDetalleRep, lblPresupuesto,
+                    btnAgregarPresupuesto, botonIngresarDetalleRep, btnDarDeBaja, lblPresupuesto,
                     lblFechaPresupuesto, lblConFactura,
                     new Separator(),
                     new Separator()
@@ -845,6 +859,15 @@ public class OrdenTrabajoVista {
         Scene scene = new Scene(scrollPane, 600, 650);
         ventanaVerOrden.setScene(scene);
         ventanaVerOrden.show();
+    }
+
+    //MOSTRAR ALERTA DE EXITO
+    public static void mostrarAlertaExito(String titulo, String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
     }
 
     //CAMBIAR ESTADO ORDEN POR ID
