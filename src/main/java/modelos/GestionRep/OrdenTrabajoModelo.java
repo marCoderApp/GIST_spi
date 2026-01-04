@@ -111,7 +111,8 @@ public class OrdenTrabajoModelo {
                 + "N.ID AS NOVEDAD_ID, N.FECHA AS FECHA_NOVEDAD, N.ADMIN_ID, "
                 + "NI.ITEMID, NI.COMENTARIOITEM, P.total AS PRESUPUESTO_TOTAL, P.fecha_creacion " +
                 "AS PRESUPUESTO_FECHA, P.PRESUPUESTO_ID, P.CON_FACTURA, M.ESTADO_MAQUINA, "
-                + "DR.DESCRIPCION, DR.FECHA "
+                + "DR.DESCRIPCION, DR.FECHA, M.DESCRIPCION_FALLA, M.OBSERVACIONES" +
+                ", M.ACTIVO "
                 + "FROM ORDEN_DE_TRABAJO O "
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
                 + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
@@ -138,6 +139,9 @@ public class OrdenTrabajoModelo {
                     fila.put("MARCA", rs.getString("MARCA"));
                     fila.put("MODELO", rs.getString("MODELO"));
                     fila.put("ESTADO_MAQUINA", rs.getString("ESTADO_MAQUINA"));
+                    fila.put("DESCRIPCION_FALLA", rs.getString("DESCRIPCION_FALLA"));
+                    fila.put("ACTIVO", rs.getBoolean("ACTIVO"));
+                    fila.put("OBSERVACIONES", rs.getString("OBSERVACIONES"));
                     fila.put("DESCRIPCION", rs.getString("DESCRIPCION"));
                     fila.put("NOVEDAD_ID", rs.getString("NOVEDAD_ID"));
                     fila.put("FECHA_NOVEDAD", rs.getDate("FECHA_NOVEDAD"));

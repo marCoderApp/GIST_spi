@@ -63,7 +63,6 @@ public class GestionRepControl {
             alerta.showAndWait();
         }
         return resultados;
-
     }
 	
 	public static ObservableList<ObservableList<String>> buscarOrdenCriterio(String criterio,
@@ -408,7 +407,10 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 						rs.getString("estado"),
                         rs.getBoolean("REINGRESO"),
                         createdAt,
-                        updatedAt);
+                        updatedAt,
+                        rs.getString("DESCRIPCION_FALLA"),
+                        rs.getString("OBSERVACIONES"),
+                        rs.getBoolean("ACTIVO"));
                 maquina.setMaquinaId(rs.getString("id"));
                 return maquina;
             }
@@ -501,6 +503,21 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         chkReingreso.setSelected(false);
         chkReingreso.setPadding(new javafx.geometry.Insets(5, 0, 5, 0));
 
+        javafx.scene.control.Label lblDescripcionFalla = new javafx.scene.control.Label("Descripcion falla:");
+        javafx.scene.control.TextArea txtDescripcionFalla = new javafx.scene.control.TextArea();
+        txtDescripcionFalla.setPromptText("Ingrese descripcion falla");
+        txtDescripcionFalla.setPrefRowCount(5);
+        txtDescripcionFalla.setWrapText(true);
+        txtDescripcionFalla.setTextFormatter(new javafx.scene.control.TextFormatter<>(change ->
+                change.getControlNewText().length() <= 255 ? change : null));
+
+        javafx.scene.control.Label lblObservaciones = new javafx.scene.control.Label("Observaciones:");
+        javafx.scene.control.TextArea txtObservaciones = new javafx.scene.control.TextArea();
+        txtObservaciones.setPromptText("Ingrese observaciones");
+        txtObservaciones.setPrefRowCount(5);
+        txtObservaciones.setWrapText(true);
+        txtObservaciones.setTextFormatter(new javafx.scene.control.TextFormatter<>(change ->
+                change.getControlNewText().length() <= 255 ? change : null));
 
         // Botones
         javafx.scene.control.Button btnGuardar = new javafx.scene.control.Button("Guardar");
@@ -518,6 +535,9 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
             boolean esReingreso = chkReingreso.isSelected();
             LocalDateTime created_at = LocalDateTime.now();
             LocalDateTime updated_at = LocalDateTime.now();
+            String descripcionFalla = txtDescripcionFalla.getText().trim();
+            String observaciones = txtObservaciones.getText().trim();
+            Boolean isActivo = true;
 
             // Validación
             if (tipo == null || tipo.isEmpty()) {
@@ -544,7 +564,10 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
                     estado,
                     esReingreso,
                     created_at,
-                    updated_at);
+                    updated_at,
+                    descripcionFalla,
+                    observaciones,
+                    isActivo);
             ventanaFormulario.close();
         });
 
@@ -561,9 +584,13 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
         // Layout
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
-        grid.setHgap(10);
+        grid.setHgap(15);
         grid.setVgap(15);
         grid.setPadding(new javafx.geometry.Insets(20));
+
+        javafx.scene.layout.ColumnConstraints col1 = new javafx.scene.layout.ColumnConstraints();
+        col1.setMinWidth(130);
+        grid.getColumnConstraints().add(col1);
 
         grid.add(lblTitulo, 0, 0, 2, 1);
         grid.add(lblTipo, 0, 1);
@@ -576,13 +603,17 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         grid.add(txtColor, 1, 4);
         grid.add(lblReingreso, 0, 5);
         grid.add(chkReingreso, 1, 5);
+        grid.add(lblDescripcionFalla, 0, 6);
+        grid.add(txtDescripcionFalla, 1, 6);
+        grid.add(lblObservaciones, 0, 7);
+        grid.add(txtObservaciones, 1, 7);
 
         javafx.scene.layout.HBox botonesBox = new javafx.scene.layout.HBox(10);
         botonesBox.setAlignment(javafx.geometry.Pos.CENTER);
         botonesBox.getChildren().addAll(btnGuardar, btnCancelar);
-        grid.add(botonesBox, 0, 6, 2, 1);
+        grid.add(botonesBox, 0, 8, 2, 1);
 
-        javafx.scene.Scene escena = new javafx.scene.Scene(grid, 400, 350);
+        javafx.scene.Scene escena = new javafx.scene.Scene(grid, 550, 550);
         ventanaFormulario.setScene(escena);
         ventanaFormulario.showAndWait();
 

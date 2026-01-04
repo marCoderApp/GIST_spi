@@ -18,8 +18,9 @@ public class OrdenTrabajoDao {
     public static ObservableList<ObservableList<String>> traerResultadoBusquedaSQL(String criterio, String dato) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
-        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.DESCRIPCION_FALLA, O.ESTADO, "
-                + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
+        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
+                + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO," +
+                " M.DESCRIPCION_FALLA "
                 + "FROM ORDEN_DE_TRABAJO O "
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
                 + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "

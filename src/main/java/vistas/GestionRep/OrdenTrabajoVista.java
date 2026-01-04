@@ -111,17 +111,6 @@ public class OrdenTrabajoVista {
 	    maquinasAlert.setHeaderText("Máquinas asociadas a la orden");
 	    maquinasAlert.showAndWait();
 
-	    // Pedir Observaciones
-	    TextInputDialog dialogoObservaciones = new TextInputDialog();
-	    dialogoObservaciones.setTitle("Observaciones");
-	    dialogoObservaciones.setHeaderText("Ingrese observaciones para la orden");
-	    dialogoObservaciones.setContentText("Observaciones:");
-
-	    Optional<String> observacionResultado = dialogoObservaciones.showAndWait();
-	    String observaciones = observacionResultado.isPresent() ? observacionResultado.get() : "";
-
-	    orden.setObservaciones(observaciones);
-	    guardarCambios(orden, observaciones);
 
 	    // Verificación final
 	    if (GestionRepControl.chequearIdOrden(orden.getOrdenId())) {
@@ -136,7 +125,7 @@ public class OrdenTrabajoVista {
 	}
 	
 
-	//GUARDAR CAMBIOS
+	//GUARDAR CAMBIOS DE OBSERVACIONES EN ORDEN
 	public void guardarCambios(OrdenTrabajoModelo orden, String observaciones) {
 		String sqlGuardarCambios = "UPDATE orden_de_trabajo SET observaciones = ? WHERE "
 				+ "orden_trabajo_id = ? ";
@@ -248,7 +237,8 @@ public class OrdenTrabajoVista {
 	//MOSTRAR LISTA DE ORDENES.
 	public void mostrarLista() {
 		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
-                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
+                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, " +
+                 "M.DESCRIPCION_FALLA, M.OBSERVACIONES, M.ACTIVO "
                 + "FROM ORDEN_DE_TRABAJO O "
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
                 + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
@@ -268,7 +258,8 @@ public class OrdenTrabajoVista {
         String[] nombresCampos = {
                 "Orden_trabajo_id", "Fecha_ingreso", "Estado",
                 "Cliente", "Maquina_id",
-                "Tipo", "Marca", "Modelo"
+                "Tipo", "Marca", "Modelo", "Descripcion_Falla",
+                "Observaciones", "Activo"
         };
 
         //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
@@ -289,6 +280,9 @@ public class OrdenTrabajoVista {
                 case "Tipo" -> 150;
                 case "Marca" -> 120;
                 case "Modelo" -> 150;
+                case "Descripcion_Falla" -> 200;
+                case "Observaciones" -> 200;
+                case "Activo" -> 100;
                 default -> 120;
             });
             tabla.getColumns().add(columna);
@@ -312,6 +306,9 @@ public class OrdenTrabajoVista {
                 String tipo = resultado.getString("tipo");
                 String marca = resultado.getString("marca");
                 String modelo = resultado.getString("modelo");
+                String descripcion_falla = resultado.getString("descripcion_falla");
+                String observaciones = resultado.getString("observaciones");
+                Boolean activo = resultado.getBoolean("activo");
 
                 if(maquina_id == null) {
                     maquina_id = "X";
@@ -323,7 +320,8 @@ public class OrdenTrabajoVista {
                 //INSERTAR VARIABLES EN FILA
                 fila.addAll(orden_trabajo_id, fecha_ingreso, estado,
                         cliente, maquina_id, tipo,
-                        marca, modelo);
+                        marca, modelo, descripcion_falla,
+                        observaciones, activo.toString());
 
                 //INSERTAR CADA FILA EN DATOS
                 datos.add(fila);
@@ -334,14 +332,13 @@ public class OrdenTrabajoVista {
 
             //BOTONES
             Button botonEditar = new Button("✏️ Editar");
-            Button botonEliminar = new Button("Eliminar");
+            Button botonDarDeBaja = new Button("Dar de Baja");
             Button botonCerrar = new Button("Cerrar");
             Button botonVer = new Button("Ver");
             Button botonCambiarEstado = new Button("Cambiar Estado");
             Button botonBuscarOrden = new Button("Buscar Orden");
 
             botonBuscarOrden.setOnAction(e -> {
-
                 //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
                 buscarOrdenDeTrabajo();
             });
@@ -382,7 +379,7 @@ public class OrdenTrabajoVista {
                 }
             });
 
-            botonEliminar.setOnAction(e -> {
+            botonDarDeBaja.setOnAction(e -> {
                 ObservableList<String> seleccionado =
                         tabla.getSelectionModel()
                                 .getSelectedItem();
@@ -414,7 +411,7 @@ public class OrdenTrabajoVista {
                     botonBuscarOrden,
                     botonVer,
                     botonCambiarEstado,
-                    botonEditar, botonEliminar,
+                    botonEditar, botonDarDeBaja,
                     botonCerrar);
 
             botonesBox.setAlignment(Pos.CENTER);
@@ -564,7 +561,8 @@ public class OrdenTrabajoVista {
                     "Maquina_ID",
                     "Tipo",
                     "Marca",
-                    "Modelo"
+                    "Modelo",
+                    "Descripcion_falla"
             };
             
             //AGREGAR NOMBRES A COLUMNAS DINAMICAMENTE
@@ -578,7 +576,7 @@ public class OrdenTrabajoVista {
                 columna.setPrefWidth(switch(nombreCampo){
                     case "Orden_trabajo_id" -> 100;
                     case "Fecha_ingreso" -> 100;
-                    case "Descripcion_fallas" -> 100;
+                    case "Descripcion_falla" -> 100;
                     case "Estado" -> 100;
                     case "Cliente" -> 100;
                     case "Empresa" -> 100;
@@ -741,8 +739,20 @@ public class OrdenTrabajoVista {
             lblMaquina.setFont(Font.font("Arial", FontWeight.BOLD, 14));
             Label lblEstadoMaquina = new Label("Estado de Máquina: " +
                     (fila.get("ESTADO_MAQUINA") != null ? fila.get("ESTADO_MAQUINA") : "Sin estado."));
+            Label lblActivo = new Label("Activa: " + (fila.get("ACTIVO").equals(true) ? "Si" : "No"));
             Label lblFecha = new Label("Fecha ingreso: " + (fila.get("FECHA_INGRESO")));
-            Label lblDescripcion = new Label("Descripción falla: " + fila.get("DESCRIPCION_FALLA"));
+            Label lblDescripcion = new Label("Descripción falla: ");
+            TextArea descripcionArea = new TextArea((String) fila.get("DESCRIPCION_FALLA"));
+            descripcionArea.setWrapText(true);
+            descripcionArea.setPromptText("Sin descripcion de falla");
+            descripcionArea.setEditable(false);
+            descripcionArea.setPrefRowCount(5);
+            Label lblObservaciones = new Label("Observaciones: ");
+            TextArea observacionesArea = new TextArea((String) fila.get("OBSERVACIONES"));
+            observacionesArea.setWrapText(true);
+            observacionesArea.setEditable(false);
+            observacionesArea.setPrefRowCount(5);
+            observacionesArea.setPromptText("Sin observaciones");
             Label lblEstado = new Label("Estado: " + fila.get("ESTADO"));
             Label lblCliente = new Label("Cliente: " + fila.get("NOMBRE") + " " + fila.get("APELLIDO"));
             Label lblNovedad = new Label("Novedad ID: " + (fila.get("NOVEDAD_ID")
@@ -751,17 +761,20 @@ public class OrdenTrabajoVista {
             != null ? fila.get("FECHA_NOVEDAD") : "Sin novedades."));
             Label lblAdmin = new Label("Admin ID: " + (fila.get("ADMIN_ID") != null ? fila.get("ADMIN_ID") : "Sin administrador."));
             Label lblItem = new Label("Item ID: " + (fila.get("ITEMID") != null ? fila.get("ITEMID") : "Sin item."));
-           Label lblComentario = new Label("Comentario: " + (fila.get("COMENTARIOITEM") != null ? fila.get("COMENTARIOITEM") : "Sin comentario."));
+           Label lblComentario = new Label("Comentario: ");
             TextArea comentarioArea = new TextArea((String) fila.get("COMENTARIOITEM"));
             comentarioArea.setWrapText(true);
             comentarioArea.setEditable(false);
             comentarioArea.setPrefRowCount(4);
             comentarioArea.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+            comentarioArea.setPromptText("Sin comentario");
             Label lblDetalleRep = new Label("Detalle de reparación: ");
             TextArea detalleReparacionArea = new TextArea((String) fila.get("DESCRIPCION"));
             detalleReparacionArea.setWrapText(true);
             detalleReparacionArea.setEditable(false);
             detalleReparacionArea.setPrefRowCount(5);
+            detalleReparacionArea.setPromptText("Sin detalle de reparacion.");
+
             Label lblPresupuesto = new Label("Presupuesto: " +
                     (fila.get("PRESUPUESTO_TOTAL") != null ? fila.get("PRESUPUESTO_TOTAL") : "Sin presupuesto"));
 
@@ -800,13 +813,24 @@ public class OrdenTrabajoVista {
                 }
             });
 
+            Button btnDarDeBaja = new Button("Dar de baja");
+
+            btnDarDeBaja.setOnAction(e -> {
+               String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
+               if(maquinaId != null){
+                   
+               }
+            });
+
 
 
             contenedor.getChildren().addAll(
-                    numMaquina, lblMaquina, lblEstadoMaquina, lblFecha, lblEstado, lblCliente,
+                    numMaquina, lblMaquina, lblEstadoMaquina, lblActivo,
+                    lblFecha, lblEstado, lblCliente,
                     new Separator(),
-                    lblNovedad, lblFechaNovedad, lblAdmin, lblDescripcion, lblDetalleRep,
-                    detalleReparacionArea, lblItem, comentarioArea,
+                    lblNovedad, lblFechaNovedad, lblAdmin, lblDetalleRep,
+                    detalleReparacionArea, lblItem, lblComentario, comentarioArea,
+                    lblDescripcion, descripcionArea,
                     btnAgregarPresupuesto, botonIngresarDetalleRep, lblPresupuesto,
                     lblFechaPresupuesto, lblConFactura,
                     new Separator(),

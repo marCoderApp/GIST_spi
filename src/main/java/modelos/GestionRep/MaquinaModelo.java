@@ -23,6 +23,9 @@ public class MaquinaModelo {
 	private boolean esReingreso;
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
+	private String descripcion_falla;
+	private String observaciones;
+	private Boolean activo = true;
 	private static Connection conexion = ConexionDB.conectar();
 	// Constructors
 	
@@ -30,7 +33,10 @@ public class MaquinaModelo {
 						 String modelo, String color,
 						 String estado, boolean esReingreso,
 						 LocalDateTime created_at,
-						 LocalDateTime updated_at) {
+						 LocalDateTime updated_at,
+						 String descripcion_falla,
+						 String observaciones,
+						 Boolean activo) {
 		this.maquinaId = generarMaquinaId();
 		this.tipo = tipo;
 		this.marca = marca;
@@ -40,6 +46,9 @@ public class MaquinaModelo {
 		this.esReingreso = esReingreso;
 		this.created_at = created_at;
 		this.updated_at = updated_at;
+		this.descripcion_falla = descripcion_falla;
+		this.observaciones = observaciones;
+		this.activo = activo;
 	}
 
 	//GENERAR ID DE MAQUINA USANDO UUID
@@ -78,7 +87,10 @@ public class MaquinaModelo {
 						rs.getString("estado"),
 						rs.getBoolean("REINGRESO"),
 						createdAt,
-					    updatedAt);
+					    updatedAt,
+						rs.getString("DESCRIPCION_FALLA"),
+						rs.getString("OBSERVACIONES"),
+						rs.getBoolean("ACTIVO"));
 				maquina.setMaquinaId(rs.getString("id"));
 				listaMaquinas.add(maquina);
 			}
@@ -113,7 +125,10 @@ public class MaquinaModelo {
 				" estado_maquina," +
 				" reingreso," +
 				"created_at," +
-				"updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				"updated_at," +
+				"descripcion_falla," +
+				"observaciones," +
+				"activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";
 	    
 	    try (Connection conexion = ConexionDB.conectar();
@@ -130,6 +145,9 @@ public class MaquinaModelo {
 				ps.setBoolean(7, m.esReingreso);
 				ps.setTimestamp(8, java.sql.Timestamp.valueOf(m.created_at));
 				ps.setTimestamp(9, java.sql.Timestamp.valueOf(m.updated_at));
+				ps.setString(10, m.descripcion_falla);
+				ps.setString(11,m.observaciones );
+				ps.setBoolean(12, m.activo);
 	            ps.addBatch();
 	            
 	            psOrdenMaquina.setString(1, ordenId);
@@ -171,9 +189,17 @@ public class MaquinaModelo {
 	public String getEstado() {
 		return estado;
 	}
-	
+
+	public boolean isEsReingreso() {return esReingreso;}
+
+	public boolean isActivo() {return activo;}
+
+	public String getDescripcionFalla() {return descripcion_falla;}
+
+	public String getObservaciones() {return observaciones;}
+
+
 	// Setters
-	
 	public void setMaquinaId(String maquinaId) {
 		this.maquinaId = maquinaId;
 	}
@@ -197,5 +223,13 @@ public class MaquinaModelo {
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
+
+	public void setEsReingreso(boolean esReingreso) {this.esReingreso = esReingreso;}
+
+	public void setActivo(boolean activo) {this.activo = activo;}
+
+	public void setDescripcionFalla(String descripcion_falla) {this.descripcion_falla = descripcion_falla;}
+
+	public void setObservaciones(String observaciones) {this.observaciones = observaciones;}
 
 }
