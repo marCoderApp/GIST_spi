@@ -15,6 +15,7 @@ public class OrdenTrabajoDao {
     public OrdenTrabajoDao() {
     }
 
+    //BUSCAR ORDEN SEGUN CRITERIO
     public static ObservableList<ObservableList<String>> traerResultadoBusquedaSQL(String criterio, String dato) {
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
 
@@ -56,6 +57,11 @@ public class OrdenTrabajoDao {
             System.out.println("Estado SQL: " + e.getSQLState());
         }
         return datos;
+    }
+
+
+    public static Boolean modificarOrdenTrabajoDB(String ordenId){
+        return true;
     }
 
 }
