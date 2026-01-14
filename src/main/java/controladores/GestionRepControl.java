@@ -3,6 +3,7 @@ package controladores;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -65,7 +66,8 @@ public class GestionRepControl {
         }
         return resultados;
     }
-	
+
+    //BUSCAR ORDEN POR CRITERIO
 	public static ObservableList<ObservableList<String>> buscarOrdenCriterio(String criterio,
 																			 String inputDato) {
 
@@ -77,6 +79,24 @@ public class GestionRepControl {
 		}
 		return null;
 	}
+
+    //DAR DE BAJA ORDEN
+    public static Boolean darDeBajaOrden(String ordenId){
+        Boolean existeOrden = OrdenTrabajoDao.encontrarOrdenPorId(ordenId);
+
+        if (existeOrden == false){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error al traer datos");
+            alert.setHeaderText("Orden de trabajo no existe");
+            alert.showAndWait();
+
+            return false;
+        }
+
+        Boolean esOrdenInactiva = OrdenTrabajoDao.darDeBajaOrdenDB(ordenId);
+
+        return esOrdenInactiva;
+    }
 
     // INSERTAR ORDEN BASE
     public void insertarOrdenBase(OrdenTrabajoModelo orden) {
@@ -645,8 +665,6 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	}
 	
 	public static void obtenerListaOrdenes() {
-	
-
 	}	
 	
 	//Getters and Setters

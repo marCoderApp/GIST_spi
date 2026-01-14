@@ -3,11 +3,14 @@ package daos.GestioRep;
 import controladores.GestionRepControl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import modelos.GestionRep.EstadoOrden;
+import modelos.GestionRep.OrdenTrabajoModelo;
 import vistas.GestionRep.OrdenTrabajoVista;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrdenTrabajoDao {
@@ -60,8 +63,51 @@ public class OrdenTrabajoDao {
     }
 
 
+    //MODIFICAR ORDEN DE TRABAJO
     public static Boolean modificarOrdenTrabajoDB(String ordenId){
         return true;
+    }
+
+    //DAR DE BAJA ORDEN
+
+    public static Boolean darDeBajaOrdenDB(String ordenId){
+
+        String sql = "UPDATE ORDEN_DE_TRABAJO" +
+                " SET ACTIVO = FALSE WHERE ORDEN_TRABAJO_ID = ?";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, ordenId);
+
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                return true;
+            }else{
+                return false;
+            }
+
+        }catch(SQLException e){
+            OrdenTrabajoVista.mostrarAdvertencia(e.getMessage().toString());
+            return false;
+        }
+    }
+
+    //ENCONTRAR ORDEN POR ID
+    public static Boolean encontrarOrdenPorId(String ordenId){
+        String sql = "SELECT * FROM ORDEN_DE_TRABAJO" +
+                " WHERE orden_trabajo_id = ?";
+        try(
+                PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
+                ){
+            ps.setString(1, ordenId);
+            try(ResultSet rs = ps.executeQuery()){
+                if(!rs.next()){
+                  return false;
+                }
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

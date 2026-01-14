@@ -238,11 +238,12 @@ public class OrdenTrabajoVista {
 	public void mostrarLista() {
 		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, " +
-                 "M.DESCRIPCION_FALLA, M.OBSERVACIONES, M.ACTIVO "
+                 "M.DESCRIPCION_FALLA, M.OBSERVACIONES, O.ACTIVO "
                 + "FROM ORDEN_DE_TRABAJO O "
                 + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
                 + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
                 + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                 + "WHERE O.ACTIVO = TRUE "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 
         // VENTANA DE LISTAR ORDENES DE TRABAJO
@@ -331,7 +332,6 @@ public class OrdenTrabajoVista {
             tabla.setItems(datos);
 
             //BOTONES
-            Button botonEditar = new Button("✏️ Editar");
             Button botonDarDeBaja = new Button("Dar de Baja");
             Button botonCerrar = new Button("Cerrar");
             Button botonVer = new Button("Ver");
@@ -367,18 +367,6 @@ public class OrdenTrabajoVista {
                 }
             });
 
-            botonEditar.setOnAction(e -> {
-                ObservableList<String> seleccionado =
-                        tabla.getSelectionModel().getSelectedItem();
-
-                if(seleccionado != null) {
-                    String ordenId = seleccionado.get(0);
-                    editarOrdenPorId(ordenId);
-                }else {
-                    mostrarAdvertencia("Debe seleccionar una orden para editar.");
-                }
-            });
-
             botonDarDeBaja.setOnAction(e -> {
                 ObservableList<String> seleccionado =
                         tabla.getSelectionModel()
@@ -392,8 +380,14 @@ public class OrdenTrabajoVista {
                             ButtonType.YES, ButtonType.NO);
                     confirm.showAndWait().ifPresent(respuesta -> {
                         if(respuesta == ButtonType.YES) {
-                            eliminarOrdenPorId(ordenId);
-                            datos.remove(seleccionado);
+                            Boolean dadaDeBaja = GestionRepControl.darDeBajaOrden(ordenId);
+
+                            if(dadaDeBaja) {
+                                mostrarAlertaExito("Desactivar orden", "Se ha dado de baja la orden");
+                                datos.remove(seleccionado);
+                            }else{
+                                mostrarAdvertencia("No se ha podido dar de baja la orden.");
+                            }
                         }
                     });
                 }else {
@@ -410,8 +404,7 @@ public class OrdenTrabajoVista {
             HBox botonesBox = new HBox(10,
                     botonBuscarOrden,
                     botonVer,
-                    botonCambiarEstado,
-                    botonEditar, botonDarDeBaja,
+                    botonCambiarEstado, botonDarDeBaja,
                     botonCerrar);
 
             botonesBox.setAlignment(Pos.CENTER);
@@ -648,7 +641,6 @@ public class OrdenTrabajoVista {
 
                 if(seleccionado != null) {
                     String ordenId = seleccionadoBusqueda.get(0);
-                    editarOrdenPorId(ordenId);
                 }else {
                     mostrarAdvertencia("Debe seleccionar una orden para editar.");
                 }
@@ -875,14 +867,29 @@ public class OrdenTrabajoVista {
         System.out.println("CAMBIAR ESTADO ORDEN");
     }
 	
-	//EDITAR ORDEN POR ID
-	private void editarOrdenPorId(String ordenId) {
-		System.out.println("EDITAR ORDEN");
-	}
-	
 	//ELIMINAR ORDEN POR ID
 	private void eliminarOrdenPorId(String ordenId) {
-		System.out.println("ELIMINAR ORDEN");
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Opciones de baja");
+        alert.setHeaderText("Seleccione una opcion: ");
+        alert.setContentText("Que desea hacer?");
+
+        ButtonType verInactivas = new ButtonType("Ver órdenes inactivas");
+        ButtonType darDeBaja = new ButtonType("Ver órdenes activas");
+        ButtonType cancelar = new  ButtonType("Cancelar");
+
+        alert.getButtonTypes().setAll(verInactivas, darDeBaja, cancelar);
+
+        alert.showAndWait().ifPresent(response -> {
+            if(response == verInactivas) {
+                System.out.println("ORDENES INACTIVAS");
+            }else if(response == darDeBaja) {
+
+            }else if(response == cancelar) {
+                alert.close();
+            }
+        });
+
 	}
 
     //OBTENER ORDENES DISPONIBLES
