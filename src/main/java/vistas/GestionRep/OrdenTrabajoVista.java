@@ -1125,7 +1125,7 @@ public class OrdenTrabajoVista {
         ventanaResultados.setTitle("Resultados de búsqueda");
 
 
-        Button botonRestaurar = new Button("✏️ Editar");
+        Button botonRestaurar = new Button("<= Restaurar");
 
 
         botonRestaurar.setOnAction(event -> {
@@ -1164,7 +1164,6 @@ public class OrdenTrabajoVista {
         ventanaResultados.show();
     }
 
-		
     //SETTERS Y GETTERS
 	public String getId() {
 		return id;
