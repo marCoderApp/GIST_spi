@@ -80,6 +80,30 @@ public class GestionRepControl {
 		return null;
 	}
 
+    //LISTAR ORDENES INACTIVAS
+    public static ObservableList<ObservableList<String>> listarOrdenesInactivas(){
+        ObservableList<ObservableList<String>> datos = OrdenTrabajoDao.listarOrdenesInactivasDB();
+
+        if(datos != null){
+            return datos;
+        }else {
+            OrdenTrabajoVista.mostrarAdvertencia("Ha ocurrido un error en el listado de ordenes" +
+                    " inactivas");
+        }
+        return null;
+    }
+
+    //RESTAURAR ORDEN A ACTIVA
+    public static Boolean restaurarOrdenInactiva(String ordenId){
+        Boolean guardado = OrdenTrabajoDao.restaurarOrdenInactivaDB(ordenId);
+
+        if(guardado){
+            return true;
+        }
+
+        return false;
+    }
+
     //DAR DE BAJA ORDEN
     public static Boolean darDeBajaOrden(String ordenId){
         Boolean existeOrden = OrdenTrabajoDao.encontrarOrdenPorId(ordenId);
@@ -89,7 +113,6 @@ public class GestionRepControl {
             alert.setTitle("Error al traer datos");
             alert.setHeaderText("Orden de trabajo no existe");
             alert.showAndWait();
-
             return false;
         }
 

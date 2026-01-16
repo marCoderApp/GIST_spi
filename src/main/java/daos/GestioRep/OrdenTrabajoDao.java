@@ -62,6 +62,65 @@ public class OrdenTrabajoDao {
         return datos;
     }
 
+    //LISTAR ORDENES INACTIVAS
+    public static  ObservableList<ObservableList<String>> listarOrdenesInactivasDB(){
+        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+
+        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
+                + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO," +
+                " M.DESCRIPCION_FALLA, O.ACTIVO "
+                + "FROM ORDEN_DE_TRABAJO O "
+                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "WHERE O.ACTIVO = FALSE "
+                + "ORDER BY O.ORDEN_TRABAJO_ID";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(consultaSQL)){
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                ObservableList<String> fila = FXCollections.observableArrayList();
+
+                fila.add(rs.getString("orden_trabajo_id"));
+                fila.add(rs.getString("fecha_ingreso"));
+                fila.add(rs.getString("descripcion_falla"));
+                fila.add(rs.getString("estado"));
+                fila.add(rs.getString("nombre") + " " + rs.getString("apellido"));
+                fila.add(rs.getString("empresa"));
+                fila.add(rs.getString("telefono"));
+                fila.add(rs.getString("maquina_id"));
+                fila.add(rs.getString("tipo"));
+                fila.add(rs.getString("marca"));
+                fila.add(rs.getString("modelo"));
+
+                datos.add(fila);
+            }
+        }catch(SQLException e){
+            System.out.println("Error SQL: " + e.getMessage());
+            System.out.println("Código: " + e.getErrorCode());
+            System.out.println("Estado SQL: " + e.getSQLState());
+        }
+        return datos;
+    }
+
+    //RESTAURAR ORDEN A ACTIVA
+    public static Boolean restaurarOrdenInactivaDB(String ordenId){
+        String sql = "UPDATE ORDEN_DE_TRABAJO SET ACTIVO = TRUE " +
+                "WHERE ORDEN_TRABAJO_ID = '" + ordenId + "'";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            int filas = ps.executeUpdate();
+            if(filas>0){
+                return true;
+            }else{
+                return false;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     //MODIFICAR ORDEN DE TRABAJO
     public static Boolean modificarOrdenTrabajoDB(String ordenId){
@@ -100,8 +159,10 @@ public class OrdenTrabajoDao {
                 ){
             ps.setString(1, ordenId);
             try(ResultSet rs = ps.executeQuery()){
-                if(!rs.next()){
-                  return false;
+                if(rs.next()){
+                  return true;
+                }else{
+                    return false;
                 }
             }
         }catch (SQLException e){

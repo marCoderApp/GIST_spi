@@ -337,12 +337,15 @@ public class OrdenTrabajoVista {
             Button botonVer = new Button("Ver");
             Button botonCambiarEstado = new Button("Cambiar Estado");
             Button botonBuscarOrden = new Button("Buscar Orden");
+            Button botonOrdenesInactivas = new Button("Ordenes inactivas");
 
+            //BOTON BUSCAR ORDEN
             botonBuscarOrden.setOnAction(e -> {
                 //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
                 buscarOrdenDeTrabajo();
             });
 
+            //BOTON VER
             botonVer.setOnAction(e -> {
                 ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
 
@@ -355,6 +358,7 @@ public class OrdenTrabajoVista {
                 }
             });
 
+            //BOTON CAMBIAR DE ESTADO
             botonCambiarEstado.setOnAction(e -> {
                 ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
 
@@ -367,6 +371,7 @@ public class OrdenTrabajoVista {
                 }
             });
 
+            //BOTON DAR DE BAJA
             botonDarDeBaja.setOnAction(e -> {
                 ObservableList<String> seleccionado =
                         tabla.getSelectionModel()
@@ -397,14 +402,20 @@ public class OrdenTrabajoVista {
 
             });
 
+            //BOTON CERRAR
             botonCerrar.setOnAction(e ->
                     ventana.close());
+
+            //BOTON DE LISTAR ORDEN INACTICAS
+            botonOrdenesInactivas.setOnAction(e -> {
+                listarOrdenesInactivasVista();
+            });
 
             //LAYOUT
             HBox botonesBox = new HBox(10,
                     botonBuscarOrden,
                     botonVer,
-                    botonCambiarEstado, botonDarDeBaja,
+                    botonCambiarEstado, botonDarDeBaja, botonOrdenesInactivas,
                     botonCerrar);
 
             botonesBox.setAlignment(Pos.CENTER);
@@ -433,9 +444,7 @@ public class OrdenTrabajoVista {
 
     //INGRESAR DETALLE DE REPARACIÓN
     private void mostrarFormDetalleRep(String maquina_id) {
-
     DetalleRepVista.ingresarDetalleRep(maquina_id);
-
 }
 
     //BUSCAR UNA ORDEN DE TRABAJO
@@ -512,6 +521,7 @@ public class OrdenTrabajoVista {
         ventana.show();
     }
 
+    //MOSTRAR FORM DE BUSQUEDA
     public void mostrarFormDeBusqueda(String criterio, String seleccionado){
         Stage ventana = new Stage();
         ventana.setTitle("Busqueda de orden avanzada por:");
@@ -1043,6 +1053,117 @@ public class OrdenTrabajoVista {
 
         return ordenId[0];
     }
+
+    //MOSTRAR ORDENES INACTIVAS
+    public void listarOrdenesInactivasVista(){;
+        ObservableList<ObservableList<String>> resultado = GestionRepControl.listarOrdenesInactivas();
+        if (resultado == null || resultado.isEmpty()) {
+            Alert a = new Alert(Alert.AlertType.INFORMATION, "No se encontraron resultados.");
+            a.setHeaderText("Búsqueda");
+            a.showAndWait();
+            return;
+        }
+
+        Stage ventana = new Stage();
+        ventana.setTitle("Ordenes inactivas");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        //TABLA DE RESULTADOS
+        TableView<ObservableList<String>> tabla =
+                new TableView<>();
+        tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        //TITULO
+            Label titulo = new Label("Ordenes inactivas");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        String[] nombresCampos = {
+                "Orden_Trabajo_ID",
+                "Fecha_Ingreso",
+                "Descripcion_Fallas",
+                "Estado",
+                "Cliente",
+                "Empresa",
+                "Telefono",
+                "Maquina_ID",
+                "Tipo",
+                "Marca",
+                "Modelo",
+                "Descripcion_falla"
+        };
+
+        //AGREGAR NOMBRES A COLUMNAS DINAMICAMENTE
+        for(String nombreCampo : nombresCampos) {
+            final int colIndex = tabla.getColumns().size();
+            TableColumn<ObservableList<String>, String> columna = new TableColumn<>(nombreCampo);
+
+            columna.setCellValueFactory(param ->
+                    new ReadOnlyStringWrapper(param.getValue().size() > colIndex ?
+                            param.getValue().get(colIndex) : ""));
+            columna.setPrefWidth(switch(nombreCampo){
+                case "Orden_trabajo_id" -> 100;
+                case "Fecha_ingreso" -> 100;
+                case "Descripcion_falla" -> 100;
+                case "Estado" -> 100;
+                case "Cliente" -> 100;
+                case "Empresa" -> 100;
+                case "Telefono" -> 100;
+                case "Maquina_ID" -> 100;
+                case "Tipo" -> 100;
+                case "Marca" -> 100;
+                case "Modelo" -> 100;
+                default -> 120;
+            });
+            tabla.getColumns().add(columna);
+        }
+
+        //AGREGAR DATOS A LA TABLA
+        tabla.setItems(resultado);
+
+        // Ventana resultados
+        Stage ventanaResultados = new Stage();
+        ventanaResultados.setTitle("Resultados de búsqueda");
+
+
+        Button botonRestaurar = new Button("✏️ Editar");
+
+
+        botonRestaurar.setOnAction(event -> {
+            ObservableList<String> seleccionadoBusqueda =
+                    tabla.getSelectionModel().getSelectedItem();
+
+            String ordenId = seleccionadoBusqueda.get(0);
+
+            if (!ordenId.isBlank() || !ordenId.isEmpty()) {
+
+                if(GestionRepControl.restaurarOrdenInactiva(ordenId)){
+                    mostrarAlertaExito("Orden restaurada", "" +
+                            "La Orden de trabajo ha sido activada correctamente");
+                    resultado.remove(seleccionadoBusqueda);
+                }else{
+                    mostrarAdvertencia("Se ha producido un error durante la restauracion" +
+                            " de la orden.");
+                }
+            }else{
+                mostrarAdvertencia("El ID de orden no es correcto!");
+            }
+        });
+
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setOnAction(ev -> ventanaResultados.close());
+
+        HBox barra = new HBox(10, botonRestaurar, btnCerrar);
+        barra.setAlignment(Pos.CENTER_RIGHT);
+        barra.setPadding(new Insets(10));
+
+        VBox layoutResultados = new VBox(10,titulo, tabla, barra);
+        layoutResultados.setPadding(new Insets(10));
+
+        ventanaResultados.setScene(new Scene(layoutResultados, 700, 400));
+        ventanaResultados.initOwner(ventana);
+        ventanaResultados.show();
+    }
+
 		
     //SETTERS Y GETTERS
 	public String getId() {
