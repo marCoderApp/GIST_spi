@@ -209,6 +209,21 @@ public class GestionRepControl {
         return false;
     }
 
+    //CAMBIAR ESTADO DE ORDEN
+    public static Boolean cambiarEstadoOrden(String ordenId, String estado){
+
+        try{
+            Boolean guardado = OrdenTrabajoDao.cambiarEstadoOrdenDB(ordenId, estado);
+            if (guardado){
+                return true;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     //REGISTRAR CLIENTE
 	public ClienteModelo registrarCliente(ClienteModelo cliente) {
 		

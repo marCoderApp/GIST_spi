@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import controladores.GestionRepControl;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -23,7 +22,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
-import modelos.GestionRep.PedidoModelo;
 
 import static vistas.GestionRep.OrdenTrabajoVista.*;
 
@@ -609,7 +607,7 @@ public class ClientesVista {
                 if(seleccionado != null) {
                     String ordenId = seleccionado.get(0);
 
-                    OrdenTrabajoVista.cambiarEstadoOrden(ordenId);
+                    OrdenTrabajoVista.cambiarEstadoOrden(tabla, tabla.getItems(), ordenId);
                 }else{
                     mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
                 }

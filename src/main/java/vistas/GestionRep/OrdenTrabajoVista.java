@@ -3,17 +3,14 @@ package vistas.GestionRep;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 //import java.time.LocalDate;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.function.Consumer;
 
 import controladores.GestionRepControl;
 import controladores.PersonalControl;
-import daos.GestioRep.OrdenTrabajoDao;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +18,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -236,16 +232,7 @@ public class OrdenTrabajoVista {
 	
 	//MOSTRAR LISTA DE ORDENES.
 	public void mostrarLista() {
-		 String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
-                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, " +
-                 "M.DESCRIPCION_FALLA, M.OBSERVACIONES, O.ACTIVO "
-                + "FROM ORDEN_DE_TRABAJO O "
-                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
-                 + "WHERE O.ACTIVO = TRUE "
-                + "ORDER BY O.ORDEN_TRABAJO_ID";
-
+//====================================================================================================
         // VENTANA DE LISTAR ORDENES DE TRABAJO
         Stage ventana = new Stage();
         ventana.setTitle("Lista de Órdenes de Trabajo");
@@ -289,6 +276,131 @@ public class OrdenTrabajoVista {
             tabla.getColumns().add(columna);
         }
 
+        //CARGAR DATOS DE ORDENES
+        cargarDatosDeOrdenes(tabla, datos);
+
+            //BOTONES
+            Button botonDarDeBaja = new Button("Dar de Baja");
+            Button botonCerrar = new Button("Cerrar");
+            Button botonVer = new Button("Ver");
+            Button botonCambiarEstado = new Button("Cambiar Estado");
+            Button botonBuscarOrden = new Button("Buscar Orden");
+            Button botonOrdenesInactivas = new Button("Ordenes inactivas");
+
+            //BOTON BUSCAR ORDEN
+            botonBuscarOrden.setOnAction(e -> {
+                //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
+                buscarOrdenDeTrabajo();
+            });
+
+            //BOTON VER
+            botonVer.setOnAction(e -> {
+             String ordenId = obtenerOrdenSeleccionada(tabla);
+
+                if(ordenId != null) {
+                    verOrdentrabajo(ordenId);
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para ver.");
+                }
+            });
+
+            //BOTON CAMBIAR DE ESTADO
+            botonCambiarEstado.setOnAction(e -> {
+
+                String ordenId = obtenerOrdenSeleccionada(tabla);
+
+                if(ordenId != null) {
+                    cambiarEstadoOrden(tabla, datos, ordenId);
+
+                }else{
+                    mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
+                }
+            });
+
+            //BOTON DAR DE BAJA
+            botonDarDeBaja.setOnAction(e -> {
+                String ordenId = obtenerOrdenSeleccionada(tabla);
+
+                if(ordenId != null) {
+
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Eliminar la orden con ID " + ordenId + "?",
+                            ButtonType.YES, ButtonType.NO);
+                    confirm.showAndWait().ifPresent(respuesta -> {
+                        if(respuesta == ButtonType.YES) {
+                            Boolean dadaDeBaja = GestionRepControl.darDeBajaOrden(ordenId);
+
+                            if(dadaDeBaja) {
+                                mostrarAlertaExito("Desactivar orden", "Se ha dado de baja la orden");
+                                tabla.getItems().remove(tabla.getSelectionModel().getSelectedItem());
+                            }else{
+                                mostrarAdvertencia("No se ha podido dar de baja la orden.");
+                            }
+                        }
+                    });
+                }else {
+                    mostrarAdvertencia("Debe seleccionar una orden para"
+                            + "eliminar");
+                }
+
+            });
+
+            //BOTON CERRAR
+            botonCerrar.setOnAction(e ->
+                    ventana.close());
+
+            //BOTON DE LISTAR ORDEN INACTICAS
+            botonOrdenesInactivas.setOnAction(e -> {
+                listarOrdenesInactivasVista();
+            });
+
+            //LAYOUT
+            HBox botonesBox = new HBox(10,
+                    botonBuscarOrden,
+                    botonVer,
+                    botonCambiarEstado, botonDarDeBaja, botonOrdenesInactivas,
+                    botonCerrar);
+
+            botonesBox.setAlignment(Pos.CENTER);
+            botonesBox.setPadding(new Insets(10));
+
+            VBox layout = new VBox(10, tabla, botonesBox);
+            layout.setPadding(new Insets(10));
+
+            Scene escena = new Scene(layout);
+            ventana.setScene(escena);
+            ventana.show();
+
+	}
+
+    //OBTENER ORDEN SELECCIONADA
+    private String obtenerOrdenSeleccionada(TableView<ObservableList<String>> tabla){
+        ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+        if (seleccionado != null){
+            return seleccionado.get(0);
+        }else{
+            mostrarAdvertencia("Debe seleccionar una orden de trabajo!");
+            return null;
+        }
+    }
+
+    //CARGAR DATOS DE ORDENES
+    private static void cargarDatosDeOrdenes(TableView<ObservableList<String>> tabla,
+                                             ObservableList<ObservableList<String>> datos){
+
+        datos.clear();
+        tabla.getItems().clear();
+        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
+                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, " +
+                "M.DESCRIPCION_FALLA, M.OBSERVACIONES, O.ACTIVO "
+                + "FROM ORDEN_DE_TRABAJO O "
+                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "WHERE O.ACTIVO = TRUE "
+                + "ORDER BY O.ORDEN_TRABAJO_ID";
+
         //HACER CONSULTA Y CARGAR LAS FILAS
         try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
             ResultSet resultado = consultaPreparada.executeQuery();
@@ -327,111 +439,14 @@ public class OrdenTrabajoVista {
                 //INSERTAR CADA FILA EN DATOS
                 datos.add(fila);
             }
-
             //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
             tabla.setItems(datos);
 
-            //BOTONES
-            Button botonDarDeBaja = new Button("Dar de Baja");
-            Button botonCerrar = new Button("Cerrar");
-            Button botonVer = new Button("Ver");
-            Button botonCambiarEstado = new Button("Cambiar Estado");
-            Button botonBuscarOrden = new Button("Buscar Orden");
-            Button botonOrdenesInactivas = new Button("Ordenes inactivas");
-
-            //BOTON BUSCAR ORDEN
-            botonBuscarOrden.setOnAction(e -> {
-                //ESTE METODO VA A FILTRAR EL TIPO DE BUSQUEDA QUE SE NECESITE.
-                buscarOrdenDeTrabajo();
-            });
-
-            //BOTON VER
-            botonVer.setOnAction(e -> {
-                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
-
-                if(seleccionado != null) {
-                    String ordenId = seleccionado.get(0);
-
-                    verOrdentrabajo(ordenId);
-                }else {
-                    mostrarAdvertencia("Debe seleccionar una orden para ver.");
-                }
-            });
-
-            //BOTON CAMBIAR DE ESTADO
-            botonCambiarEstado.setOnAction(e -> {
-                ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
-
-                if(seleccionado != null) {
-                    String ordenId = seleccionado.get(0);
-
-                    cambiarEstadoOrden(ordenId);
-                }else{
-                    mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
-                }
-            });
-
-            //BOTON DAR DE BAJA
-            botonDarDeBaja.setOnAction(e -> {
-                ObservableList<String> seleccionado =
-                        tabla.getSelectionModel()
-                                .getSelectedItem();
-
-                if(seleccionado != null) {
-                    String ordenId = seleccionado.get(0);
-
-                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                            "¿Eliminar la orden con ID " + ordenId + "?",
-                            ButtonType.YES, ButtonType.NO);
-                    confirm.showAndWait().ifPresent(respuesta -> {
-                        if(respuesta == ButtonType.YES) {
-                            Boolean dadaDeBaja = GestionRepControl.darDeBajaOrden(ordenId);
-
-                            if(dadaDeBaja) {
-                                mostrarAlertaExito("Desactivar orden", "Se ha dado de baja la orden");
-                                datos.remove(seleccionado);
-                            }else{
-                                mostrarAdvertencia("No se ha podido dar de baja la orden.");
-                            }
-                        }
-                    });
-                }else {
-                    mostrarAdvertencia("Debe seleccionar una orden para"
-                            + "eliminar");
-                }
-
-            });
-
-            //BOTON CERRAR
-            botonCerrar.setOnAction(e ->
-                    ventana.close());
-
-            //BOTON DE LISTAR ORDEN INACTICAS
-            botonOrdenesInactivas.setOnAction(e -> {
-                listarOrdenesInactivasVista();
-            });
-
-            //LAYOUT
-            HBox botonesBox = new HBox(10,
-                    botonBuscarOrden,
-                    botonVer,
-                    botonCambiarEstado, botonDarDeBaja, botonOrdenesInactivas,
-                    botonCerrar);
-
-            botonesBox.setAlignment(Pos.CENTER);
-            botonesBox.setPadding(new Insets(10));
-
-            VBox layout = new VBox(10, tabla, botonesBox);
-            layout.setPadding(new Insets(10));
-
-            Scene escena = new Scene(layout);
-            ventana.setScene(escena);
-            ventana.show();
         } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
+            Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al cargar datos: " + e.getMessage());
             alerta.showAndWait();
         }
-	}
+    }
 	
 	//MOSTRAR ADVERTENCIA
 	public static void mostrarAdvertencia(String mensaje) {
@@ -641,7 +656,7 @@ public class OrdenTrabajoVista {
                 if(seleccionado != null) {
                     String ordenId = seleccionadoBusqueda.get(0);
 
-                    cambiarEstadoOrden(ordenId);
+                    cambiarEstadoOrden(tabla, tabla.getItems(), ordenId);
                 }else{
                     mostrarAdvertencia("Debe seleccionar una orden para cambiar su estado.");
                 }
@@ -895,8 +910,82 @@ public class OrdenTrabajoVista {
     }
 
     //CAMBIAR ESTADO ORDEN POR ID
-    static void cambiarEstadoOrden(String ordenId) {
+    static void cambiarEstadoOrden(TableView<ObservableList<String>> tabla,
+                                   ObservableList<ObservableList<String>> datos
+                                   ,String ordenId) {
+        final String[] newEstado = new String[1];
 
+            Stage ventanaCambioDeEstado = new Stage();
+            ventanaCambioDeEstado.setTitle("Cambio de Estado");
+            ventanaCambioDeEstado.initModality(Modality.APPLICATION_MODAL);
+
+            Label titulo = new Label("Cambiar estado de" +
+                    " orden de trabajo = " + ordenId);
+            titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+            ComboBox<String> comboEstados = new ComboBox<>();
+            comboEstados.getItems().addAll("Pendiente", "En revisión", "Revisada", "Lista",
+                    "Confirmada", "Rechazada", "Retirada");
+            comboEstados.setPromptText("Seleccione un estado");
+
+            comboEstados.setOnAction(e -> {
+                   newEstado[0] = comboEstados.getValue();
+            });
+
+            Button btnAceptar = new Button("Aceptar");
+            Button btnCancelar = new Button("Cancelar");
+
+        btnAceptar.setStyle(
+                "-fx-background-color: #28a745;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 8 16 8 16;" +
+                        "-fx-background-radius: 5;"
+        );
+
+        btnCancelar.setStyle(
+                "-fx-background-color: #dc3545;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 8 16 8 16;" +
+                        "-fx-background-radius: 5;"
+        );
+
+        btnAceptar.setOnAction(e -> {
+           if(ordenId == null){
+               mostrarAdvertencia("Debe elegir una orden!");
+           }
+
+           if(newEstado[0] == null){
+               mostrarAdvertencia("Debe seleccionar un estado!");
+           }
+
+           Boolean exito = GestionRepControl.cambiarEstadoOrden(ordenId, newEstado[0]);
+
+           if(exito){
+               mostrarAlertaExito("Cambio de estado", "Se ha cambiado de estado .");
+               ventanaCambioDeEstado.close();
+               cargarDatosDeOrdenes(tabla, datos);
+
+           }else{
+               mostrarAdvertencia("Ha ocurrido un error durante el cambio de estado.");
+           }
+        });
+
+        btnCancelar.setOnAction(e -> {
+            ventanaCambioDeEstado.close();
+        });
+
+        HBox botonesBox = new HBox(10, btnAceptar, btnCancelar);
+        botonesBox.setAlignment(Pos.CENTER);
+        botonesBox.setPadding(new Insets(10));
+
+        VBox layout = new VBox(10, titulo, comboEstados, botonesBox);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout);
+        ventanaCambioDeEstado.setScene(escena);
+        ventanaCambioDeEstado.show();
     }
 	
 	//ELIMINAR ORDEN POR ID

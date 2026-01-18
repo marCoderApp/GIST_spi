@@ -170,5 +170,26 @@ public class OrdenTrabajoDao {
         return false;
     }
 
+    //CAMBIAR ESTADO DE ORDEN
+    public static Boolean cambiarEstadoOrdenDB(String ordenId, String estado){
+        String sql = "UPDATE ORDEN_DE_TRABAJO " +
+                "SET ESTADO = ? " +
+                "WHERE ORDEN_TRABAJO_ID = ?";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, estado);
+            ps.setString(2, ordenId);
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                return true;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
 }
 
