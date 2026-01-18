@@ -29,7 +29,7 @@ public class FormPresupVista {
 	}
 
     //INGRESAR PRESUPUESTO. FORMULARIO PARA INGRESAR DATOS DE PRESUPUESTO.
-	public static void ingresarPresupuesto(String maquinaId) {
+	public static void ingresarPresupuesto(String maquinaId, Runnable callback) {
         Stage ventana = new Stage();
         ventana.setTitle("Crear Presupuesto");
 
@@ -62,6 +62,10 @@ public class FormPresupVista {
                     alerta.setContentText("El presupuesto fue guardado correctamente.");
                     alerta.showAndWait();
                     ventana.close();
+
+					if (callback != null){
+						callback.run();
+					}
                 } else {
                     Alert alerta = new Alert(Alert.AlertType.ERROR);
                     alerta.setTitle("Error");

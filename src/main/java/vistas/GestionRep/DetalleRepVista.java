@@ -44,7 +44,7 @@ public class DetalleRepVista {
 	}
 
     //INGRESAR DATOS DE DETALLE REPARACION
-    public static void ingresarDetalleRep(String maquinaId){
+    public static void ingresarDetalleRep(String maquinaId, Runnable callback){
 
         Stage ventanaDetalleRep = new Stage();
         ventanaDetalleRep.setTitle("Ingresar Detalle de Reparación");
@@ -107,13 +107,16 @@ public class DetalleRepVista {
             nuevoDetalleRep.setRepuestos(repuestos);
             nuevoDetalleRep.setTecnicoId(tecnicoId);
             nuevoDetalleRep.setNivelService(nivelService);
-
+            btnGuardar.setDisable(true);
             boolean exito = GestionRepControl.cargarDetalleRep(nuevoDetalleRep, maquinaId);
 
             if(exito){
                 mostrarAlerta("Detalle de reparación guardado correctamente."
                 , ventanaDetalleRep);
-                btnGuardar.setDisable(true);
+                if (callback != null){
+                    callback.run();
+                }
+
             }else{
                 mostrarError("Verificá los datos e intentá nuevamente.");
             }

@@ -22,8 +22,8 @@ public class PresupuestosVista {
 	}
 
     //MUESTRA FORMULARIO PARA CREAR PRESUPUESTO
-    public static void mostrarFormCrearPresupuesto(String maquinaId) {
-            FormPresupVista.ingresarPresupuesto(maquinaId);
+    public static void mostrarFormCrearPresupuesto(String maquinaId, Runnable callback) {
+            FormPresupVista.ingresarPresupuesto(maquinaId, callback);
     }
 
     //MOSTRA MENU EN PRESPUESTO

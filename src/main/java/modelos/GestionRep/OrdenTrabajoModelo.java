@@ -74,7 +74,6 @@ public class OrdenTrabajoModelo {
 	            e.printStackTrace();
 	        }
 	    }
-
 	    return String.format("ORDEN%05d", siguienteNumero);
 	}
 
@@ -99,7 +98,6 @@ public class OrdenTrabajoModelo {
    		 System.out.println("Error al actualizar la Orden: " + e.getMessage());
 		 e.printStackTrace(); 
     	}
-    	
     	return true;
     }
 
@@ -159,7 +157,6 @@ public class OrdenTrabajoModelo {
             e.printStackTrace();
         }
         return resultados;
-
     }
 
     public Boolean agregarMaquinaAlista(MaquinaModelo maquina) {

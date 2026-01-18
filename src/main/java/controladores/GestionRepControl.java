@@ -332,6 +332,11 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 	    return "";
     }
 
+    //TRAER ORDENES RELACIONADAS AL CLIENTE
+    public static Boolean traerOrdenesRelacionadasACliente(String clienteId){
+        return false;
+    }
+
     //SELECCIONAR MAQUINAS
 	public List<MaquinaModelo> seleccionarMaquinas(OrdenTrabajoModelo orden) {
 		 return agregarMaquinasNuevas(orden.getOrdenId());

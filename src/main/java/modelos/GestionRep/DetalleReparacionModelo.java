@@ -62,9 +62,16 @@ public class DetalleReparacionModelo {
 	
 	public static Boolean guardarDetalleBD(DetalleReparacionModelo nuevoDetalleRep, String maquinaId) {
 
+		String sqlDelete = "DELETE FROM DETALLEREPARACION WHERE MAQUINA_ID = ?";
         String sql = "INSERT INTO DETALLEREPARACION VALUES (?,?,?,?,?,?)";
 
-        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
+			PreparedStatement psDelete = GestionRepControl.conexion.prepareStatement(sqlDelete);){
+
+			//ELIMINAR DETALLE ANTERIOR
+			psDelete.setString(1, maquinaId);
+			psDelete.executeUpdate();
+			//INSERTAR NUEVO DETALLE REP
                 ps.setString(1,nuevoDetalleRep.getDetalleRepId());
                 ps.setString(2, nuevoDetalleRep.getDescripcion());
                 ps.setObject(3, nuevoDetalleRep.getFecha());
@@ -77,8 +84,6 @@ public class DetalleReparacionModelo {
                 if(filas > 0){
                     return true;
                 }
-
-
         }catch(SQLException e){
             e.printStackTrace();
         }

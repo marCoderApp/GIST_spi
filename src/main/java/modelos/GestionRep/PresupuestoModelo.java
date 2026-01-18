@@ -37,12 +37,21 @@ public class PresupuestoModelo {
 	}
 
     //INSERTA NUEVO PRESUPUESTO EN LA BASE DE DATOS. UTILIZA LOS DATOS CORRESPONDIENTES
-    public static boolean ingresarPresupuestoBD(PresupuestoModelo presupuesto) {
+    public static boolean ingresarPresupuestoBD(PresupuestoModelo presupuesto)
+    {
+
+        String sqlDelete = "DELETE FROM PRESUPUESTO WHERE MAQUINA_ID = ?";
         String sql = "INSERT INTO presupuesto " +
                 "(presupuesto_id, maquina_id, total, con_factura, fecha_creacion, admin_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
+        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
+            PreparedStatement psDelete = GestionRepControl.conexion.prepareStatement(sqlDelete);) {
+
+            //ELIMINAR PRESUPUESTO ANTERIOR
+            psDelete.setString(1, presupuesto.getMaquinaId());
+            psDelete.executeUpdate();
+            //AGREGAR UN PRESUPUESTO
             ps.setString(1, presupuesto.getPresupuestoId());
             ps.setString(2, presupuesto.getMaquinaId());
             ps.setDouble(3, presupuesto.getTotal());

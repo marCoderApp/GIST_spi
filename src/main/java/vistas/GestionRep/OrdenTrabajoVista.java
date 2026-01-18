@@ -443,12 +443,12 @@ public class OrdenTrabajoVista {
 	}
 
     //INGRESAR DETALLE DE REPARACIÓN
-    private void mostrarFormDetalleRep(String maquina_id) {
-    DetalleRepVista.ingresarDetalleRep(maquina_id);
+    private static void mostrarFormDetalleRep(String maquina_id, Runnable callback) {
+    DetalleRepVista.ingresarDetalleRep(maquina_id, callback);
 }
 
     //BUSCAR UNA ORDEN DE TRABAJO
-    private void buscarOrdenDeTrabajo() {
+    public static void buscarOrdenDeTrabajo() {
 
         //VENTANA
         Stage ventana = new Stage();
@@ -522,7 +522,7 @@ public class OrdenTrabajoVista {
     }
 
     //MOSTRAR FORM DE BUSQUEDA
-    public void mostrarFormDeBusqueda(String criterio, String seleccionado){
+    public static void mostrarFormDeBusqueda(String criterio, String seleccionado){
         Stage ventana = new Stage();
         ventana.setTitle("Busqueda de orden avanzada por:");
         ventana.initModality(Modality.APPLICATION_MODAL);
@@ -614,7 +614,9 @@ public class OrdenTrabajoVista {
 
                 if(seleccionado != null){
                     String ordenId = seleccionadoBusqueda.get(0);
-                    mostrarFormDetalleRep(ordenId);
+                    mostrarFormDetalleRep(ordenId, ()->{
+
+                    });
                 }else{
                     mostrarAdvertencia("Debe seleccionar una orden para ingresar detalle de reparación");
                 }
@@ -718,7 +720,7 @@ public class OrdenTrabajoVista {
     }
 
     //VER UNA ORDEN DE TRABAJO POR ID
-    private void verOrdentrabajo(String ordenId) {
+    static void verOrdentrabajo(String ordenId) {
 
         List<Map<String, Object>> datos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
 
@@ -733,6 +735,26 @@ public class OrdenTrabajoVista {
         VBox contenedor = new VBox(10);
         contenedor.setPadding(new Insets(15));
         contenedor.getChildren().add(titulo);
+
+        //===============================================================================
+
+        construirVistaOrden(contenedor, datos, ordenId);
+
+        //=================================================================================
+        ScrollPane scrollPane = new ScrollPane(contenedor);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(500);
+
+        Scene scene = new Scene(scrollPane, 600, 650);
+        ventanaVerOrden.setScene(scene);
+        ventanaVerOrden.show();
+    }
+
+    //CONSTRUCTOR DE VISTA EN VER ORDEN
+    public static void construirVistaOrden(VBox contenedor,
+                                           List<Map<String, Object>> datos,
+                                           String ordenId){
+        contenedor.getChildren().clear();
         int contador = 1;
         for (Map<String, Object> fila : datos) {
             Label numMaquina = new Label("Máquina número: " + contador);
@@ -759,12 +781,12 @@ public class OrdenTrabajoVista {
             Label lblEstado = new Label("Estado: " + fila.get("ESTADO"));
             Label lblCliente = new Label("Cliente: " + fila.get("NOMBRE") + " " + fila.get("APELLIDO"));
             Label lblNovedad = new Label("Novedad ID: " + (fila.get("NOVEDAD_ID")
-            != null ? fila.get("NOVEDAD_ID") : "Sin novedades."));
+                    != null ? fila.get("NOVEDAD_ID") : "Sin novedades."));
             Label lblFechaNovedad = new Label("Fecha novedad: " + (fila.get("FECHA_NOVEDAD")
-            != null ? fila.get("FECHA_NOVEDAD") : "Sin novedades."));
+                    != null ? fila.get("FECHA_NOVEDAD") : "Sin novedades."));
             Label lblAdmin = new Label("Admin ID: " + (fila.get("ADMIN_ID") != null ? fila.get("ADMIN_ID") : "Sin administrador."));
             Label lblItem = new Label("Item ID: " + (fila.get("ITEMID") != null ? fila.get("ITEMID") : "Sin item."));
-           Label lblComentario = new Label("Comentario: ");
+            Label lblComentario = new Label("Comentario: ");
             TextArea comentarioArea = new TextArea((String) fila.get("COMENTARIOITEM"));
             comentarioArea.setWrapText(true);
             comentarioArea.setEditable(false);
@@ -793,13 +815,16 @@ public class OrdenTrabajoVista {
                             ? "-fx-text-fill: green;" : "-fx-text-fill: red;"
             );
 
+            //BOTON DE INGRESAR DETALLE DE REPARACION
             Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
-
             botonIngresarDetalleRep.setOnAction(e -> {
                 String seleccionado = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
 
                 if(seleccionado != null){
-                    mostrarFormDetalleRep(seleccionado);
+                    mostrarFormDetalleRep(seleccionado, ()-> {
+                        List<Map<String, Object>> nuevosDatos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
+                        construirVistaOrden(contenedor, nuevosDatos, ordenId);
+                    });
                 }else{
                     mostrarAdvertencia("Debe seleccionar una máquina para ingresar detalle de reparación");
                 }
@@ -811,7 +836,11 @@ public class OrdenTrabajoVista {
             btnAgregarPresupuesto.setOnAction(e -> {
                 String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
                 if (maquinaId != null) {
-                    PresupuestosVista.mostrarFormCrearPresupuesto(maquinaId);
+                    PresupuestosVista.mostrarFormCrearPresupuesto(maquinaId,()->
+                    {
+                        List<Map<String, Object>> nuevosDatos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
+                        construirVistaOrden(contenedor, nuevosDatos, ordenId);
+                    });
                 } else {
                     mostrarAdvertencia("El id de máquina es nulo");
                 }
@@ -822,22 +851,22 @@ public class OrdenTrabajoVista {
             btnDarDeBaja.setOnAction(e -> {
                 String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
 
-                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                                "¿Eliminar la orden con ID " + ordenId + "?",
-                                ButtonType.YES, ButtonType.NO);
-                        confirm.showAndWait().ifPresent(respuesta -> {
-                            if(respuesta == ButtonType.YES) {
-                                if(maquinaId != null){
-                                    Boolean borrado = GestionRepControl.darBajaMaquina(maquinaId);
-                                    if (borrado){
-                                        mostrarAlertaExito("Operación exitosa", "Se ha dado de baja correctamente la MAQUINA!");
-                                    }else{
-                                        mostrarAdvertencia("No se ha podido dar de baja la orden!");
-                                    }
-                                }
+                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                        "¿Eliminar la orden con ID " + ordenId + "?",
+                        ButtonType.YES, ButtonType.NO);
+                confirm.showAndWait().ifPresent(respuesta -> {
+                    if(respuesta == ButtonType.YES) {
+                        if(maquinaId != null){
+                            Boolean borrado = GestionRepControl.darBajaMaquina(maquinaId);
+                            if (borrado){
+                                mostrarAlertaExito("Operación exitosa", "Se ha dado de baja correctamente la MAQUINA!");
+                            }else{
+                                mostrarAdvertencia("No se ha podido dar de baja la orden!");
                             }
-                        })
-            ;}
+                        }
+                    }
+                })
+                ;}
             );
 
             contenedor.getChildren().addAll(
@@ -854,13 +883,6 @@ public class OrdenTrabajoVista {
             );
             contador++;
         }
-        ScrollPane scrollPane = new ScrollPane(contenedor);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefViewportHeight(500);
-
-        Scene scene = new Scene(scrollPane, 600, 650);
-        ventanaVerOrden.setScene(scene);
-        ventanaVerOrden.show();
     }
 
     //MOSTRAR ALERTA DE EXITO
@@ -873,12 +895,12 @@ public class OrdenTrabajoVista {
     }
 
     //CAMBIAR ESTADO ORDEN POR ID
-    private void cambiarEstadoOrden(String ordenId) {
-        System.out.println("CAMBIAR ESTADO ORDEN");
+    static void cambiarEstadoOrden(String ordenId) {
+
     }
 	
 	//ELIMINAR ORDEN POR ID
-	private void eliminarOrdenPorId(String ordenId) {
+	private static void eliminarOrdenPorId(String ordenId) {
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Opciones de baja");
         alert.setHeaderText("Seleccione una opcion: ");
@@ -1055,7 +1077,7 @@ public class OrdenTrabajoVista {
     }
 
     //MOSTRAR ORDENES INACTIVAS
-    public void listarOrdenesInactivasVista(){;
+    public static void listarOrdenesInactivasVista(){;
         ObservableList<ObservableList<String>> resultado = GestionRepControl.listarOrdenesInactivas();
         if (resultado == null || resultado.isEmpty()) {
             Alert a = new Alert(Alert.AlertType.INFORMATION, "No se encontraron resultados.");

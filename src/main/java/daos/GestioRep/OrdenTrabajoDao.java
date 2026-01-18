@@ -128,7 +128,6 @@ public class OrdenTrabajoDao {
     }
 
     //DAR DE BAJA ORDEN
-
     public static Boolean darDeBajaOrdenDB(String ordenId){
 
         String sql = "UPDATE ORDEN_DE_TRABAJO" +
