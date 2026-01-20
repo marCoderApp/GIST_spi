@@ -1,8 +1,15 @@
 package vistas.Notificacion;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+import controladores.GestionRepControl;
 import controladores.NotificacionesControlador;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -12,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelos.Notificacion.NovedadItem;
 import modelos.Notificacion.NovedadModelo;
@@ -167,7 +175,8 @@ public class NovedadesVista {
         btnAgregarItem.setOnAction(e -> {
 
             if (contenedorItems.getChildren().size() >= 5) {
-                mostrarError("Solo se permiten hasta 5 ítems por novedad.");
+                mostrarError("Solo se permiten hasta 5 ítems por novedad.",
+                        "Advertencia");
                 return;
             }
 
@@ -220,7 +229,8 @@ public class NovedadesVista {
                     }
                 }
             if(items.isEmpty()){
-                mostrarError("Debe agregar al menos un item a la novedad");
+                mostrarError("Debe agregar al menos un item a la novedad",
+                        "Ocurrió error");
             }
 
             NovedadModelo nuevaNovedad = new NovedadModelo(
@@ -239,7 +249,8 @@ public class NovedadesVista {
                 ventanaFormNovedades.close();
 
             }else{
-                mostrarError("No se pudo guardar la novedad.");
+                mostrarError("No se pudo guardar la novedad.", "Ocurrió" +
+                        " un error");
             }
 
 
@@ -267,14 +278,109 @@ public class NovedadesVista {
 
         //MOSTRAR NOVEDADES
     public void mostrarListaNovedades(){
-        System.out.println("LISTA DE NOVEDADES");
+        Stage ventana = new Stage();
+        ventana.setTitle("Lista de novedades");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        TableView<ObservableList<String>> table = new TableView<>();
+
+        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+
+        String[] nombresCampos = {
+                "Id", "Orden_id", "Comentario",
+                "Fecha", "Admin_id"
+        };
+
+        for(String nombreCampo : nombresCampos){
+            final int colIndex = table.getColumns().size();
+            TableColumn<ObservableList<String>, String> columna =
+                    new TableColumn<>(nombreCampo);
+
+            columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
+                    (param.getValue().size() > colIndex) ?
+                            param.getValue().get(colIndex) : ""));
+            columna.setPrefWidth(switch(nombreCampo){
+                case "Id" -> 100;
+                case "Orden_id" -> 100;
+                case "Comentario" -> 150;
+                case "Fecha" -> 150;
+                case "Admin_id" -> 120;
+                default -> 120;
+            });
+            table.getColumns().add(columna);
+        }
+
+        String consultaSQL = "SELECT N.ID, I.ORDENID, I.COMENTARIOITEM, " +
+                "N.FECHA, N.ADMIN_ID FROM NOVEDADES N" +
+                " JOIN NOVEDAD_ITEM I ON N.ID = I.NOVEDADID" +
+                " ORDER BY FECHA ASC";
+
+        try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
+            ResultSet resultado = consultaPreparada.executeQuery();
+
+            while (resultado.next()) {
+                ObservableList<String> fila =
+                        FXCollections.observableArrayList();
+
+                String id= resultado.getString("Id");
+                String orden_id = resultado.getString("OrdenId");
+                String comentario = resultado.getString("ComentarioItem");
+                String fecha = resultado.getString("Fecha");
+                String admin_id = resultado.getString("Admin_id");
+
+                if(admin_id == null) {
+                 admin_id = "0";
+                }
+
+                //INSERTAR VARIABLES EN FILA
+                fila.addAll(id, orden_id, comentario, fecha, admin_id.toString());
+
+                //INSERTAR CADA FILA EN DATOS
+                datos.add(fila);
+            }
+
+            //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
+            table.setItems(datos);
+    }catch (SQLException e) {
+        mostrarError("Error al listar items!", "Ocurrió un error");
+        e.printStackTrace();
+        }
+
+        Button btnVerNovedad = new Button("Ver");
+        Button btnEditar = new Button("Editar");
+        Button btnEliminar = new Button("Eliminar");
+        Button btnCerrar = new Button("Cerrar");
+
+        btnVerNovedad.setOnAction(e->{
+
+        });
+
+        btnEliminar.setOnAction(e->{});
+
+        btnEditar.setOnAction(e->{});
+
+        btnCerrar.setOnAction(e -> {});
+
+        //LAYOUT
+        HBox botonesBox = new HBox(10,
+                btnVerNovedad, btnEditar, btnEliminar, btnCerrar);
+
+        botonesBox.setAlignment(Pos.CENTER);
+        botonesBox.setSpacing(10);
+
+        VBox layout = new VBox(10, table, botonesBox);
+        layout.setPadding(new Insets(10, 10, 10, 0));
+
+        Scene scene = new Scene(layout);
+        ventana.setScene(scene);
+        ventana.show();
     }
 
     //MOSTRAR ERRORES
-    private static void mostrarError(String mensaje){
+    private static void mostrarError(String mensaje, String header){
         Alert alerta = new Alert(Alert.AlertType.ERROR);
         alerta.setTitle("Error");
-        alerta.setHeaderText("No se pudo guardar");
+        alerta.setHeaderText(header);
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
