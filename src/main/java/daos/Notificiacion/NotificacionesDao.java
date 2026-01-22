@@ -17,7 +17,7 @@ public static List<Map<String, Object>> obtenerDatosNovedadBD(String nov_id){
     List<Map<String, Object>> resultados = new ArrayList<>();
 
     String sql = "SELECT N.ID, N.FECHA, N.ADMIN_ID, " +
-            "NI.ITEMID, NI.ORDENID, NI.COMENTARIO FROM NOVEDADES N" +
+            "NI.ITEMID, NI.ORDENID, NI.COMENTARIOITEM FROM NOVEDADES N" +
             " JOIN NOVEDAD_ITEM NI ON N.ID = NI.NOVEDADID" +
             " WHERE N.ID = ? " +
             "ORDER BY N.ID";
@@ -34,7 +34,7 @@ public static List<Map<String, Object>> obtenerDatosNovedadBD(String nov_id){
                 fila.put("FECHA", rs.getString("FECHA"));
                 fila.put("ADMIN_ID", rs.getString("ADMIN_ID"));
                 fila.put("ITEMID", rs.getString("ITEMID"));
-                fila.put("COMENTARIO", rs.getString("COMENTARIO"));
+                fila.put("COMENTARIO", rs.getString("COMENTARIOITEM"));
                 fila.put("ORDENID", rs.getString("ORDENID"));
                 resultados.add(fila);
             }

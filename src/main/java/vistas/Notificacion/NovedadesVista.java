@@ -26,6 +26,7 @@ import modelos.Notificacion.NovedadModelo;
 import java.util.*;
 import modelos.GestionRep.OrdenTrabajoModelo;
 import vistas.GestionRep.OrdenTrabajoVista;
+import vistas.GestionRep.PresupuestosVista;
 
 
 public class NovedadesVista {
@@ -312,7 +313,7 @@ public class NovedadesVista {
 
         String consultaSQL = "SELECT N.ID, I.ORDENID, I.COMENTARIOITEM, " +
                 "N.FECHA, N.ADMIN_ID FROM NOVEDADES N" +
-                " JOIN NOVEDAD_ITEM I ON N.ID = I.NOVEDADID" +
+                " LEFT JOIN NOVEDAD_ITEM I ON N.ID = I.NOVEDADID" +
                 " ORDER BY FECHA ASC";
 
         try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
@@ -351,7 +352,14 @@ public class NovedadesVista {
         Button btnCerrar = new Button("Cerrar");
 
         btnVerNovedad.setOnAction(e->{
-
+            ObservableList<String> seleccionado = table.getSelectionModel()
+                    .getSelectedItem();
+            String nov_id = seleccionado.get(0);
+                if (nov_id != null || nov_id.isEmpty()){
+                    verNovedad(nov_id);
+                }else{
+                    OrdenTrabajoVista.mostrarAdvertencia("Debe seleccionar una novedad para ver");
+                }
         });
 
         btnEliminar.setOnAction(e->{
@@ -395,8 +403,8 @@ public class NovedadesVista {
     public void verNovedad(String nov_id){
         List<Map<String, Object>> datos = NotificacionesControlador.obtenerNovedadPorId(nov_id);
 
-        Stage ventanaVerOrden = new Stage();
-        ventanaVerOrden.setTitle("Novedad: " + nov_id);
+        Stage ventanaVerNovedad = new Stage();
+        ventanaVerNovedad.setTitle("Novedad: " + nov_id);
 
         //TITULO
         Label titulo = new Label("Novedad - " + nov_id);
@@ -407,13 +415,48 @@ public class NovedadesVista {
         contenedor.setPadding(new Insets(15));
         contenedor.getChildren().add(titulo);
 
-        //AQUI VA EL CONSTRUIR VIDA DE NOVEDAD
+        //Metodo para construir la vista de novedad
+        construirVistaNovedad(contenedor, datos);
+
+        ScrollPane scrollPane = new ScrollPane(contenedor);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(500);
+
+        Scene scene = new Scene(scrollPane, 600, 650);
+        ventanaVerNovedad.setScene(scene);
+        ventanaVerNovedad.show();
     }
 
     public static void construirVistaNovedad(VBox contenedor,
-                                             List<Map<String, Object>> datos,
-                                             String nov_id) {
+                                             List<Map<String, Object>> datos) {
         //AQUI VA EL RESTO PARA PODER VER LA ORDEN
+        contenedor.getChildren().clear();
+        int contador = 1;
+        for (Map<String, Object> fila : datos) {
+            Label numItem = new Label("Item número: " + contador);
+            numItem.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+            Label lblFecha = new Label("Fecha creación: " + (fila.get("FECHA")));
+            Label lblComentario = new Label("Comentario: ");
+            TextArea comentarioArea = new TextArea((String) fila.get("COMENTARIO"));
+            comentarioArea.setWrapText(true);
+            comentarioArea.setPromptText("Sin comentario");
+            comentarioArea.setEditable(false);
+            comentarioArea.setPrefRowCount(5);
+            Label lblAdminID = new Label("Admin ID: " + fila.get("ADMIN_ID"));
+            Label lblItemID = new Label("Item ID: " + fila.get("ITEMID"));
+            Label lblOrdenID = new Label("Orden ID: " + fila.get("OrdenID"));
+
+            contenedor.getChildren().addAll(
+                   numItem,
+                    lblFecha,
+                    new Separator(),
+                    lblComentario, comentarioArea,
+                    lblAdminID, lblItemID, lblOrdenID,
+                    new Separator(),
+                    new Separator()
+            );
+            contador++;
+        }
     }
 	
 	//Getters and Setters
