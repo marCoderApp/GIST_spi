@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelos.GestionRep.ClienteModelo;
 
@@ -257,93 +258,191 @@ public class ClientesVista {
 	}
 
 	//BUSCAR CLIENTE
-    public ClienteModelo buscarCliente(){
+    public void buscarCliente(){
+        //VENTANA
+        Stage ventana = new Stage();
+        ventana.setTitle("Busqueda de Cliente");
 
-        TextInputDialog dialogo = new TextInputDialog();
-        dialogo.setTitle("Buscar cliente");
-        dialogo.setHeaderText("Ingrese nombre o apellido del cliente");
-        dialogo.setContentText("Busqueda:");
+        //TITULO
+        Label titulo = new Label("Elija criterio de búsqueda");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
-        Optional<String> resultado = dialogo.showAndWait();
+        //DROPDOWN
+        ComboBox<String> criterioOpciones = new ComboBox<>();
+        criterioOpciones.getItems().addAll("Cliente_ID",
+                "Apellido",
+                "Nombre",
+                "Empresa",
+                "CUIT",
+                "DNI",
+                "Telefono");
+        criterioOpciones.setPromptText("Seleccione un criterio");
+        criterioOpciones.setPrefWidth(200);
 
-        if(resultado.isPresent() && !resultado.get().trim().isEmpty()){
-            String criterio = resultado.get().trim();
+        //BOTONES
+        Button botonBuscar = new Button("Aceptar");
+        Button botonCancelar = new Button("Cancelar");
 
-            List<ClienteModelo> clientesEncontrados = buscarClientesPorNombre(criterio);
-            
-            if(clientesEncontrados.isEmpty()) {
-            	Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-            	alerta.setTitle("No hay clientes - Lista vacía");
-            	alerta.setHeaderText("No se han encontrado clientes");
-            	alerta.showAndWait();
-            }else {
-            	mostrarResultadosBusqueda(clientesEncontrados);
+        botonBuscar.setOnAction(e-> {
+            String criterioSeleccionado = criterioOpciones.getValue();
+
+            if(criterioSeleccionado == null){
+                mostrarAdvertencia("Debe seleccionar un criterio de busqueda para continuar!!");
+                return;
             }
-        }
 
-        return null;
+            String criterio = switch (criterioSeleccionado) {
+                case "CLIENTE ID" -> "CLIENTE_ID";
+                case "Nombre" -> "NOMBRE";
+                case "Apellido" -> "APELLIDO";
+                case "Empresa" -> "EMPRESA";
+                case "CUIT" -> "CUIT";
+                case "DNI" -> "MARCA";
+                case "Telefono" -> "TELEFONO";
+                default -> null;
+            };
+
+            if(criterio == null) {
+                mostrarAdvertencia("Criterio de búsqueda no reconocido: " + criterioSeleccionado);
+                return;
+            }
+
+            mostrarFormBusquedaCliente(criterio, criterioSeleccionado);
+
+        });
+        botonBuscar.setStyle("-fx-base: #008000;");
+
+        botonCancelar.setOnAction(e -> ventana.close());
+        botonCancelar.setStyle("-fx-base: #FF0000;");
+
+        //BOTON LAYOUT
+        HBox botonLayout = new HBox(10, botonBuscar, botonCancelar);
+        botonLayout.setAlignment(Pos.CENTER);
+
+        //LAYOUT
+        VBox layout = new VBox(10, titulo, criterioOpciones, botonLayout);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout);
+        ventana.setScene(escena);
+        ventana.show();
     }
-    
-    //BUSCAR CLIENTE POR NOMBRE
-    private List<ClienteModelo> buscarClientesPorNombre(String criterio){
-    	List<ClienteModelo> resultados = new ArrayList<>();
-    	
-    	String sqlBusqueda = "SELECT * FROM CLIENTE WHERE"
-    			+ " LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ?";
-    	
-    	try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlBusqueda)){
-    		ps.setString(1, "%" + criterio.toLowerCase() + "%");
-    		ps.setString(2, "%" + criterio.toLowerCase() + "%");
-    		
-    		ResultSet rs = ps.executeQuery();
-    		
-    		while(rs.next()) {
-    			ClienteModelo cliente = new ClienteModelo(
-    					rs.getString("nombre"),
-    					rs.getString("apellido"),
-    					rs.getString("empresa"),
-    					rs.getString("telefono"),
-    					rs.getString("cuit"),
-    					rs.getString("dni")
-    					);
-    			cliente.setClienteId(rs.getString("cliente_id"));
-    			resultados.add(cliente);
-    		}
-    		
-    	}catch(SQLException e) {
-    		e.printStackTrace();
-    	}
-    	
-    	return resultados;
-    }
-    
-    //MOSTRAR RESULTADOS
-    private void mostrarResultadosBusqueda(List<ClienteModelo> clientes) {
-    	Stage ventanaResultados = new Stage();
-    	ventanaResultados.setTitle("Resultados de la Búsqueda");
-    	
-    	TableView<ClienteModelo> tablaResultados = new TableView<>();
-    	
-    	ObservableList<ClienteModelo> datos = FXCollections.observableArrayList(clientes);
-    	
-    	//COLUMNAS
-    	TableColumn<ClienteModelo, String> columnaId = new TableColumn<>("ID");
-		columnaId.setCellValueFactory(new PropertyValueFactory<>("Cliente_id"));
-		
-		TableColumn<ClienteModelo, String> columnaNombre = new TableColumn<>("Nombre");
-		columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-		
-		TableColumn<ClienteModelo, String> columnaApellido = new TableColumn<>("apellido");
-		columnaApellido.setCellValueFactory(new PropertyValueFactory<>("Apellido"));
-		
-		TableColumn<ClienteModelo, String> columnaEmpresa = new TableColumn<>("Empresa");
-		columnaEmpresa.setCellValueFactory(new PropertyValueFactory<>("empresa"));
-		
-		TableColumn<ClienteModelo, String> columnaCuit = new TableColumn<>("CUIT");
-		columnaCuit.setCellValueFactory(new PropertyValueFactory<>("cuit"));
-    	
-		TableColumn<ClienteModelo, String> columnaDni = new TableColumn<>("DNI");
-		columnaDni.setCellValueFactory(new PropertyValueFactory<>("dni"));
+
+    //MOSTAR FORM BUSQUEDA DE CLIENTE
+    public void mostrarFormBusquedaCliente(String criterio, String criterioSeleccionado){
+        Stage ventana = new Stage();
+        ventana.setTitle("Busqueda de orden avanzada por:");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        //TITULO
+        Label titulo = new Label("Busqueda de orden avanzada");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUT
+        TextField inputDato = new TextField();
+        inputDato.setPromptText("Ingrese dato de busqueda");
+        inputDato.setPrefWidth(20);
+
+        //BOTON BUSCAR
+        Button botonBuscar = new Button("Buscar");
+        botonBuscar.setOnAction(e -> {
+                    String dato = inputDato.getText();
+                    ObservableList<ObservableList<String>> resultado = GestionRepControl.buscarClientePorCriterio(criterio, dato);
+                    if (resultado == null || resultado.isEmpty()) {
+                        Alert a = new Alert(Alert.AlertType.INFORMATION, "No se encontraron resultados.");
+                        a.setHeaderText("Búsqueda");
+                        a.showAndWait();
+                        return;
+                    }
+
+                    //TABLA DE RESULTADOS DE BUSQUEDA
+                    TableView<ObservableList<String>> tabla =
+                            new TableView<>();
+                    tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+                    String[] nombresCampos = {
+                            "Cliente_ID",
+                            "Nombre",
+                            "Apellido",
+                            "Empresa",
+                            "Telefono",
+                            "CUIT",
+                            "DNI",
+                    };
+
+                    //AGREGAR NOMBRES A COLUMNAS DINAMICAMENTE
+                    for(String nombreCampo : nombresCampos) {
+                        final int colIndex = tabla.getColumns().size();
+                        TableColumn<ObservableList<String>, String> columna = new TableColumn<>(nombreCampo);
+
+                        columna.setCellValueFactory(param ->
+                                new ReadOnlyStringWrapper(param.getValue().size() > colIndex ?
+                                        param.getValue().get(colIndex) : ""));
+                        columna.setPrefWidth(switch(nombreCampo){
+                            case "Cliente_ID" -> 100;
+                            case "Nombre" -> 100;
+                            case "Apellido" -> 100;
+                            case "Telefono" -> 100;
+                            case "Empresa" -> 100;
+                            case "Maquina_ID" -> 100;
+                            case "CUIT" -> 100;
+                            case "DNI" -> 100;
+                            default -> 120;
+                        });
+                        tabla.getColumns().add(columna);
+                    }
+
+                    //AGREGAR DATOS A LA TABLA
+                    tabla.setItems(resultado);
+
+                    // Ventana resultados
+                    Stage ventanaResultados = new Stage();
+                    ventanaResultados.setTitle("Resultados de búsqueda");
+
+                    Label tituloResultados = new Label("Resultados para: " + criterioSeleccionado + " = " + dato);
+                    tituloResultados.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
+
+                    Button btnOrdenesRelacionadas = new Button(" Ordenes relacionadas");
+                    btnOrdenesRelacionadas.setOnAction(event->{
+                      String cliente_id = String.valueOf(tabla.getItems().get(0).get(0));
+
+                      mostrarListaOrdenesByClienteId(cliente_id);
+                    });
+
+                    Button btnCerrar = new Button("Cerrar");
+                    btnCerrar.setOnAction(ev -> ventanaResultados.close());
+
+                    HBox barra = new HBox(10,btnOrdenesRelacionadas, btnCerrar);
+                    barra.setAlignment(Pos.CENTER_RIGHT);
+                    barra.setPadding(new Insets(10));
+
+                    VBox layoutResultados = new VBox(10, tituloResultados, tabla, barra);
+                    layoutResultados.setPadding(new Insets(10));
+
+                    ventanaResultados.setScene(new Scene(layoutResultados, 700, 400));
+                    ventanaResultados.initOwner(ventana);
+                    ventanaResultados.show();
+    });
+
+        botonBuscar.setPrefWidth(100);
+        botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+        Button botonCancelar = new Button("Cancelar");
+        botonCancelar.setOnAction(e -> ventana.close());
+        botonCancelar.setPrefWidth(100);
+        botonCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+
+        //LAYOUT
+        HBox layoutBotones = new HBox(10, botonBuscar, botonCancelar);
+        layoutBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10, titulo, inputDato, layoutBotones);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout, 300, 150);
+        ventana.setScene(escena);
+        ventana.show();
     }
 
     //MOSTRAR MENSAJE

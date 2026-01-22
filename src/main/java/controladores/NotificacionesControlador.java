@@ -3,9 +3,12 @@ package controladores;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import daos.Notificiacion.NotificacionesDao;
 import modelos.Notificacion.NovedadModelo;
 import modelos.Notificacion.TareasModelo;
+import vistas.GestionRep.OrdenTrabajoVista;
 
 public class NotificacionesControlador {
 	
@@ -56,6 +59,34 @@ public class NotificacionesControlador {
 	public void mostrarNotificacion(String notificacionId) {
 
 	}
+
+	//ELIMINAR UNA NOVEDAD
+	public static Boolean eliminarNovedad(String nov_id){
+		return false;
+	}
+
+	//OBTENER DATOS DE NOVEDAD POR ID
+	public static List<Map<String, Object>> obtenerNovedadPorId(String nov_id){
+
+		if(nov_id==null){
+			return null;
+		}
+
+		List<Map<String, Object>> resultados;
+
+		try{
+			resultados = NotificacionesDao.obtenerDatosNovedadBD(nov_id);
+
+		} catch (RuntimeException e) {
+			OrdenTrabajoVista.mostrarAdvertencia("Ocurrió un error al obtener" +
+					" datos de NOVEDAD.");
+			return null;
+		}
+
+
+		return resultados;
+	}
+
 	
 	
 	//Getters and Setters

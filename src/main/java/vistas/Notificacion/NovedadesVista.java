@@ -347,7 +347,6 @@ public class NovedadesVista {
         }
 
         Button btnVerNovedad = new Button("Ver");
-        Button btnEditar = new Button("Editar");
         Button btnEliminar = new Button("Eliminar");
         Button btnCerrar = new Button("Cerrar");
 
@@ -355,15 +354,18 @@ public class NovedadesVista {
 
         });
 
-        btnEliminar.setOnAction(e->{});
+        btnEliminar.setOnAction(e->{
+            String nov_id = "";
+                NotificacionesControlador.eliminarNovedad(nov_id);
+        });
 
-        btnEditar.setOnAction(e->{});
-
-        btnCerrar.setOnAction(e -> {});
+        btnCerrar.setOnAction(e -> {
+            ventana.close();
+        });
 
         //LAYOUT
         HBox botonesBox = new HBox(10,
-                btnVerNovedad, btnEditar, btnEliminar, btnCerrar);
+                btnVerNovedad, btnEliminar, btnCerrar);
 
         botonesBox.setAlignment(Pos.CENTER);
         botonesBox.setSpacing(10);
@@ -388,6 +390,31 @@ public class NovedadesVista {
     //CREAR TAREA A PARTIR DE NOVEDAD
 	public void crearTareaAPartirDeNovedad(NovedadModelo novedad) {
 	}
+
+    //VER UNA NOVEDAD
+    public void verNovedad(String nov_id){
+        List<Map<String, Object>> datos = NotificacionesControlador.obtenerNovedadPorId(nov_id);
+
+        Stage ventanaVerOrden = new Stage();
+        ventanaVerOrden.setTitle("Novedad: " + nov_id);
+
+        //TITULO
+        Label titulo = new Label("Novedad - " + nov_id);
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        //CONTENEDOR
+        VBox contenedor = new VBox(10);
+        contenedor.setPadding(new Insets(15));
+        contenedor.getChildren().add(titulo);
+
+        //AQUI VA EL CONSTRUIR VIDA DE NOVEDAD
+    }
+
+    public static void construirVistaNovedad(VBox contenedor,
+                                             List<Map<String, Object>> datos,
+                                             String nov_id) {
+        //AQUI VA EL RESTO PARA PODER VER LA ORDEN
+    }
 	
 	//Getters and Setters
 	

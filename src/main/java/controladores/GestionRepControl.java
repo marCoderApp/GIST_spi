@@ -11,6 +11,7 @@ import java.util.List;
 
 import Enums.MaquinaEstado;
 import conexion.ConexionDB;
+import daos.GestioRep.ClientesDao;
 import daos.GestioRep.MaquinaDao;
 import daos.GestioRep.OrdenTrabajoDao;
 import javafx.collections.ObservableList;
@@ -70,7 +71,6 @@ public class GestionRepControl {
     //BUSCAR ORDEN POR CRITERIO
 	public static ObservableList<ObservableList<String>> buscarOrdenCriterio(String criterio,
 																			 String inputDato) {
-
 		if (inputDato.isEmpty()) {
 			OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un dato de busqueda");
 		}else{
@@ -693,6 +693,23 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
     //DAR DE BAJA MAQUINA
     public static Boolean darBajaMaquina(String idMaquina) {
         return MaquinaDao.darDeBajaMaquinaBD(idMaquina);
+    }
+
+    //BUSCAR CLIENTE POR CRITERIO
+    public static ObservableList<ObservableList<String>>  buscarClientePorCriterio(String criterio,
+                                                                            String dato){
+        ObservableList<ObservableList<String>> resultado = null;
+        if (dato == null){
+            OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un criterio de busqueda!");
+            return null;
+        }else{
+               resultado = ClientesDao.traerResultadoBusquedaClienteDB(criterio, dato);
+
+                if(resultado == null || resultado.isEmpty()){
+                    return null;
+                }
+        }
+        return resultado;
     }
 	
 	public void crearPresupuesto(PresupuestoModelo presupuesto) {
