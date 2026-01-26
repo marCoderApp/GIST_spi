@@ -24,9 +24,12 @@ import javafx.stage.Stage;
 import modelos.Notificacion.NovedadItem;
 import modelos.Notificacion.NovedadModelo;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+
 import modelos.GestionRep.OrdenTrabajoModelo;
 import vistas.GestionRep.OrdenTrabajoVista;
-import vistas.GestionRep.PresupuestosVista;
+
+import static vistas.GestionRep.OrdenTrabajoVista.mostrarAdvertencia;
 
 
 public class NovedadesVista {
@@ -103,8 +106,8 @@ public class NovedadesVista {
 
         //LAYOUT
         VBox layout = new VBox(15);
-        layout.setAlignment(javafx.geometry.Pos.CENTER);
-        layout.setPadding(new javafx.geometry.Insets(30));
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(30));
         layout.getChildren().addAll(
           titulo,
           btnListarNovedades,
@@ -186,20 +189,24 @@ public class NovedadesVista {
             txtComentarioItem.setPrefRowCount(5);
             txtComentarioItem.setWrapText(true);
 
-            Button btnSeleccionarOrden = new Button("Vincular orden");
-            btnSeleccionarOrden.setPrefWidth(250);
-            btnSeleccionarOrden.setStyle(estiloBoton);
+            //Boton vincular orden
+            Button btnVincularOrden = new Button("Vincular orden");
+            btnVincularOrden.setPrefWidth(250);
+            btnVincularOrden.setStyle(estiloBoton);
 
-            btnSeleccionarOrden.setOnAction(event -> {
+            btnVincularOrden.setOnAction(event -> {
 
-                OrdenTrabajoVista.obtenerOrdenesDisponibles(idSeleccionado -> {
-                    btnSeleccionarOrden.setUserData(idSeleccionado);
-                    btnSeleccionarOrden.setText(idSeleccionado);
-                    btnSeleccionarOrden.setText("Orden: " + idSeleccionado);
-                });
+                String orden_id = buscarOrdenParaVincular();
+
+                if (orden_id != null){
+                    btnVincularOrden.setUserData(orden_id);
+                    btnVincularOrden.setText(orden_id);
+                }else{
+                    mostrarError("Debe seleccionar una orden!", "Orden no seleccionada!");
+                }
             });
 
-            HBox itemBox = new HBox(10, txtComentarioItem, btnSeleccionarOrden);
+            HBox itemBox = new HBox(10, txtComentarioItem, btnVincularOrden);
             contenedorItems.getChildren().add(itemBox);
             itemBox.setAlignment(Pos.CENTER);
 
@@ -216,9 +223,9 @@ public class NovedadesVista {
                         for(Node child : itemBox.getChildren()){
                             if(child instanceof TextArea area){
                                 comentarioArea = area;
-                            }else if(child instanceof Button btnSeleccionarOrden){
-                                ordenId = btnSeleccionarOrden.getUserData() != null ?
-                                        btnSeleccionarOrden.getUserData().toString() : "";
+                            }else if(child instanceof Button btnVincularOrden){
+                                ordenId = btnVincularOrden.getUserData() != null ?
+                                        btnVincularOrden.getUserData().toString() : "";
                                 System.out.println("ORDEN ID EN BOTÓN: " + ordenId);
                             }
                         }
@@ -259,6 +266,7 @@ public class NovedadesVista {
 
         btnCancelar.setOnAction(e->{ventanaFormNovedades.close();});
 
+        //layout
         VBox botonesBox = new VBox(10,
                 btnAgregarItem, btnCancelar);
 
@@ -358,7 +366,7 @@ public class NovedadesVista {
                 if (nov_id != null || nov_id.isEmpty()){
                     verNovedad(nov_id);
                 }else{
-                    OrdenTrabajoVista.mostrarAdvertencia("Debe seleccionar una novedad para ver");
+                    mostrarAdvertencia("Debe seleccionar una novedad para ver");
                 }
         });
 
@@ -427,6 +435,7 @@ public class NovedadesVista {
         ventanaVerNovedad.show();
     }
 
+    //CONSTRUIR VISTA DE NOVEDAD
     public static void construirVistaNovedad(VBox contenedor,
                                              List<Map<String, Object>> datos) {
         //AQUI VA EL RESTO PARA PODER VER LA ORDEN
@@ -458,9 +467,228 @@ public class NovedadesVista {
             contador++;
         }
     }
-	
+	//BUSCAR ORDEN PARA VINCULAR
+    public static String buscarOrdenParaVincular(){
+        AtomicReference<String> orden_id = new AtomicReference<>();
+
+        //VENTANA
+        Stage ventana = new Stage();
+        ventana.setTitle("Busqueda de Orden");
+
+        //TITULO
+        Label titulo = new Label("Elija criterio de búsqueda");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        //DROPDOWN
+        ComboBox<String> criterioOpciones = new ComboBox<>();
+        criterioOpciones.getItems().addAll("Orden ID",
+                "Apellido Cliente",
+                "Estado",
+                "Fecha ingreso",
+                "Empresa",
+                "Tipo de máquina",
+                "Marca",
+                "Telefono");
+        criterioOpciones.setPromptText("Seleccione un criterio");
+        criterioOpciones.setPrefWidth(200);
+
+        //BOTONES
+        Button botonBuscar = new Button("Aceptar");
+        Button botonCancelar = new Button("Cancelar");
+
+        botonBuscar.setOnAction(e-> {
+            String criterioSeleccionado = criterioOpciones.getValue();
+
+            if(criterioSeleccionado == null){
+                mostrarAdvertencia("Debe seleccionar un criterio de busqueda para continuar!!");
+                return;
+            }
+
+            String criterio = switch (criterioSeleccionado) {
+                case "Orden ID" -> "O.ORDEN_TRABAJO_ID";
+                case "Apellido Cliente" -> "C.APELLIDO";
+                case "Estado" -> "O.ESTADO";
+                case "Fecha ingreso" -> "O.FECHA_INGRESO";
+                case "Empresa" -> "EMPRESA";
+                case "Tipo de máquina" -> "M.TIPO";
+                case "Marca" -> "MARCA";
+                case "Telefono" -> "TELEFONO";
+                default -> null;
+            };
+
+            if(criterio == null) {
+                mostrarAdvertencia("Criterio de búsqueda no reconocido: " + criterioSeleccionado);
+                return;
+            }
+
+            orden_id.set(mostrarFormBusquedaParaVincularOrden(criterio, criterioSeleccionado,
+                    ventana));
+
+        });
+        botonBuscar.setStyle("-fx-base: #008000;");
+
+        botonCancelar.setOnAction(e -> ventana.close());
+        botonCancelar.setStyle("-fx-base: #FF0000;");
+
+        //BOTON LAYOUT
+        HBox botonLayout = new HBox(10, botonBuscar, botonCancelar);
+        botonLayout.setAlignment(Pos.CENTER);
+
+        //LAYOUT
+        VBox layout = new VBox(10, titulo, criterioOpciones, botonLayout);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout);
+        ventana.setScene(escena);
+        ventana.showAndWait();
+        return orden_id.get();
+    }
+
+
+    //MOSTRAR FORM DE BUSQUEDA PARA VINCULAR.
+    public static String mostrarFormBusquedaParaVincularOrden(String criterio,
+                                                              String seleccionado,
+                                                              Stage ventanaSeleccionada){
+        AtomicReference<String> orden_id = new AtomicReference<>();
+        Stage ventana = new Stage();
+        ventana.setTitle("Busqueda de orden avanzada por:");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        //TITULO
+        Label titulo = new Label("Busqueda de orden avanzada");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUT
+        TextField inputDato = new TextField();
+        inputDato.setPromptText("Ingrese dato de busqueda");
+        inputDato.setPrefWidth(20);
+
+        //BOTON BUSCAR
+        Button botonBuscar = new Button("Buscar");
+        botonBuscar.setOnAction(e -> {
+            String dato = inputDato.getText();
+            ObservableList<ObservableList<String>> resultado = GestionRepControl.buscarOrdenCriterio(criterio, dato);
+            if (resultado == null || resultado.isEmpty()) {
+                Alert a = new Alert(Alert.AlertType.INFORMATION, "No se encontraron resultados.");
+                a.setHeaderText("Búsqueda");
+                a.showAndWait();
+                return;
+            }
+
+            //TABLA DE RESULTADOS DE BUSQUEDA
+            TableView<ObservableList<String>> tabla =
+                    new TableView<>();
+            tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            String[] nombresCampos = {
+                    "Orden_Trabajo_ID",
+                    "Fecha_Ingreso",
+                    "Descripcion_Fallas",
+                    "Estado",
+                    "Cliente",
+                    "Empresa",
+                    "Telefono",
+                    "Maquina_ID",
+                    "Tipo",
+                    "Marca",
+                    "Modelo",
+                    "Descripcion_falla"
+            };
+
+            //AGREGAR NOMBRES A COLUMNAS DINAMICAMENTE
+            for(String nombreCampo : nombresCampos) {
+                final int colIndex = tabla.getColumns().size();
+                TableColumn<ObservableList<String>, String> columna = new TableColumn<>(nombreCampo);
+
+                columna.setCellValueFactory(param ->
+                        new ReadOnlyStringWrapper(param.getValue().size() > colIndex ?
+                                param.getValue().get(colIndex) : ""));
+                columna.setPrefWidth(switch(nombreCampo){
+                    case "Orden_trabajo_id" -> 100;
+                    case "Fecha_ingreso" -> 100;
+                    case "Descripcion_falla" -> 100;
+                    case "Estado" -> 100;
+                    case "Cliente" -> 100;
+                    case "Empresa" -> 100;
+                    case "Telefono" -> 100;
+                    case "Maquina_ID" -> 100;
+                    case "Tipo" -> 100;
+                    case "Marca" -> 100;
+                    case "Modelo" -> 100;
+                    default -> 120;
+                });
+                tabla.getColumns().add(columna);
+            }
+
+            //AGREGAR DATOS A LA TABLA
+            tabla.setItems(resultado);
+
+            // Ventana resultados
+            Stage ventanaResultados = new Stage();
+            ventanaResultados.setTitle("Resultados de búsqueda");
+
+            Label tituloResultados = new Label("Resultados para: " + seleccionado + " = " + dato);
+            tituloResultados.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+            Button btnSeleccionarOrden = new Button("Seleccionar");
+            Button btnCerrar = new Button("Cerrar");
+            btnSeleccionarOrden.setOnAction(event->{
+                    ObservableList<ObservableList<String>> ordenSeleccionada =
+                            tabla.getSelectionModel().getSelectedItems();
+
+                    if (ordenSeleccionada != null && !ordenSeleccionada.isEmpty()){
+                        orden_id.set(ordenSeleccionada.get(0).get(0));
+                        ventanaResultados.close();
+                        ventanaSeleccionada.close();
+                        ventana.close();
+                    }else{
+                        mostrarError("Debe seleccionar una orden de trabajo.",
+                                "Orden no seleccioanda!");
+                    }
+
+            });
+            btnCerrar.setOnAction(ev -> ventanaResultados.close());
+
+            //Barra de botones.
+            HBox barra = new HBox(10,btnSeleccionarOrden,
+                    btnCerrar);
+            barra.setAlignment(Pos.CENTER_RIGHT);
+            barra.setPadding(new Insets(10));
+
+            //Layout
+            VBox layoutResultados = new VBox(10, tituloResultados, tabla, barra);
+            layoutResultados.setPadding(new Insets(10));
+
+            ventanaResultados.setScene(new Scene(layoutResultados, 700, 400));
+            ventanaResultados.initOwner(ventana);
+            ventanaResultados.showAndWait();
+        });
+
+        botonBuscar.setPrefWidth(100);
+        botonBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+        Button botonCancelar = new Button("Cancelar");
+        botonCancelar.setOnAction(e -> ventana.close());
+        botonCancelar.setPrefWidth(100);
+        botonCancelar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+
+        //LAYOUT
+        HBox layoutBotones = new HBox(10, botonBuscar, botonCancelar);
+        layoutBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10, titulo, inputDato, layoutBotones);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout, 300, 150);
+        ventana.setScene(escena);
+        ventana.showAndWait();
+
+    return orden_id.get();
+    }
+
+
 	//Getters and Setters
-	
 	public String getNovedadId() {
 		return novedadId;
 	}

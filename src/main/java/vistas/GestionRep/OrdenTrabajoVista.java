@@ -1013,7 +1013,7 @@ public class OrdenTrabajoVista {
 
 	}
 
-    //OBTENER ORDENES DISPONIBLES
+    //OBTENER ORDENES DISPONIBLES PARA VINCULAR UNA ORDEN
     public static String obtenerOrdenesDisponibles(Consumer<String> callback) {
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, M.DESCRIPCION_FALLA, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
