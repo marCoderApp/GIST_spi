@@ -3,8 +3,17 @@ package vistas.GestionRep;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.control.Alert;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import modelos.GestionRep.*;
+import javafx.scene.*;
+import javafx.stage.*;
 
 public class PedidosVista {
 
@@ -88,11 +97,77 @@ public class PedidosVista {
 
     //MENU PARA REALIZAR FUNCIONALIDADES DE PEDIDOS.
 	public void mostrarMenuPedidos() {
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle("Aviso");
-        alerta.setHeaderText(null);
-        alerta.setContentText("Módulo en construcción");
-        alerta.showAndWait();
+     		Stage ventanaPedidos = new Stage();
+			 ventanaPedidos.setTitle("Pedidos");
+
+			 Label titulo = new Label("Gestion de Pedidos");
+		titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+		//botones
+		Button btnCrearPedido = new Button("Crear pedido");
+		Button btnListarPedidos = new Button("Listar pedidos");
+		Button btnBuscarPedidos = new Button("Buscar pedidos");
+		Button btnCerrar = new Button("Cerrar");
+
+		btnListarPedidos.setPrefWidth(250);
+		btnCrearPedido.setPrefWidth(250);
+		btnBuscarPedidos.setPrefWidth(250);
+		btnCerrar.setPrefWidth(250);
+
+		btnListarPedidos.setOnAction(e->{
+			System.out.println("Listar pedidos");
+		});
+
+		btnCrearPedido.setOnAction(e->{
+			System.out.println("Crear pedido");
+		});
+
+		btnBuscarPedidos.setOnAction(e->{
+			System.out.println("Buscar pedido");
+		});
+
+		btnCerrar.setOnAction(e->{
+			ventanaPedidos.close();
+		});
+
+		// Estilos
+		String estiloBoton =
+				"-fx-background-color: white;" +
+						"-fx-text-fill: black;" +
+						"-fx-border-color: black;" +
+						"-fx-border-width: 1.5;" +
+						"-fx-background-radius: 8;" +
+						"-fx-border-radius: 8;" +
+						"-fx-font-size: 14px;";
+
+		btnListarPedidos.setStyle(estiloBoton);
+		btnCrearPedido.setStyle(estiloBoton);
+		btnBuscarPedidos.setStyle(estiloBoton);
+		btnCerrar.setStyle(estiloBoton);
+
+		// Hover effects
+		Button[] botones = {btnListarPedidos, btnCrearPedido,
+				btnBuscarPedidos, btnCerrar};
+		for (Button btn : botones) {
+			btn.setOnMouseEntered(e -> btn.setStyle(estiloBoton + "-fx-background-color: #f5851c;"));
+			btn.setOnMouseExited(e -> btn.setStyle(estiloBoton));
+		}
+
+		VBox layout = new VBox(15);
+		layout.setAlignment(Pos.CENTER);
+		layout.setPadding(new Insets(30));
+		layout.getChildren().addAll(titulo,
+				btnListarPedidos,
+				btnCrearPedido,
+				btnBuscarPedidos,
+				btnCerrar);
+		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+
+
+		//Escena
+		Scene scene = new Scene(layout, 400, 450);
+		ventanaPedidos.setScene(scene);
+		ventanaPedidos.show();
     }
 	
 }
