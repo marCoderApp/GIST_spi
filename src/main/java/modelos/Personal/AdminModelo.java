@@ -9,10 +9,10 @@ import modelos.GestionRep.Credenciales;
 
 public class AdminModelo extends PersonalBase {
 
-	private int turno;
+	private String turno;
 	private Connection conexion = ConexionDB.conectar();
 	
-	public AdminModelo(String nombre, String apellido, int turno) {
+	public AdminModelo(String nombre, String apellido, String turno) {
 		super(nombre, apellido);
         this.id = generarId();
         this.turno = turno;
@@ -88,11 +88,11 @@ public class AdminModelo extends PersonalBase {
 		return apellido;
 	}
 
-	public int getTurno() {
+	public String getTurno() {
 		return turno;
 	}
 	
-	public void setTurno(int turno) {
+	public void setTurno(String turno) {
 		this.turno = turno;
 	}
 

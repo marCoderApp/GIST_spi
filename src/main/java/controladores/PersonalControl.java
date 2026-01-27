@@ -1,5 +1,6 @@
 package controladores;
 
+import daos.Personal.AdminDao;
 import modelos.GestionRep.Credenciales;
 import modelos.Personal.AdminModelo;
 import modelos.Personal.TecnicoModelo;
@@ -21,7 +22,7 @@ public class PersonalControl {
 			boolean tecnicoGuardado,
 			boolean contraseñaValida,
 			TecnicoModelo datosTecnico) {
-		this.setDatosAdministrador(new AdminModelo(null, null, 0));
+		this.setDatosAdministrador(new AdminModelo(null, null, ""));
 		this.tecnicoGuardado = false;
 		this.setContraseñaValida(false);
 		this.setDatosTecnico(new TecnicoModelo(null, null, null, 0, 0, 0));
@@ -29,7 +30,7 @@ public class PersonalControl {
 
     //VALIDAR CREDENCIALES
 	public boolean validarCredenciales(Credenciales credencialIngresada) {
-		AdminModelo user = new AdminModelo(null, null, 0);
+		AdminModelo user = new AdminModelo(null, null, "");
 		
 		Credenciales cred_bdgist = user.buscarUsuario(credencialIngresada.getUsuario());
 		
@@ -98,6 +99,20 @@ public class PersonalControl {
 		
 	}
 
+	//GUARDAR ADMIN
+	public static Boolean guardarNuevoAdmin(AdminModelo nuevoAdmin){
+		if(nuevoAdmin == null){
+			return false;
+		}
+
+		try{
+			Boolean guardado = AdminDao.guardarNuevoAdminDB(nuevoAdmin);
+			return guardado;
+		}catch(RuntimeException e){
+			e.printStackTrace();
+			return false;
+		}
+	}
 
     //REGISTRAR TECNICO
 	public TecnicoModelo registrarTecnico(TecnicoModelo tecnico) {
@@ -137,7 +152,7 @@ public class PersonalControl {
 		}
 	}
 	
-	public void registrarAdministrador(String nombre, String especialidad, int turno) {
+	public void registrarAdministrador(String nombre, String especialidad, String turno) {
         this.setDatosAdministrador(new AdminModelo(nombre, especialidad, turno));
     }
 	
@@ -145,7 +160,7 @@ public class PersonalControl {
 		
 	}
 	
-	public void modificarAdministrador(String nombre, String especialidad, int turno) {
+	public void modificarAdministrador(String nombre, String especialidad, String turno) {
 		if (this.datosAdministrador != null) {
 			this.setDatosAdministrador(new AdminModelo(nombre, especialidad, turno));
 		}

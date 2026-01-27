@@ -1,5 +1,6 @@
 package vistas.Personal;
 
+import controladores.GestionRepControl;
 import controladores.PersonalControl;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
@@ -7,24 +8,27 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import modelos.GestionRep.Credenciales;
 import modelos.GestionRep.RolCredencial;
+import modelos.Personal.AdminModelo;
 import modelos.Personal.TecnicoModelo;
 import controladores.PersonalControl;
+import vistas.GestionRep.OrdenTrabajoVista;
 
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import javafx.scene.control.Button;
 
 public class FichaUsuarioVista {
 
@@ -182,7 +186,6 @@ public class FichaUsuarioVista {
     public void opcionCrearTecnico() {
         System.out.println("CREANDO TECNICO...");
         ingresarDatosTecnico();
-
     }
 
     private TecnicoModelo ingresarDatosTecnico(){
@@ -351,6 +354,127 @@ public class FichaUsuarioVista {
     }
 
     private void opcionCrearAdmin() {
+        Stage ventana = new Stage();
+        ventana.setTitle("Creación de admin");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        //TITULO
+        Label titulo = new Label("Crear Admin");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUTS
+
+        TextField txtUsuario = new TextField();
+        txtUsuario.setPromptText("Usuario");
+        txtUsuario.setPrefWidth(100);
+
+        TextField txtNombre = new TextField();
+        txtNombre.setPromptText("Nombre");
+        txtNombre.setPrefWidth(100);
+
+        PasswordField txtContrasenia = new PasswordField();
+        txtContrasenia.setPromptText("Contraseña");
+        txtContrasenia.setPrefWidth(100);
+
+        PasswordField txtConfirmarContrasenia = new PasswordField();
+        txtConfirmarContrasenia.setPromptText("Confirmar contraseña");
+        txtConfirmarContrasenia.setPrefWidth(100);
+
+        TextField txtApellido = new TextField();
+        txtApellido.setPromptText("Ingrese apellido...");
+        txtApellido.setPrefWidth(100);
+
+        ComboBox<String> turnoCombo = new  ComboBox<>();
+        turnoCombo.setPromptText("Turno");
+        turnoCombo.getItems().addAll("Mañana", "Tarde", "Completo");
+
+        //NUEVO ADMINISTRADOR
+        AdminModelo nuevoAdmin = new AdminModelo(
+                null,
+                null,
+                null
+        );
+
+        // NUEVAS CREDENCIALES
+        Credenciales nuevaCredencial = new Credenciales(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        //BOTONES
+        //BOTONES
+        Button btnGuardar = new Button("Guardar");
+        btnGuardar.setStyle("-fx-background-color: #15bb15;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnGuardar.setOnAction(e -> {
+            String nombre = txtNombre.getText();
+            String apellido = txtApellido.getText();
+            String turno = turnoCombo.getValue() != null ?  turnoCombo.getValue() : "";
+
+
+            if(nombre == null || nombre.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
+
+            if(turno.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
+
+            if(apellido == null || apellido.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
+
+            if(txtContrasenia.getText().isEmpty() || txtConfirmarContrasenia.getText().isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
+
+            if(!txtContrasenia.getText().equals(txtConfirmarContrasenia.getText())){
+                OrdenTrabajoVista.mostrarAdvertencia("Contraseñas no coinciden");
+                return;
+            }
+
+
+                //CARGAR LOS DATOS EN EL BOTON
+                nuevoAdmin.setNombre(nombre);
+                nuevoAdmin.setApellido(apellido);
+                nuevoAdmin.setTurno(turno);
+                btnGuardar.setDisable(true);
+                boolean exito = PersonalControl.guardarNuevoAdmin(nuevoAdmin);
+
+                if(exito){
+                    OrdenTrabajoVista.mostrarAlertaExito("Admin guardado correctamente!",
+                            "El admin ha sido guardado correctamente!");
+                }else{
+                    OrdenTrabajoVista.mostrarAdvertencia(  "Verificá los datos e intentá nuevamente.");
+                }
+
+        });
+        Button btnCancelar = new Button("Cancelar");
+        btnCancelar.setStyle("-fx-background-color: #da1d38;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnCancelar.setOnAction(e -> ventana.close());
+
+        HBox barraBotones = new HBox(10, btnGuardar, btnCancelar);
+        barraBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(15, titulo, txtNombre, txtApellido, turnoCombo, barraBotones );
+        layout.setAlignment(Pos.CENTER);
+        layout.setPrefHeight(600);
+        layout.setPadding(new Insets(20));
+
+        Scene escena = new Scene(layout, 300, 300);
+        ventana.setScene(escena);
+        ventana.show();
     }
 	
 	public void abrirFicha() {
@@ -544,7 +668,7 @@ public class FichaUsuarioVista {
                 modelos.Personal.AdminModelo admin = new modelos.Personal.AdminModelo(
                         rs.getString("nombre"),
                         rs.getString("apellido"),
-                        rs.getInt("turno")
+                        rs.getString("turno")
                 );
                 admin.id = rs.getString("administrador_id");
                 resultados.add(admin);
