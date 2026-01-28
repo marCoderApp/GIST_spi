@@ -1,6 +1,7 @@
 package daos.Personal;
 
 import controladores.GestionRepControl;
+import modelos.GestionRep.Credenciales;
 import modelos.Personal.AdminModelo;
 
 import java.sql.PreparedStatement;
@@ -9,19 +10,30 @@ import java.sql.SQLException;
 public class AdminDao {
 
     //GUARDAR NUEVO ADMIN DB
-    public static Boolean guardarNuevoAdminDB(AdminModelo nuevoAdmin){
+    public static Boolean guardarNuevoAdminDB(AdminModelo nuevoAdmin,
+                                              Credenciales credencialIngresada){
       String sql = "INSERT INTO ADMINISTRADOR (ADMINISTRADOR_ID, " +
               "NOMBRE, APELLIDO, TURNO) VALUES (?, ?, ?, ?)";
+
+      String sqlCredencial = "INSERT INTO CREDENCIALES (USUARIO, CONTRASEñA, " +
+              "FECHACREACION, ADMIN_ID, TECNICO_ID, ROL) VALUES (?, ?, ?, " +
+              "?, ?, ?)";
+
 
       try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
           ps.setString(1, nuevoAdmin.getId());
           ps.setString(2, nuevoAdmin.getNombre());
           ps.setString(3, nuevoAdmin.getApellido());
           ps.setString(4, nuevoAdmin.getTurno());
+
           int filas = ps.executeUpdate();
 
-          if(filas>0){
-              return true;
+          if(filas>0 ){
+              Boolean credGuardada = Credenciales.crearCredenciales(credencialIngresada);
+
+              if(credGuardada){
+                  return true;
+              }
           }else{
               throw new SQLException();
           }
@@ -31,4 +43,6 @@ public class AdminDao {
       }
       return false;
     }
+
+    
 }

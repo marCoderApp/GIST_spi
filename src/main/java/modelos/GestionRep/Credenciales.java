@@ -29,13 +29,13 @@ public class Credenciales {
 	        this.setTecnico_id(tecnico_id);
 	    }
 
-        public boolean crearCredenciales(Credenciales credenciales) {
+        public static boolean crearCredenciales(Credenciales credenciales) {
 
             String sqlSentencia = "INSERT INTO CREDENCIALES" +
                     " (usuario, contraseña, fechaCreacion, rol, admin_id, tecnico_id)" +
                     " VALUES (?, ?, ?, ?, ?, ?);";
 
-            try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sqlSentencia)) {
+            try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlSentencia)) {
 
                 ps.setString(1, credenciales.getUsuario());
                 ps.setString(2, credenciales.getContrasena());

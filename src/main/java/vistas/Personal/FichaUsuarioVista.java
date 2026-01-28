@@ -415,7 +415,19 @@ public class FichaUsuarioVista {
             String nombre = txtNombre.getText();
             String apellido = txtApellido.getText();
             String turno = turnoCombo.getValue() != null ?  turnoCombo.getValue() : "";
+            String usuario = txtUsuario.getText();
+            String contra = txtContrasenia.getText();
+            String rol = "ADMIN";
+            String confirmarContra = txtConfirmarContrasenia.getText();
 
+            //====================
+            // AGREGAR METODO QUE COMPRUEBE SI YA EXISTE UN ADMIN CON ESE USUARIO.
+            //====================
+
+            if(usuario == null || usuario.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
 
             if(nombre == null || nombre.isEmpty()){
                 OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
@@ -447,12 +459,20 @@ public class FichaUsuarioVista {
                 nuevoAdmin.setNombre(nombre);
                 nuevoAdmin.setApellido(apellido);
                 nuevoAdmin.setTurno(turno);
+                nuevaCredencial.setUsuario(usuario);
+                nuevaCredencial.setContrasena(contra);
+                nuevaCredencial.setRol(RolCredencial.ADMIN);
+                nuevaCredencial.setFechaCreacion(LocalDateTime.now());
+                nuevaCredencial.setAdmin_id(nuevoAdmin.getId());
+                nuevaCredencial.setTecnico_id(null);
                 btnGuardar.setDisable(true);
-                boolean exito = PersonalControl.guardarNuevoAdmin(nuevoAdmin);
+
+                boolean exito = PersonalControl.guardarNuevoAdmin(nuevoAdmin, nuevaCredencial);
 
                 if(exito){
                     OrdenTrabajoVista.mostrarAlertaExito("Admin guardado correctamente!",
                             "El admin ha sido guardado correctamente!");
+                    ventana.close();
                 }else{
                     OrdenTrabajoVista.mostrarAdvertencia(  "Verificá los datos e intentá nuevamente.");
                 }
@@ -467,12 +487,17 @@ public class FichaUsuarioVista {
         HBox barraBotones = new HBox(10, btnGuardar, btnCancelar);
         barraBotones.setAlignment(Pos.CENTER);
 
-        VBox layout = new VBox(15, titulo, txtNombre, txtApellido, turnoCombo, barraBotones );
+        VBox layout = new VBox(15, titulo,
+                txtUsuario,
+                txtNombre, txtApellido,
+                txtContrasenia,
+                txtConfirmarContrasenia,
+                turnoCombo, barraBotones );
         layout.setAlignment(Pos.CENTER);
         layout.setPrefHeight(600);
         layout.setPadding(new Insets(20));
 
-        Scene escena = new Scene(layout, 300, 300);
+        Scene escena = new Scene(layout, 300, 350);
         ventana.setScene(escena);
         ventana.show();
     }

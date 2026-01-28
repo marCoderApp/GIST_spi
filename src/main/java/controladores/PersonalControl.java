@@ -100,13 +100,14 @@ public class PersonalControl {
 	}
 
 	//GUARDAR ADMIN
-	public static Boolean guardarNuevoAdmin(AdminModelo nuevoAdmin){
+	public static Boolean guardarNuevoAdmin(AdminModelo nuevoAdmin,
+											Credenciales credencialIngresada){
 		if(nuevoAdmin == null){
 			return false;
 		}
 
 		try{
-			Boolean guardado = AdminDao.guardarNuevoAdminDB(nuevoAdmin);
+			Boolean guardado = AdminDao.guardarNuevoAdminDB(nuevoAdmin, credencialIngresada);
 			return guardado;
 		}catch(RuntimeException e){
 			e.printStackTrace();
