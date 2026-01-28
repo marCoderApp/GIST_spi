@@ -44,5 +44,22 @@ public class AdminDao {
       return false;
     }
 
-    
+    //COMPRAR EXISTENCIA DE ADMIN BY USER
+    public static Boolean comprobarExistenciaAdmin(String usuario){
+        String sql = "SELECT * FROM CREDENCIALES WHERE USUARIO = ?";
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, usuario);
+            ps.executeQuery();
+
+            if(ps.getResultSet().next()){
+                return true;
+            }else{
+                return false;
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

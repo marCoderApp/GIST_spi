@@ -2,6 +2,7 @@ package vistas.Personal;
 
 import controladores.GestionRepControl;
 import controladores.PersonalControl;
+import daos.Personal.AdminDao;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -423,6 +424,13 @@ public class FichaUsuarioVista {
             //====================
             // AGREGAR METODO QUE COMPRUEBE SI YA EXISTE UN ADMIN CON ESE USUARIO.
             //====================
+
+            Boolean siExiste = AdminDao.comprobarExistenciaAdmin(usuario);
+
+            if (siExiste){
+                OrdenTrabajoVista.mostrarAdvertencia("El usuario ya existe");
+                return;
+            }
 
             if(usuario == null || usuario.isEmpty()){
                 OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
