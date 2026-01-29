@@ -2,6 +2,7 @@ package vistas.Personal;
 
 import controladores.PersonalControl;
 import daos.Personal.AdminDao;
+import daos.Personal.TecnicoDao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -84,7 +85,16 @@ public class FichaUsuarioVista {
         botonVolver.setPrefWidth(250);
 
         //ACCIONES DE BOTONES
-        botonCrearAdmin.setOnAction(e -> opcionCrearAdmin());
+        botonCrearAdmin.setOnAction(e -> {
+                    int numAdmins = AdminDao.contarAdmins();
+                    if(numAdmins >= 10){
+                        OrdenTrabajoVista.mostrarAdvertencia("" +
+                                "Ya ha alcanzado el número máximo de Administradores" +
+                                " que puede agregar.");
+                        return;
+                    }
+                    opcionCrearAdmin();
+                });
         botonListarAdmins.setOnAction(e -> mostrarListaAdmins());
         botonBuscarAdmin.setOnAction(e->{buscarUser("ADMINISTRADOR");});
         botonVolver.setOnAction(e -> {gestionAdministradorVentana.close();});
@@ -137,7 +147,14 @@ public class FichaUsuarioVista {
         botonBuscarTecnico.setPrefWidth(250);
         botonVolver.setPrefWidth(250);
 
-        botonCrearTecnico.setOnAction(e -> opcionCrearTecnico());
+        botonCrearTecnico.setOnAction(e -> {
+            int numTecnicos = TecnicoDao.contarTecnicos();
+            if(numTecnicos >= 25){
+                OrdenTrabajoVista.mostrarAdvertencia("" +
+                        "Ha alcanzado el numero máximos de técnicos" +
+                        " admitidos.");
+            }
+            opcionCrearTecnico();});
         botonListarTecnicos.setOnAction(e -> mostrarListaTecnicos());
         botonBuscarTecnico.setOnAction(e -> buscarUser("TECNICO"));
         botonVolver.setOnAction(e -> gestionTecnicosVentana.close());
@@ -569,11 +586,6 @@ public class FichaUsuarioVista {
 
         tablaTecnicos.setItems(datos);
 
-        //BOTONES
-        Button btnVer = new Button("Ver");
-        btnVer.setPrefWidth(100);
-        btnVer.setOnAction(e -> {});
-
         Button btnEditar = new Button("Editar");
         btnEditar.setPrefWidth(100);
         btnEditar.setOnAction(e -> {});
@@ -587,7 +599,7 @@ public class FichaUsuarioVista {
         btnVolver.setOnAction(e -> ventanaListarTecnicos.close());
 
         //LAYOUT
-        HBox hbox = new HBox(10, btnVer, btnEditar, btnEliminar, btnVolver);
+        HBox hbox = new HBox(10, btnEditar, btnEliminar, btnVolver);
 
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(10));
@@ -642,24 +654,22 @@ public class FichaUsuarioVista {
         tablaAdmins.setItems(datos);
 
         //BOTONES
-        Button btnVer = new Button("Ver");
-        btnVer.setPrefWidth(100);
-        btnVer.setOnAction(e -> {});
-
         Button btnEditar = new Button("Editar");
         btnEditar.setPrefWidth(100);
         btnEditar.setOnAction(e -> {});
 
         Button btnEliminar = new Button("Eliminar");
         btnEliminar.setPrefWidth(100);
-        btnEliminar.setOnAction(e -> {});
+        btnEliminar.setOnAction(e -> {
+
+        });
 
         Button btnVolver = new Button("Volver");
         btnVolver.setPrefWidth(100);
         btnVolver.setOnAction(e -> ventanaListarAdmins.close());
 
         //LAYOUT
-        HBox hbox = new HBox(10, btnVer, btnEditar, btnEliminar, btnVolver);
+        HBox hbox = new HBox(10, btnEditar, btnEliminar, btnVolver);
 
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(10));

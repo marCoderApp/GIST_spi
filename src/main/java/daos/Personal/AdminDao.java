@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminDao {
+    private static final int  MAX_ADMINS_AMOUNT = 10;
 
     //GUARDAR NUEVO ADMIN DB
     public static Boolean guardarNuevoAdminDB(AdminModelo nuevoAdmin,
@@ -65,6 +66,17 @@ public class AdminDao {
         return false;
     }
 
+    //CONTAR NUMERO DE ADMINS
+    public static int contarAdmins(){
+        String sql = "SELECT COUNT(*) AS c FROM ADMINISTRADOR";
+        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            java.sql.ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt("c");
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
     //OBTENER LISTA DE ADMINS
     public static List<AdminModelo> obtenerListaAdminsDB(){
