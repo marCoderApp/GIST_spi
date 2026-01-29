@@ -1,9 +1,7 @@
 package vistas.Personal;
 
-import controladores.GestionRepControl;
 import controladores.PersonalControl;
 import daos.Personal.AdminDao;
-import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -19,15 +17,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import modelos.GestionRep.Credenciales;
 import modelos.GestionRep.RolCredencial;
 import modelos.Personal.AdminModelo;
 import modelos.Personal.TecnicoModelo;
-import controladores.PersonalControl;
 import vistas.GestionRep.OrdenTrabajoVista;
 
-import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -90,7 +85,7 @@ public class FichaUsuarioVista {
 
         //ACCIONES DE BOTONES
         botonCrearAdmin.setOnAction(e -> opcionCrearAdmin());
-        botonListarAdmins.setOnAction(e -> mostrarLista());
+        botonListarAdmins.setOnAction(e -> mostrarListaAdmins());
         botonBuscarAdmin.setOnAction(e->{buscarUser("ADMINISTRADOR");});
         botonVolver.setOnAction(e -> {gestionAdministradorVentana.close();});
 
@@ -143,7 +138,7 @@ public class FichaUsuarioVista {
         botonVolver.setPrefWidth(250);
 
         botonCrearTecnico.setOnAction(e -> opcionCrearTecnico());
-        botonListarTecnicos.setOnAction(e -> mostrarLista());
+        botonListarTecnicos.setOnAction(e -> mostrarListaTecnicos());
         botonBuscarTecnico.setOnAction(e -> buscarUser("TECNICO"));
         botonVolver.setOnAction(e -> gestionTecnicosVentana.close());
 
@@ -517,8 +512,9 @@ public class FichaUsuarioVista {
 	public void mostrarFichaDatos(TecnicoModelo tecnico) {
 		// Lógica para mostrar los datos del técnico
 	}
-	
-	public void mostrarLista() {
+
+    //MOSTRAR LISTA DE TECNICOS
+	public void mostrarListaTecnicos() {
 
         List<TecnicoModelo> listaTecnicos = personalControl.obtenerListaTecnicos();
         Stage ventanaListarTecnicos = new Stage();
@@ -604,6 +600,78 @@ public class FichaUsuarioVista {
         ventanaListarTecnicos.setScene(escena);
         ventanaListarTecnicos.showAndWait();
 	}
+
+    //MOSTRAR LISTA DE ADMINS
+    public void mostrarListaAdmins() {
+
+        List<AdminModelo> listaAdmins = personalControl.obtenerListaAdmins();
+        Stage ventanaListarAdmins = new Stage();
+        ventanaListarAdmins.setTitle("Lista de Órdenes de Trabajo");
+
+        //VISTA DE TABLA Y FILAS DE TIPO TECNICO MODELO
+        TableView<AdminModelo> tablaAdmins = new TableView<>();
+        ObservableList<AdminModelo> datos = FXCollections.observableArrayList();
+
+        //COLUMNAS DE LA TABLA
+        TableColumn<AdminModelo, String> columnaId = new TableColumn<>("ID");
+        columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        columnaId.setPrefWidth(80);
+
+        TableColumn<AdminModelo, String> columnaNombre = new TableColumn<>("Nombre");
+        columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        columnaNombre.setPrefWidth(80);
+
+        TableColumn<AdminModelo, String> columnaApellido = new TableColumn<>("Apellido");
+        columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        columnaApellido.setPrefWidth(50);
+
+        TableColumn<AdminModelo, String> columnaTurno = new TableColumn<>("Turno");
+        columnaTurno.setCellValueFactory(new PropertyValueFactory<>("turno"));
+        columnaTurno.setPrefWidth(80);
+
+        tablaAdmins.getColumns().addAll(columnaId,
+                columnaNombre,
+                columnaApellido,
+                columnaTurno);
+
+        //ITERAR LA LISTA DE ADMIN Y AGREGARLAS A LA TABLA
+        for (AdminModelo admin : listaAdmins) {
+            datos.add(admin);
+        }
+
+        tablaAdmins.setItems(datos);
+
+        //BOTONES
+        Button btnVer = new Button("Ver");
+        btnVer.setPrefWidth(100);
+        btnVer.setOnAction(e -> {});
+
+        Button btnEditar = new Button("Editar");
+        btnEditar.setPrefWidth(100);
+        btnEditar.setOnAction(e -> {});
+
+        Button btnEliminar = new Button("Eliminar");
+        btnEliminar.setPrefWidth(100);
+        btnEliminar.setOnAction(e -> {});
+
+        Button btnVolver = new Button("Volver");
+        btnVolver.setPrefWidth(100);
+        btnVolver.setOnAction(e -> ventanaListarAdmins.close());
+
+        //LAYOUT
+        HBox hbox = new HBox(10, btnVer, btnEditar, btnEliminar, btnVolver);
+
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setPadding(new Insets(10));
+
+        VBox layout = new VBox(10, tablaAdmins, hbox);
+        layout.setPadding(new Insets(10));
+        layout.setAlignment(Pos.CENTER);
+
+        Scene escena = new Scene(layout);
+        ventanaListarAdmins.setScene(escena);
+        ventanaListarAdmins.showAndWait();
+    }
 
     //METODO PARA BUSCAR ADMINISTRADOR POR NOMBRE
     private void buscarUser(String rol) {

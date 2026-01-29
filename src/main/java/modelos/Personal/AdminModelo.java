@@ -96,6 +96,10 @@ public class AdminModelo extends PersonalBase {
 		this.turno = turno;
 	}
 
+	public void setId(String id){
+		this.id = id;
+	}
+
     @Override
     public String getRol(){
         return "ADMIN";

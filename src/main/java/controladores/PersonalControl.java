@@ -156,7 +156,18 @@ public class PersonalControl {
 	public void registrarAdministrador(String nombre, String especialidad, String turno) {
         this.setDatosAdministrador(new AdminModelo(nombre, especialidad, turno));
     }
-	
+
+    //MOSTRAR DATOS DE ADMINS
+    public static List<AdminModelo> obtenerListaAdmins(){
+
+		List<AdminModelo> listaAdmins = AdminDao.obtenerListaAdminsDB();
+
+		if(listaAdmins != null){
+			return listaAdmins;
+		}
+		return null;
+	}
+
 	public void eliminarAdministrador(String adminId) {
 		
 	}

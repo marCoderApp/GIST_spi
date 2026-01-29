@@ -6,6 +6,8 @@ import modelos.Personal.AdminModelo;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminDao {
 
@@ -61,5 +63,37 @@ public class AdminDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+
+    //OBTENER LISTA DE ADMINS
+    public static List<AdminModelo> obtenerListaAdminsDB(){
+        String sql = "SELECT * FROM ADMINISTRADOR";
+        List<AdminModelo> listaAdmins = new ArrayList<>();
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            java.sql.ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                String administradorId = rs.getString("administrador_id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String turno = rs.getString("turno");
+
+                AdminModelo adminModelo = new AdminModelo(
+                        nombre,
+                        apellido,
+                        turno
+                );
+
+                adminModelo.setId(administradorId);
+                listaAdmins.add(adminModelo);
+            }
+        return listaAdmins;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
