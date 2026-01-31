@@ -1,6 +1,7 @@
 package com.mfernandez.spi.gist;
 
 
+import daos.Personal.AdminDao;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,17 +18,30 @@ import vistas.Personal.*;
 import vistas.Notificacion.*;
 import conexion.ConexionDB;
 import java.sql.Connection;
+import java.sql.SQLException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 public class MainFX extends Application {
 	
 	  @Override
-	    public void start(Stage stage) {
+	    public void start(Stage stage) throws SQLException {
 		  OrdenTrabajoVista ordenVista = new OrdenTrabajoVista(null, null, null, null, null, null, null, null, null);
 		  // Conexión y credenciales
 	        Credenciales credenciales = new Credenciales(null, null, null, null, null, null);
 	        LoginVista loginVista = new LoginVista(null);
 	        Connection conn = ConexionDB.conectar();
+			AdminDao adminDao = new AdminDao();
+
+		  if (!adminDao.existeSuperAdmin()) {
+			  String id = "ADM000";
+			  String email = "superadmin@sistema.local"; // ideal: tomar de config
+			  String pwd = System.getenv().getOrDefault("APP_SUPERADMIN_PWD", "VALORXDEFAULT987");
+			  String hash = new BCryptPasswordEncoder().encode(pwd);
+
+			  adminDao.crearSuperAdmin(id, "Super", "Admin", email, hash);
+			  System.out.println("[BOOT] SUPER_ADMIN creado: " + email);
+		  }
 
 	        if (conn != null) {
 	            System.out.println("La conexión está funcionando correctamente");
@@ -40,6 +54,7 @@ public class MainFX extends Application {
 	            System.out.println("Credenciales inválidas. Por favor, intentalo de nuevo.");
 	            return;
 	        }
+
 
 	     //TITULO
 	        Text titulo = new Text("💻 GIST");

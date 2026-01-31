@@ -2,7 +2,8 @@ package modelos.GestionRep;
 
 public enum RolCredencial {
 	ADMIN("ADMIN"),
-    TECNICO("TECNICO");
+    TECNICO("TECNICO"),
+    SUPER_ADMIN("SUPER_ADMIN");
 
     private final String valor;
 

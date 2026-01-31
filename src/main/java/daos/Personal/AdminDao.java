@@ -2,10 +2,13 @@ package daos.Personal;
 
 import controladores.GestionRepControl;
 import modelos.GestionRep.Credenciales;
+import modelos.GestionRep.RolCredencial;
 import modelos.Personal.AdminModelo;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +20,6 @@ public class AdminDao {
                                               Credenciales credencialIngresada){
       String sql = "INSERT INTO ADMINISTRADOR (ADMINISTRADOR_ID, " +
               "NOMBRE, APELLIDO, TURNO) VALUES (?, ?, ?, ?)";
-
-      String sqlCredencial = "INSERT INTO CREDENCIALES (USUARIO, CONTRASEñA, " +
-              "FECHACREACION, ADMIN_ID, TECNICO_ID, ROL) VALUES (?, ?, ?, " +
-              "?, ?, ?)";
-
 
       try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
           ps.setString(1, nuevoAdmin.getId());
@@ -107,5 +105,48 @@ public class AdminDao {
         }
 
         return null;
+    }
+
+    //COMPROBAR SI EXISTE EL SUPER ADMIN
+    public boolean existeSuperAdmin() throws SQLException {
+        String sql = "SELECT 1 FROM admin WHERE rol = ? LIMIT 1";
+        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
+            ps.setString(1, "SUPER_ADMIN");
+            try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
+        }
+    }
+
+
+    //CREAR SUPER ADMIN
+    public void crearSuperAdmin(String id, String nombre, String apellido, String email, String hashPwd) throws SQLException {
+        String sql = "INSERT INTO ADMINISTRADOR (ADMINISTRADOR_ID, " +
+                "NOMBRE, APELLIDO, TURNO) VALUES (?, ?, ?, ?)";
+
+        Credenciales credencialIngresada = new Credenciales(
+                "ADMIN_BASE",
+                hashPwd,
+                RolCredencial.SUPER_ADMIN,
+                LocalDateTime.now(),
+                id,
+                null
+        );
+        
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, id);
+            ps.setString(2, nombre);
+            ps.setString(3, apellido);
+            ps.setString(4, "Completo");
+
+            int filas = ps.executeUpdate();
+
+            if(filas>0 ){
+                Boolean credGuardada = Credenciales.crearCredenciales(credencialIngresada);
+            }else{
+                throw new SQLException();
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 }
