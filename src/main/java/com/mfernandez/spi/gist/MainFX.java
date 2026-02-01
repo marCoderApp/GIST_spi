@@ -1,6 +1,7 @@
 package com.mfernandez.spi.gist;
 
 
+import conexion.PasswordHasher;
 import daos.Personal.AdminDao;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -19,8 +20,14 @@ import vistas.Notificacion.*;
 import conexion.ConexionDB;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+//JAVA SECURITY IMPORTS
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.sql.Connection;
+import java.util.Base64;
 
 public class MainFX extends Application {
 	
@@ -33,21 +40,21 @@ public class MainFX extends Application {
 	        Connection conn = ConexionDB.conectar();
 			AdminDao adminDao = new AdminDao();
 
+		  if (conn != null) {
+			  System.out.println("La conexión está funcionando correctamente");
+		  } else {
+			  System.out.println("La conexión falló");
+		  }
+
 		  if (!adminDao.existeSuperAdmin()) {
 			  String id = "ADM000";
 			  String email = "superadmin@sistema.local"; // ideal: tomar de config
-			  String pwd = System.getenv().getOrDefault("APP_SUPERADMIN_PWD", "VALORXDEFAULT987");
-			  String hash = new BCryptPasswordEncoder().encode(pwd);
+			  String pwd = System.getenv().get("SUPER_ADMIN_KEY");
+			  String hash = PasswordHasher.hash(pwd.toCharArray());
 
 			  adminDao.crearSuperAdmin(id, "Super", "Admin", email, hash);
 			  System.out.println("[BOOT] SUPER_ADMIN creado: " + email);
 		  }
-
-	        if (conn != null) {
-	            System.out.println("La conexión está funcionando correctamente");
-	        } else {
-	            System.out.println("La conexión falló");
-	        }
 
 	        // INICIO DE SESIÓN
 	        if (!loginVista.ingresarCredenciales(credenciales)) {

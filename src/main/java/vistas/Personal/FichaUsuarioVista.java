@@ -86,6 +86,12 @@ public class FichaUsuarioVista {
 
         //ACCIONES DE BOTONES
         botonCrearAdmin.setOnAction(e -> {
+
+                if(AdminDao.rolActual != "SUPER_ADMIN"){
+                    OrdenTrabajoVista.mostrarAdvertencia("No tiene permisos para crear un nuevo administrador.");
+                    return;
+                }
+
                     int numAdmins = AdminDao.contarAdmins();
                     if(numAdmins >= 10){
                         OrdenTrabajoVista.mostrarAdvertencia("" +
@@ -148,6 +154,12 @@ public class FichaUsuarioVista {
         botonVolver.setPrefWidth(250);
 
         botonCrearTecnico.setOnAction(e -> {
+
+            if(AdminDao.rolActual != "SUPER_ADMIN"){
+                OrdenTrabajoVista.mostrarAdvertencia("No tiene los permisos necesarios para crear técnico!");
+                return;
+            }
+
             int numTecnicos = TecnicoDao.contarTecnicos();
             if(numTecnicos >= 25){
                 OrdenTrabajoVista.mostrarAdvertencia("" +

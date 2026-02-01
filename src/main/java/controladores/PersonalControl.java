@@ -1,5 +1,6 @@
 package controladores;
 
+import conexion.PasswordHasher;
 import daos.Personal.AdminDao;
 import modelos.GestionRep.Credenciales;
 import modelos.Personal.AdminModelo;
@@ -40,13 +41,27 @@ public class PersonalControl {
 		    }
 		
 		filtrarIdPorRol(cred_bdgist, cred_bdgist.getRol().getValor());
+
+         String contraGuardada = cred_bdgist.getContrasena();
+         String contraIngresada = credencialIngresada.getContrasena();
 		
-		if(cred_bdgist != null && cred_bdgist.getContrasena().equals(credencialIngresada.getContrasena())) {
-			return true;
-		}else {
-			return false;
-		}
-			
+	    boolean ok;
+
+        if(contraGuardada.startsWith("pbkdf2$")) {
+            ok = PasswordHasher.verify(contraIngresada.toCharArray(), contraGuardada);
+           AdminDao.rolActual = cred_bdgist.getRol().getValor();
+        }else{
+            ok = contraGuardada.equals(contraIngresada);
+
+            if(ok){
+                String nuevoHash = PasswordHasher.hash(contraIngresada.toCharArray());
+                Credenciales.actualizarContraPorUsuario(credencialIngresada.getUsuario(), nuevoHash);
+                AdminDao.rolActual = cred_bdgist.getRol().getValor();
+            }
+
+        }
+
+     return ok;
     }
 
     //CREAR NUEVA CREDENCIAL

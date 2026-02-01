@@ -56,6 +56,19 @@ public class Credenciales {
             return false;
         }
 
+		//ACTUALIZAR CONTRASEñA POR USUARIO
+	public static boolean actualizarContraPorUsuario(String usuario, String nuevaContrasena){
+		String sql = "UPDATE CREDENCIALES SET contraseña = ? WHERE usuario = ?";
+		try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
+			ps.setString(1, nuevaContrasena);
+			ps.setString(2, usuario);
+			return ps.executeUpdate() == 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	    public String getUsuario() {
 	        return usuario;
 	    }

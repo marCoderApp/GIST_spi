@@ -14,6 +14,9 @@ import java.util.List;
 
 public class AdminDao {
     private static final int  MAX_ADMINS_AMOUNT = 10;
+    public static String adminActualId;
+    public static String tecnicoActualId;
+    public static String rolActual;
 
     //GUARDAR NUEVO ADMIN DB
     public static Boolean guardarNuevoAdminDB(AdminModelo nuevoAdmin,
@@ -31,7 +34,6 @@ public class AdminDao {
 
           if(filas>0 ){
               Boolean credGuardada = Credenciales.crearCredenciales(credencialIngresada);
-
               if(credGuardada){
                   return true;
               }
@@ -109,7 +111,7 @@ public class AdminDao {
 
     //COMPROBAR SI EXISTE EL SUPER ADMIN
     public boolean existeSuperAdmin() throws SQLException {
-        String sql = "SELECT 1 FROM admin WHERE rol = ? LIMIT 1";
+        String sql = "SELECT 1 FROM CREDENCIALES WHERE rol = ? LIMIT 1";
         try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
             ps.setString(1, "SUPER_ADMIN");
             try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
@@ -123,14 +125,14 @@ public class AdminDao {
                 "NOMBRE, APELLIDO, TURNO) VALUES (?, ?, ?, ?)";
 
         Credenciales credencialIngresada = new Credenciales(
-                "ADMIN_BASE",
+                "admin_base",
                 hashPwd,
                 RolCredencial.SUPER_ADMIN,
                 LocalDateTime.now(),
                 id,
                 null
         );
-        
+
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.setString(1, id);
             ps.setString(2, nombre);

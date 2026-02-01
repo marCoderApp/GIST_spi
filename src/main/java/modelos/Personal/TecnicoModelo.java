@@ -93,9 +93,14 @@ public class TecnicoModelo extends PersonalBase {
                 int tareasCompletadas = rs.getInt("cantidad_tareas_asignadas");
                 int tareasPendientes = rs.getInt("cantidad_tareas_pendientes");
 
-                TecnicoModelo tecnico = new TecnicoModelo(nombre, apellido, especialidad, tareasAsignadas, tareasCompletadas, tareasPendientes);
-                tecnico.setTecnicoId(tecnicoId);
-
+                TecnicoModelo tecnico = new TecnicoModelo(
+                        nombre,
+                        apellido,
+                        especialidad,
+                        tareasAsignadas,
+                        tareasCompletadas,
+                        tareasPendientes);
+            tecnico.setTecnicoId(tecnicoId);
                 listaTecnicos.add(tecnico);
             }
 
@@ -118,7 +123,7 @@ public class TecnicoModelo extends PersonalBase {
     }
 	
 	public void setTecnicoId(String tecnicoId) {
-		this.id = id;
+		this.id = tecnicoId;
 	}
 	
 	public String getNombre() {
