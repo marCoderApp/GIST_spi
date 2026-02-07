@@ -2,6 +2,8 @@ package controladores;
 
 import conexion.PasswordHasher;
 import daos.Personal.AdminDao;
+import dtos.AdminModeloDTO;
+import dtos.TecnicoModeloDTO;
 import modelos.GestionRep.Credenciales;
 import modelos.Personal.AdminModelo;
 import modelos.Personal.TecnicoModelo;
@@ -50,6 +52,7 @@ public class PersonalControl {
         if(contraGuardada.startsWith("pbkdf2$")) {
             ok = PasswordHasher.verify(contraIngresada.toCharArray(), contraGuardada);
            AdminDao.rolActual = cred_bdgist.getRol().getValor();
+		   AdminDao.adminActualId = cred_bdgist.getAdmin_id();
         }else{
             ok = contraGuardada.equals(contraIngresada);
 
@@ -92,9 +95,9 @@ public class PersonalControl {
 	}
 
     //MOSTRAR LISTA DE TECNICOS, LLAMA METODO QUE REALIZA CONSULTA EN BD
-    public List<TecnicoModelo> obtenerListaTecnicos(){
+    public List<TecnicoModeloDTO> obtenerListaTecnicos(){
 
-    List<TecnicoModelo> listaTecnicos = TecnicoModelo.obtenerListaTecnicosBD();
+    List<TecnicoModeloDTO> listaTecnicos = TecnicoModelo.obtenerListaTecnicosBD();
 
     if(listaTecnicos != null){
         return listaTecnicos;
@@ -130,6 +133,32 @@ public class PersonalControl {
 		}
 	}
 
+	//DAR DE BAJA ADMIN
+	public static Boolean darDeBajaAdminDB(String adminId){
+		try{
+
+			Boolean guardado = AdminDao.darDeBajaAdminDB(adminId);
+			return guardado;
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	//EDITAR ADMIN
+	public static Boolean editarAdmin(String adminId, AdminModelo newAdmin){
+		try{
+			Boolean editado = AdminDao.editarAdminDB(adminId, newAdmin);
+			if(editado){
+				return true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
     //REGISTRAR TECNICO
 	public TecnicoModelo registrarTecnico(TecnicoModelo tecnico) {
 		String sqlSentencia = "INSERT INTO tecnico (tecnico_id, nombre, especialidad, cantidadTareas," +
@@ -162,9 +191,12 @@ public class PersonalControl {
         this.tecnicoGuardado = false;
     }
 	
-	public void modificarTecnico(String nombre, String especialidad, int experiencia) {
-		if (this.tecnicoGuardado) {
-			this.setDatosTecnico(new TecnicoModelo(nombre, especialidad, especialidad, 0,0,0));
+	public Boolean modificarTecnico(TecnicoModelo tecnico) {
+
+		try{
+			Boolean.
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -173,9 +205,9 @@ public class PersonalControl {
     }
 
     //MOSTRAR DATOS DE ADMINS
-    public static List<AdminModelo> obtenerListaAdmins(){
+    public static List<AdminModeloDTO> obtenerListaAdmins(){
 
-		List<AdminModelo> listaAdmins = AdminDao.obtenerListaAdminsDB();
+		List<AdminModeloDTO> listaAdmins = AdminDao.obtenerListaAdminsDB();
 
 		if(listaAdmins != null){
 			return listaAdmins;

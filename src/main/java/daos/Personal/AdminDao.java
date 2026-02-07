@@ -1,6 +1,7 @@
 package daos.Personal;
 
 import controladores.GestionRepControl;
+import dtos.AdminModeloDTO;
 import modelos.GestionRep.Credenciales;
 import modelos.GestionRep.RolCredencial;
 import modelos.Personal.AdminModelo;
@@ -79,27 +80,26 @@ public class AdminDao {
     }
 
     //OBTENER LISTA DE ADMINS
-    public static List<AdminModelo> obtenerListaAdminsDB(){
-        String sql = "SELECT * FROM ADMINISTRADOR";
-        List<AdminModelo> listaAdmins = new ArrayList<>();
+    public static List<AdminModeloDTO> obtenerListaAdminsDB(){
+        String sql = "SELECT AD.ADMINISTRADOR_ID, AD.NOMBRE, AD.APELLIDO, AD.TURNO," +
+                " C.USUARIO AS USUARIO FROM ADMINISTRADOR AD " +
+                "JOIN CREDENCIALES C ON AD.ADMINISTRADOR_ID = C.ADMIN_ID" +
+                " WHERE AD.ACTIVO = TRUE" +
+                " ORDER BY AD.ADMINISTRADOR_ID";
+        List<AdminModeloDTO> listaAdmins = new ArrayList<>();
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             java.sql.ResultSet rs = ps.executeQuery();
 
             while(rs.next()){
                 String administradorId = rs.getString("administrador_id");
+                String usuario = rs.getString("usuario");
                 String nombre = rs.getString("nombre");
                 String apellido = rs.getString("apellido");
                 String turno = rs.getString("turno");
 
-                AdminModelo adminModelo = new AdminModelo(
-                        nombre,
-                        apellido,
-                        turno
-                );
-
-                adminModelo.setId(administradorId);
-                listaAdmins.add(adminModelo);
+                AdminModeloDTO adminModeloDTO = new AdminModeloDTO(administradorId, nombre, apellido, turno, usuario);
+                listaAdmins.add(adminModeloDTO);
             }
         return listaAdmins;
         }catch(SQLException e){
@@ -117,7 +117,6 @@ public class AdminDao {
             try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
         }
     }
-
 
     //CREAR SUPER ADMIN
     public void crearSuperAdmin(String id, String nombre, String apellido, String email, String hashPwd) throws SQLException {
@@ -151,4 +150,46 @@ public class AdminDao {
             e.printStackTrace();
         }
     }
+
+    //DAR DE BAJA ADMIN
+    public static Boolean darDeBajaAdminDB(String adminId){
+        String sql = "UPDATE ADMINISTRADOR SET ACTIVO = FALSE WHERE ADMINISTRADOR_ID = ?";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, adminId);
+
+            int filas = ps.executeUpdate();
+            if(filas>0){
+                return true;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    //EDITAR ADMIN
+    public static Boolean editarAdminDB(String adminId, AdminModelo newAdmin){
+
+        String sql = "UPDATE ADMINISTRADOR SET NOMBRE = ?, APELLIDO = ?, TURNO = ? WHERE ADMINISTRADOR_ID = ?";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, newAdmin.getNombre());
+            ps.setString(2, newAdmin.getApellido());
+            ps.setString(3, newAdmin.getTurno());
+            ps.setString(4, adminId);
+
+            int filas = ps.executeUpdate();
+            if(filas>0){
+                return true;
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 }

@@ -1,8 +1,11 @@
 package vistas.Personal;
 
+import controladores.GestionRepControl;
 import controladores.PersonalControl;
 import daos.Personal.AdminDao;
 import daos.Personal.TecnicoDao;
+import dtos.AdminModeloDTO;
+import dtos.TecnicoModeloDTO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -26,6 +29,8 @@ import vistas.GestionRep.OrdenTrabajoVista;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class FichaUsuarioVista {
 
@@ -545,40 +550,40 @@ public class FichaUsuarioVista {
     //MOSTRAR LISTA DE TECNICOS
 	public void mostrarListaTecnicos() {
 
-        List<TecnicoModelo> listaTecnicos = personalControl.obtenerListaTecnicos();
+        List<TecnicoModeloDTO> listaTecnicos = personalControl.obtenerListaTecnicos();
         Stage ventanaListarTecnicos = new Stage();
         ventanaListarTecnicos.setTitle("Lista de Órdenes de Trabajo");
 
         //VISTA DE TABLA Y FILAS DE TIPO TECNICO MODELO
-        TableView<TecnicoModelo> tablaTecnicos = new TableView<>();
-        ObservableList<TecnicoModelo> datos = FXCollections.observableArrayList();
+        TableView<TecnicoModeloDTO> tablaTecnicos = new TableView<>();
+        ObservableList<TecnicoModeloDTO> datos = FXCollections.observableArrayList();
 
         //COLUMNAS DE LA TABLA
-        TableColumn<TecnicoModelo, String> columnaId = new TableColumn<>("ID");
+        TableColumn<TecnicoModeloDTO, String> columnaId = new TableColumn<>("ID");
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaId.setPrefWidth(80);
 
-        TableColumn<TecnicoModelo, String> columnaNombre = new TableColumn<>("Nombre");
+        TableColumn<TecnicoModeloDTO, String> columnaNombre = new TableColumn<>("Nombre");
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaNombre.setPrefWidth(80);
 
-        TableColumn<TecnicoModelo, String> columnaApellido = new TableColumn<>("Apellido");
+        TableColumn<TecnicoModeloDTO, String> columnaApellido = new TableColumn<>("Apellido");
         columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
         columnaApellido.setPrefWidth(50);
 
-        TableColumn<TecnicoModelo, String> columnaEspecialidad = new TableColumn<>("Especialidad");
+        TableColumn<TecnicoModeloDTO, String> columnaEspecialidad = new TableColumn<>("Especialidad");
         columnaEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
         columnaEspecialidad.setPrefWidth(80);
 
-        TableColumn<TecnicoModelo, String> columnaTareasCompletadas = new TableColumn<>("Tareas completadas");
+        TableColumn<TecnicoModeloDTO, String> columnaTareasCompletadas = new TableColumn<>("Tareas completadas");
         columnaTareasCompletadas.setCellValueFactory(new PropertyValueFactory<>("cantidadTareasCompletadas"));
         columnaTareasCompletadas.setPrefWidth(50);
 
-        TableColumn<TecnicoModelo, String> columnaTareasAsignadas = new TableColumn<>("Tareas asignadas");
+        TableColumn<TecnicoModeloDTO, String> columnaTareasAsignadas = new TableColumn<>("Tareas asignadas");
         columnaTareasAsignadas.setCellValueFactory(new PropertyValueFactory<>("cantidadTareasAsignadas"));
         columnaTareasAsignadas.setPrefWidth(50);
 
-        TableColumn<TecnicoModelo, String> columnaTareasPendientes = new TableColumn<>("Tareas pendientes");
+        TableColumn<TecnicoModeloDTO, String> columnaTareasPendientes = new TableColumn<>("Tareas pendientes");
         columnaTareasPendientes.setCellValueFactory(new PropertyValueFactory<>("cantidadTareasPendientes"));
         columnaTareasPendientes.setPrefWidth(50);
 
@@ -592,7 +597,7 @@ public class FichaUsuarioVista {
 
 
         //ITERAR LA LISTA DE TECNICOS Y AGREGARLAS A LA TABLA
-        for (TecnicoModelo tecnico : listaTecnicos) {
+        for (TecnicoModeloDTO tecnico : listaTecnicos) {
             datos.add(tecnico);
         }
 
@@ -600,11 +605,26 @@ public class FichaUsuarioVista {
 
         Button btnEditar = new Button("Editar");
         btnEditar.setPrefWidth(100);
-        btnEditar.setOnAction(e -> {});
+        btnEditar.setOnAction(e -> {
 
-        Button btnEliminar = new Button("Eliminar");
+            TecnicoModeloDTO tec = tablaTecnicos.getSelectionModel().getSelectedItem();
+            if (tec == null){
+                OrdenTrabajoVista.mostrarAdvertencia("Seleccione un administrador para editar");
+            }else{
+
+                if(!AdminDao.adminActualId.equals("ADM000")){
+                    OrdenTrabajoVista.mostrarAdvertencia("No cuenta con los permisos necesarios para editar");
+                }else{
+                    mostrarFormEditarTecnico(ventanaListarTecnicos, tec.getId());
+                }
+            }
+        });
+
+        Button btnEliminar = new Button("Dar de Baja");
         btnEliminar.setPrefWidth(100);
-        btnEliminar.setOnAction(e -> {});
+        btnEliminar.setOnAction(e -> {
+
+        });
 
         Button btnVolver = new Button("Volver");
         btnVolver.setPrefWidth(100);
@@ -625,41 +645,122 @@ public class FichaUsuarioVista {
         ventanaListarTecnicos.showAndWait();
 	}
 
+    //MOSTRAR FORM EDITAR TECNICO
+    public void mostrarFormEditarTecnico(Stage ventanaListarTecnicos, String idTecnico){
+
+        Stage ventanaEditarTecnico = new Stage();
+        ventanaEditarTecnico.setTitle("Editar tecnico");
+        ventanaEditarTecnico.initModality(Modality.APPLICATION_MODAL);
+
+        Label titulo = new Label("Editar tecnico");
+        titulo.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 16));
+
+        TextField txtNombre = new TextField();
+        txtNombre.setPromptText("Nombre");
+        txtNombre.setPrefWidth(100);
+
+        TextField txtApellido = new TextField();
+        txtApellido.setPromptText("Apellido");
+        txtApellido.setPrefWidth(100);
+
+        TextField txtEspecialidad = new TextField();
+        txtEspecialidad.setPromptText("Especialidad");
+        txtApellido.setPrefWidth(100);
+
+        Button btnGuardar = new Button("Guardar");
+        Button btnCancelar = new Button("Cancelar");
+        btnGuardar.setStyle("-fx-background-color: #15bb15;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnGuardar.setOnAction(e -> {
+
+            String nombre = txtNombre.getText();
+            String apellido = txtApellido.getText();
+            String especialidad = txtEspecialidad.getText();
+
+            if(nombre == null || nombre.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
+
+            if(apellido == null || apellido.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+            }
+
+            if(especialidad == null || especialidad.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+            }
+
+            TecnicoModelo tecnicoInfo = TecnicoModelo.obtenerTecnicoPorId(idTecnico);
+
+            tecnicoInfo.setNombre(nombre);
+            tecnicoInfo.setApellido(apellido);
+            tecnicoInfo.setEspecialidad(especialidad);
+
+
+
+
+        });
+
+        btnCancelar.setStyle("-fx-background-color: #da1d38;" +
+                " -fx-text-fill: white;" +
+                " -fx-font-weight: bold;");
+        btnCancelar.setOnAction(e -> ventanaEditarTecnico.close());
+
+        HBox barraBotones = new HBox(10, btnGuardar, btnCancelar);
+        barraBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(15, titulo, txtNombre, txtApellido, txtEspecialidad, barraBotones);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene escena = new Scene(layout, 300, 350);
+        ventanaEditarTecnico.setScene(escena);
+        ventanaEditarTecnico.show();
+
+    }
+
+
+
     //MOSTRAR LISTA DE ADMINS
     public void mostrarListaAdmins() {
 
-        List<AdminModelo> listaAdmins = personalControl.obtenerListaAdmins();
+        List<AdminModeloDTO> listaAdmins = personalControl.obtenerListaAdmins();
         Stage ventanaListarAdmins = new Stage();
         ventanaListarAdmins.setTitle("Lista de Órdenes de Trabajo");
 
         //VISTA DE TABLA Y FILAS DE TIPO TECNICO MODELO
-        TableView<AdminModelo> tablaAdmins = new TableView<>();
-        ObservableList<AdminModelo> datos = FXCollections.observableArrayList();
+        TableView<AdminModeloDTO> tablaAdmins = new TableView<>();
+        ObservableList<AdminModeloDTO> datos = FXCollections.observableArrayList();
 
         //COLUMNAS DE LA TABLA
-        TableColumn<AdminModelo, String> columnaId = new TableColumn<>("ID");
+        TableColumn<AdminModeloDTO, String> columnaId = new TableColumn<>("Administrador ID");
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaId.setPrefWidth(80);
 
-        TableColumn<AdminModelo, String> columnaNombre = new TableColumn<>("Nombre");
+        TableColumn<AdminModeloDTO, String> columnaUsuario = new TableColumn<>("Usuario");
+        columnaUsuario.setCellValueFactory(new PropertyValueFactory<>("usuario"));
+        columnaUsuario.setPrefWidth(80);
+
+        TableColumn<AdminModeloDTO, String> columnaNombre = new TableColumn<>("Nombre");
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaNombre.setPrefWidth(80);
 
-        TableColumn<AdminModelo, String> columnaApellido = new TableColumn<>("Apellido");
+        TableColumn<AdminModeloDTO, String> columnaApellido = new TableColumn<>("Apellido");
         columnaApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
         columnaApellido.setPrefWidth(50);
 
-        TableColumn<AdminModelo, String> columnaTurno = new TableColumn<>("Turno");
+        TableColumn<AdminModeloDTO, String> columnaTurno = new TableColumn<>("Turno");
         columnaTurno.setCellValueFactory(new PropertyValueFactory<>("turno"));
         columnaTurno.setPrefWidth(80);
 
         tablaAdmins.getColumns().addAll(columnaId,
+                columnaUsuario,
                 columnaNombre,
                 columnaApellido,
                 columnaTurno);
 
         //ITERAR LA LISTA DE ADMIN Y AGREGARLAS A LA TABLA
-        for (AdminModelo admin : listaAdmins) {
+        for (AdminModeloDTO admin : listaAdmins) {
             datos.add(admin);
         }
 
@@ -668,12 +769,56 @@ public class FichaUsuarioVista {
         //BOTONES
         Button btnEditar = new Button("Editar");
         btnEditar.setPrefWidth(100);
-        btnEditar.setOnAction(e -> {});
+        btnEditar.setOnAction(e -> {
+                AdminModeloDTO admin = tablaAdmins.getSelectionModel().getSelectedItem();
+                if (admin == null){
+                    OrdenTrabajoVista.mostrarAdvertencia("Seleccione un administrador para editar");
+                }else{
 
-        Button btnEliminar = new Button("Eliminar");
-        btnEliminar.setPrefWidth(100);
-        btnEliminar.setOnAction(e -> {
+                    if(Objects.equals(admin.getUsuario(), "admin_base")){
+                        OrdenTrabajoVista.mostrarAdvertencia("No se puede editar el administrador base");
+                        return;
+                    }
+                   mostrarFormEditarAdmin(ventanaListarAdmins, admin.getId());
+                }
+        });
 
+        Button btnDarDeBaja = new Button("Dar De Baja");
+        btnDarDeBaja.setPrefWidth(100);
+        btnDarDeBaja.setOnAction(e -> {
+                if (AdminDao.rolActual != "SUPER_ADMIN"){
+                    OrdenTrabajoVista.mostrarAdvertencia("No tiene permisos para dar de baja a un administrador");
+                    return;
+                }
+
+                AdminModeloDTO admin = tablaAdmins.getSelectionModel().getSelectedItem();
+                if (admin == null){
+                    OrdenTrabajoVista.mostrarAdvertencia("Seleccione un administrador para dar de baja");
+                }else{
+
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Confirmación");
+                    alert.setHeaderText("¿Desea continuar?");
+                    alert.setContentText("Seleccione una opción.");
+
+                    ButtonType btnSi = new ButtonType("Sí");
+                    ButtonType btnNo = new ButtonType("No");
+
+                    alert.getButtonTypes().setAll(btnSi, btnNo);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+
+                    if (result.isPresent() && result.get() == btnSi) {
+                        if(PersonalControl.darDeBajaAdminDB(admin.getId())){
+                            OrdenTrabajoVista.mostrarAlertaExito("Administrador dado de baja correctamente", "El administrador ha sido dado de baja correctamente");
+                            ventanaListarAdmins.close();
+                        }else{
+                            OrdenTrabajoVista.mostrarAdvertencia("No se pudo dar de baja al administrador");
+                        }
+                    } else {
+                        return;
+                    }
+                }
         });
 
         Button btnVolver = new Button("Volver");
@@ -681,7 +826,7 @@ public class FichaUsuarioVista {
         btnVolver.setOnAction(e -> ventanaListarAdmins.close());
 
         //LAYOUT
-        HBox hbox = new HBox(10, btnEditar, btnEliminar, btnVolver);
+        HBox hbox = new HBox(10, btnEditar, btnDarDeBaja, btnVolver);
 
         hbox.setAlignment(Pos.CENTER);
         hbox.setPadding(new Insets(10));
@@ -722,6 +867,72 @@ public class FichaUsuarioVista {
                 buscarAdminPorNombre(criterio);
             }
         }
+    }
+
+    //METODO PARA EDITAR ADMIN POR ID
+    public void mostrarFormEditarAdmin(Stage ventanaListarAdmins, String adminId){
+        Stage ventanaEditarAdmin = new Stage();
+        ventanaEditarAdmin.setTitle("Editar administrador");
+        ventanaEditarAdmin.initModality(Modality.APPLICATION_MODAL);
+
+        Label titulo = new Label("Editar administrador");
+        titulo.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+
+        TextField txtNombre = new TextField();
+        txtNombre.setPromptText("Nombre");
+        txtNombre.setPrefWidth(100);
+
+        TextField txtApellido = new TextField();
+        txtApellido.setPromptText("Apellido");
+        txtApellido.setPrefWidth(100);
+
+        ComboBox comboTurno = new ComboBox();
+        comboTurno.setPromptText("Elija turno");
+        comboTurno.getItems().addAll("Completo", "Mañana", "Tarde");
+
+        Button btnGuardar = new Button("Guardar");
+        btnGuardar.setPrefWidth(150);
+        btnGuardar.setStyle("-fx-font-size: 14px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+        Button btnCancelar = new Button("Cancelar");
+        btnCancelar.setPrefWidth(150);
+        btnCancelar.setStyle("-fx-font-size: 14px; -fx-background-color: #da1d38; -fx-text-fill: white;");
+
+        btnGuardar.setOnAction(e -> {
+            if(txtNombre.getText().isEmpty() || txtApellido.getText().isEmpty()
+            || comboTurno.getValue() == null){
+                OrdenTrabajoVista.mostrarAdvertencia("Todos los campos son obligatorios");
+                return;
+            }
+
+            AdminModelo newAdmin = new AdminModelo( txtNombre.getText(),
+                    txtApellido.getText(),
+                    comboTurno.getValue().toString());
+
+           Boolean editado = PersonalControl.editarAdmin(adminId, newAdmin);
+
+            if(editado){
+                OrdenTrabajoVista.mostrarAlertaExito("Admin editado correctamente!",
+                        "El administrador ha sido editado correctamente!");
+               ventanaEditarAdmin.close();
+               ventanaListarAdmins.close();
+               mostrarListaAdmins();
+            }
+        });
+
+        btnCancelar.setOnAction(e -> ventanaEditarAdmin.close());
+
+        HBox barraBotones = new HBox(10, btnGuardar, btnCancelar);
+        barraBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(15, titulo, txtNombre, txtApellido, comboTurno, barraBotones);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPrefHeight(200);
+        layout.setPadding(new Insets(20));
+
+        Scene escena = new Scene(layout, 300, 250);
+        ventanaEditarAdmin.setScene(escena);
+        ventanaEditarAdmin.show();
     }
 
     //METODO PARA BUSCAR TECNICO POR NOMBRE

@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mysql.cj.xdevapi.PreparableStatement;
+import dtos.TecnicoModeloDTO;
 import modelos.Personal.PersonalBase;
 import modelos.Notificacion.TareasModelo;
 import controladores.GestionRepControl;
@@ -56,7 +59,8 @@ public class TecnicoModelo extends PersonalBase {
         return String.format("TEC%03d", siguienteNumero);
 
 	}
-	
+
+    //GUARDAR TECNICO
     public Boolean guardarTecnico(PreparedStatement ps){
         int rowsAfectadas = 0;
 
@@ -77,9 +81,14 @@ public class TecnicoModelo extends PersonalBase {
         return false;
     }
 
-    public static List<TecnicoModelo> obtenerListaTecnicosBD(){
-        String sql = "SELECT * FROM tecnico";
-        List<TecnicoModelo> listaTecnicos = new ArrayList<TecnicoModelo>();
+    //OBTENER LISTA DE TECNICOS
+    public static List<TecnicoModeloDTO> obtenerListaTecnicosBD(){
+        String sql = "SELECT T.TECNICO_ID, T.NOMBRE, T.APELLIDO, T.ESPECIALIDAD," +
+                " T.CANTIDADTAREAS, T.CANTIDAD_TAREAS_ASIGNADAS," +
+                " T.CANTIDAD_TAREAS_PENDIENTES, C.USUARIO * FROM TECNICO T " +
+                "JOIN CREDENCIALES C ON T.TECNICO_ID = C.TECNICO_ID" +
+                " ORDER BY T.TECNICO_ID";
+        List<TecnicoModeloDTO> listaTecnicos = new ArrayList<TecnicoModeloDTO>();
 
         try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql);){
             ResultSet rs = ps.executeQuery();
@@ -87,20 +96,22 @@ public class TecnicoModelo extends PersonalBase {
             while(rs.next()){
                 String tecnicoId = rs.getString("tecnico_id");
                 String nombre = rs.getString("nombre");
+                String usuario = rs.getString("usuario");
                 String apellido = rs.getString("apellido");
                 String especialidad = rs.getString("especialidad");
                 int tareasAsignadas = rs.getInt("cantidadTareas");
                 int tareasCompletadas = rs.getInt("cantidad_tareas_asignadas");
                 int tareasPendientes = rs.getInt("cantidad_tareas_pendientes");
 
-                TecnicoModelo tecnico = new TecnicoModelo(
+                TecnicoModeloDTO tecnico = new TecnicoModeloDTO(
+                        tecnicoId,
+                        usuario,
                         nombre,
                         apellido,
                         especialidad,
                         tareasAsignadas,
                         tareasCompletadas,
                         tareasPendientes);
-            tecnico.setTecnicoId(tecnicoId);
                 listaTecnicos.add(tecnico);
             }
 
@@ -111,7 +122,49 @@ public class TecnicoModelo extends PersonalBase {
         return null;
     }
 
-     //Getters and Setters
+    //BUSCAR TECNICO POR ID
+    public static TecnicoModelo obtenerTecnicoPorId(String tecnicoId){
+        String sql = "SELECT * FROM TECNICO WHERE tecnico_id = ?";
+       try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
+           ps.setString(1, tecnicoId);
+
+           ResultSet rs = ps.executeQuery();
+           rs.next();
+           return new TecnicoModelo(rs.getString("nombre"),
+                   rs.getString("apellido"),
+                   rs.getString("especialidad"),
+                   rs.getInt("cantidadTareas"),
+                   rs.getInt("cantidad_tareas_asignadas"),
+                   rs.getInt("cantidad_tareas_pendientes"));
+       }catch (SQLException e){
+           e.printStackTrace();
+       }
+
+       return null;
+    }
+
+    //EDITAR TECNICO
+    public static Boolean editarTecnicoDB(TecnicoModelo tecnico){
+        String sql = "UPDATE TECNICO SET NOMBRE = ?, APELLIDO = ?, ESPECIALIDAD = ? WHERE tecnico_id = ?";
+        try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql)){
+            ps.setString(1, tecnico.getNombre());
+            ps.setString(2, tecnico.getApellido());
+            ps.setString(3, tecnico.getEspecialidad());
+            ps.setString(4, tecnico.getId());
+
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0){
+                return true;
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //Getters and Setters
 	
 	public String getId() {
 		        return id;
