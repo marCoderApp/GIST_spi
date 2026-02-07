@@ -32,4 +32,32 @@ public class TecnicoModeloDTO {
     public String getId() {
         return this.id;
     }
+
+    public int getCantidadTareasAsignadas() {
+        return cantidadTareasAsignadas;
+    }
+
+    public int getCantidadTareasCompletadas() {
+        return cantidadTareasCompletadas;
+    }
+
+    public int getCantidadTareasPendientes() {
+        return cantidadTareasPendientes;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getEspecialidad() {
+        return especialidad;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
 }

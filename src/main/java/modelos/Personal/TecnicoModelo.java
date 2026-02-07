@@ -85,8 +85,9 @@ public class TecnicoModelo extends PersonalBase {
     public static List<TecnicoModeloDTO> obtenerListaTecnicosBD(){
         String sql = "SELECT T.TECNICO_ID, T.NOMBRE, T.APELLIDO, T.ESPECIALIDAD," +
                 " T.CANTIDADTAREAS, T.CANTIDAD_TAREAS_ASIGNADAS," +
-                " T.CANTIDAD_TAREAS_PENDIENTES, C.USUARIO * FROM TECNICO T " +
-                "JOIN CREDENCIALES C ON T.TECNICO_ID = C.TECNICO_ID" +
+                " T.CANTIDAD_TAREAS_PENDIENTES, C.USUARIO FROM TECNICO T " +
+                "LEFT JOIN CREDENCIALES C ON T.TECNICO_ID = C.TECNICO_ID" +
+                " WHERE T.ACTIVO = TRUE" +
                 " ORDER BY T.TECNICO_ID";
         List<TecnicoModeloDTO> listaTecnicos = new ArrayList<TecnicoModeloDTO>();
 
@@ -139,21 +140,19 @@ public class TecnicoModelo extends PersonalBase {
        }catch (SQLException e){
            e.printStackTrace();
        }
-
        return null;
     }
 
     //EDITAR TECNICO
-    public static Boolean editarTecnicoDB(TecnicoModelo tecnico){
+    public static Boolean editarTecnicoDB(TecnicoModelo tecnico, String idTecnico){
         String sql = "UPDATE TECNICO SET NOMBRE = ?, APELLIDO = ?, ESPECIALIDAD = ? WHERE tecnico_id = ?";
-        try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql)){
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.setString(1, tecnico.getNombre());
             ps.setString(2, tecnico.getApellido());
             ps.setString(3, tecnico.getEspecialidad());
-            ps.setString(4, tecnico.getId());
+            ps.setString(4, idTecnico);
 
             int filasAfectadas = ps.executeUpdate();
-
             if (filasAfectadas > 0){
                 return true;
             }

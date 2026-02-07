@@ -191,13 +191,21 @@ public class PersonalControl {
         this.tecnicoGuardado = false;
     }
 	
-	public Boolean modificarTecnico(TecnicoModelo tecnico) {
+	public static Boolean modificarTecnico(TecnicoModelo tecnico, String tecnicoId) {
 
 		try{
-			Boolean.
+			Boolean editado = TecnicoModelo.editarTecnicoDB(tecnico, tecnicoId);
+
+			if (editado) {
+				System.out.println("Tecnico modificado exitosamente: " + editado);
+				return true;
+			}
+
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	public void registrarAdministrador(String nombre, String especialidad, String turno) {

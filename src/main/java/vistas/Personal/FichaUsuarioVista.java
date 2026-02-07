@@ -563,6 +563,10 @@ public class FichaUsuarioVista {
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaId.setPrefWidth(80);
 
+        TableColumn<TecnicoModeloDTO, String> columnaUsuario = new TableColumn<>("Usuario");
+        columnaUsuario.setCellValueFactory(new PropertyValueFactory<>("usuario"));
+        columnaUsuario.setPrefWidth(80);
+
         TableColumn<TecnicoModeloDTO, String> columnaNombre = new TableColumn<>("Nombre");
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaNombre.setPrefWidth(80);
@@ -588,6 +592,7 @@ public class FichaUsuarioVista {
         columnaTareasPendientes.setPrefWidth(50);
 
         tablaTecnicos.getColumns().addAll(columnaId,
+                columnaUsuario,
                 columnaNombre,
                 columnaApellido,
                 columnaEspecialidad,
@@ -696,11 +701,17 @@ public class FichaUsuarioVista {
             tecnicoInfo.setNombre(nombre);
             tecnicoInfo.setApellido(apellido);
             tecnicoInfo.setEspecialidad(especialidad);
+            Boolean editado = PersonalControl.modificarTecnico(tecnicoInfo, idTecnico);
 
-
-
-
+            if(editado){
+                OrdenTrabajoVista.mostrarAlertaExito("Tecnico editado correctamente!",
+                        "El tecnico ha sido editado correctamente!");
+                ventanaEditarTecnico.close();
+                ventanaListarTecnicos.close();
+                mostrarListaTecnicos();
+            };
         });
+
 
         btnCancelar.setStyle("-fx-background-color: #da1d38;" +
                 " -fx-text-fill: white;" +
@@ -710,8 +721,11 @@ public class FichaUsuarioVista {
         HBox barraBotones = new HBox(10, btnGuardar, btnCancelar);
         barraBotones.setAlignment(Pos.CENTER);
 
+
         VBox layout = new VBox(15, titulo, txtNombre, txtApellido, txtEspecialidad, barraBotones);
         layout.setAlignment(Pos.CENTER);
+        layout.setPrefHeight(200);
+        layout.setPadding(new Insets(20));
 
         Scene escena = new Scene(layout, 300, 350);
         ventanaEditarTecnico.setScene(escena);
