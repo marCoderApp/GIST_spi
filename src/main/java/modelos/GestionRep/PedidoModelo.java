@@ -11,11 +11,10 @@ public class PedidoModelo {
 	private String adminId;
 	private EstadoPedido estado = EstadoPedido.PENDIENTE;
 	
-	public PedidoModelo(String ordenId, LocalDateTime fecha,
+	public PedidoModelo(LocalDateTime fecha,
 			String repuestos, String adminId,
 			EstadoPedido estado) {
 		this.pedidoId = generarPedidoId();
-		this.ordenId = ordenId;
 		this.fecha = fecha;
 		this.repuestos = repuestos;
 		this.adminId = adminId;

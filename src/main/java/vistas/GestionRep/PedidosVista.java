@@ -3,6 +3,7 @@ package vistas.GestionRep;
 import java.util.ArrayList;
 import java.util.List;
 
+import controladores.GestionRepControl;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -169,5 +170,28 @@ public class PedidosVista {
 		ventanaPedidos.setScene(scene);
 		ventanaPedidos.show();
     }
-	
+
+	//MOSTRAR FORM CREAR PEDIDOS
+	public void mostrarFormCrearPedidos(){
+		Stage ventana = new Stage();
+		ventana.setTitle("Crear pedido");
+		ventana.initModality(Modality.APPLICATION_MODAL);
+
+		Label titulo = new Label("Crear pedido");
+		titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+		titulo.setPadding(new Insets(10, 0, 10, 0));
+
+
+
+		HBox layout = new HBox(10);
+		layout.setAlignment(Pos.CENTER);
+		layout.setPadding(new Insets(10));
+
+		layout.getChildren().addAll(titulo);
+
+		Scene escena = new Scene(layout, 400, 100);
+		ventana.setScene(escena);
+		ventana.show();
+	}
+
 }
