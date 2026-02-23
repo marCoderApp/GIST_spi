@@ -26,7 +26,7 @@ public class FormClientesVista {
     }
 	
 	public PedidoModelo ingresarPedido() {
-		return new PedidoModelo(clienteId, null, clienteId, clienteId, null);
+		return null;
 	}
 	
 	public void abrirForm() {

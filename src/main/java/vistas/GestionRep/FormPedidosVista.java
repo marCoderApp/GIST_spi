@@ -29,7 +29,7 @@ public class FormPedidosVista {
 
     //METODOS
     public PedidoModelo ingresarPedido() {
-        return new PedidoModelo(presupuestoId, fechaCreacion, repuestos, ordenTrabajoId, null);
+        return null;
     }
 
     public void abrirForm() {

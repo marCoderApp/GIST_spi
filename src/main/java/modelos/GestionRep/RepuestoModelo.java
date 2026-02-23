@@ -6,6 +6,7 @@ public class RepuestoModelo {
 	private String nombre;
 	private int cantidad;
 	private double precioUnitario;
+	private String destinatario;
 	
 	//Constructor
 	public RepuestoModelo(String repuestoId, String nombre, int cantidad, double precioUnitario) {
@@ -14,8 +15,31 @@ public class RepuestoModelo {
 		this.cantidad = cantidad;
 		this.precioUnitario = precioUnitario;
 	}
-	
+
+	public RepuestoModelo(String repuestoId,
+						  String nombre,
+						  int cantidad,
+						  double precioUnitario,
+						  String destinatario) {
+		this.repuestoId = repuestoId;
+		this.nombre = nombre;
+		this.cantidad = cantidad;
+		this.precioUnitario = precioUnitario;
+		this.destinatario = destinatario;
+	}
+
+
+
+
 	//Getters y Setters
+
+	public void setDestinatario(String destinatario) {
+		this.destinatario = destinatario;
+	}
+
+	public String getDestinatario() {
+		return destinatario;
+	}
 	
 	public String getRepuestoId() {
 		return repuestoId;

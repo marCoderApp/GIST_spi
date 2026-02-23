@@ -11,22 +11,14 @@ import java.util.List;
 
 import Enums.MaquinaEstado;
 import conexion.ConexionDB;
-import daos.GestioRep.ClientesDao;
-import daos.GestioRep.MaquinaDao;
-import daos.GestioRep.OrdenTrabajoDao;
+import daos.GestioRep.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.stage.Stage;
-import modelos.GestionRep.ClienteModelo;
-import modelos.GestionRep.DetalleReparacionModelo;
-import modelos.GestionRep.EstadoOrden;
-import modelos.GestionRep.MaquinaModelo;
-import modelos.GestionRep.OrdenTrabajoModelo;
-import modelos.GestionRep.PedidoModelo;
-import modelos.GestionRep.PresupuestoModelo;
+import modelos.GestionRep.*;
 import vistas.GestionRep.ClientesVista;
 import vistas.GestionRep.OrdenTrabajoVista;
 
@@ -711,19 +703,26 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         }
         return resultado;
     }
-	
+
+    //CREAR PRESUPUESTO
 	public void crearPresupuesto(PresupuestoModelo presupuesto) {
 		// Lógica para crear un presupuesto
 	}
-	
-	public void registrarPedido(PedidoModelo pedido) {
-		// Lógica para registrar un pedido
-	}
-	
+
+    //LISTAR ITEMS DE PEDIDO
+    public static List<RepuestoModelo> listarItemsDePedido(String pedidoId) {
+        // Implementar consulta JOIN como en mi respuesta anterior
+        // ...
+
+        return null;
+    }
+
+    //OBTENER LISTA DE ORDENES
 	public void obtenerListaOrdenes(PedidoModelo pedido) {
 		// Lógica para obtener la lista de órdenes de trabajo
 	}
-	
+
+    //OBTENER LISTA ORDENES
 	public static void obtenerListaOrdenes() {
 	}	
 	
