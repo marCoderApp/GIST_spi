@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import controladores.GestionRepControl;
 import daos.GestioRep.PedidosDao;
 import daos.Personal.AdminDao;
 import dtos.PedidosDto;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -90,7 +92,7 @@ public class PedidosVista {
 		});
 
 		btnBuscarPedidos.setOnAction(e->{
-			System.out.println("Buscar pedido");
+			buscarPedidos();
 		});
 
 		btnCerrar.setOnAction(e->{
@@ -481,6 +483,178 @@ public class PedidosVista {
         Scene scene = new Scene(layout, 600, 550);
         ventanaDetalle.setScene(scene);
         ventanaDetalle.showAndWait();
+    }
+
+    //BUSCAR PEDIDO
+    public void buscarPedidos(){
+        Stage ventana = new Stage();
+        ventana.setTitle("Buscar pedido");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        Label titulo = new Label("Elija criterio de búsqueda:");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        ComboBox<String> cbCriterio = new ComboBox<>();
+        cbCriterio.getItems().addAll("Repuesto",
+                "Fecha",
+                "Destinatario");
+
+        cbCriterio.setPromptText("Seleccione un criterio");
+        cbCriterio.setPrefWidth(200);
+
+
+        Button btnBuscar = new Button("Buscar");
+        btnBuscar.setPrefWidth(100);
+        btnBuscar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnBuscar.setOnAction(e -> {
+            String criterioSeleccionado = cbCriterio.getValue();
+
+            if (criterioSeleccionado == null){
+                OrdenTrabajoVista.mostrarAdvertencia("Debe seleccionar un criterio para continuar");
+                return;
+            }
+
+            String criterio = switch (criterioSeleccionado){
+                case "Repuesto" -> "nombre_repuesto";
+                case "Fecha" -> "fecha";
+                case "Destinatario" -> "destinatario";
+                default -> null;
+            };
+
+            if (criterio == null){
+                OrdenTrabajoVista.mostrarAdvertencia("Criterio de busqueda no reconocido!");
+                return;
+            }
+
+            mostrarFormBusquedaPedidos(criterio);
+        });
+
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setPrefWidth(100);
+        btnCerrar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCerrar.setOnAction(e -> ventana.close());
+
+        HBox barraBotones = new HBox(10, btnBuscar, btnCerrar);
+        barraBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10, titulo, cbCriterio, barraBotones);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+
+        Scene scene = new Scene(layout, 350, 150);
+        ventana.setScene(scene);
+        ventana.showAndWait();
+
+    }
+
+    //MOSTRAR FORM DE BUSQUEDA DE PEDIDOS.
+    public void mostrarFormBusquedaPedidos(String criterio){
+        Stage ventana = new Stage();
+        ventana.setTitle("Buscar pedido");
+        ventana.initModality(Modality.APPLICATION_MODAL);
+
+        Label titulo = new Label("Busqueda de pedido avanzada");
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        //INPUT
+        TextField inputDatoBusqueda = new TextField();
+        inputDatoBusqueda.setPrefWidth(200);
+        inputDatoBusqueda.setPromptText("Ingrese dato de busqueda");
+
+        Button btnBuscar = new Button("Buscar");
+        btnBuscar.setPrefWidth(100);
+        btnBuscar.setOnAction(e -> {
+            String dato = inputDatoBusqueda.getText();
+            ObservableList<ObservableList<String>> pedidos = GestionRepControl
+                        .buscarPedidoPorCriterio(criterio, dato);
+
+            if (pedidos == null || pedidos.isEmpty()){
+                OrdenTrabajoVista.mostrarAdvertencia("No se encontraron resultados.");
+                return;
+            }
+
+            TableView<ObservableList<String>> tablaResultados = new TableView<>();
+            tablaResultados.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            String [] nombresCampos = {
+                    "Pedido ID",
+                    "Fecha",
+                    "Admin ID",
+                    "Estado",
+                    "Repuesto ID",
+                    "Nombre Repuesto",
+                    "Cantidad",
+                    "Precio Unitario",
+                    "Destinatario",
+                    "Recibido"
+            };
+
+            for(String nombreCampo : nombresCampos){
+                final int colIndex = tablaResultados.getColumns().size();
+                TableColumn<ObservableList<String>, String> column = new TableColumn<>(nombreCampo);
+
+                column.setCellValueFactory(param ->
+                        new ReadOnlyStringWrapper(param.getValue().size() > colIndex ? param.
+                                getValue().get(colIndex): ""));
+                column.setPrefWidth(switch (nombreCampo){
+                    case "Pedido ID" -> 150;
+                    case "Fecha" -> 150;
+                    case "Admin ID" -> 150;
+                    case "Estado" -> 150;
+                    case "Repuesto ID" -> 150;
+                    case "Nombre Repuesto" -> 150;
+                    case "Cantidad" -> 100;
+                    case "Precio Unitario" -> 150;
+                    case "Destinatario" -> 150;
+                    case "Recibido" -> 100;
+                    default -> 0;
+                });
+                tablaResultados.getColumns().add(column);
+            }
+
+            tablaResultados.setItems(pedidos);
+            tablaResultados.setPrefHeight(300);
+
+            Stage ventanaResultados = new Stage();
+            ventanaResultados.setTitle("Resultados de la busqueda");
+            ventana.setMinWidth(800);
+            Label tituloResultados = new Label("Resultados de la busqueda");
+            tituloResultados.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+            Button btnCerrar = new Button("Cerrar");
+            btnCerrar.setOnAction(event->{
+                ventanaResultados.close();
+            });
+
+            HBox barraBotones = new HBox(10, btnCerrar);
+            barraBotones.setAlignment(Pos.CENTER);
+            barraBotones.setPadding(new Insets(10, 0, 0, 0));
+
+            VBox layout = new VBox(10);
+            layout.setAlignment(Pos.CENTER);
+            layout.getChildren().addAll(tituloResultados, tablaResultados, barraBotones);
+
+            Scene escena = new Scene(layout, 600, 400);
+            ventanaResultados.setScene(escena);
+            ventanaResultados.showAndWait();
+
+        });
+
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setOnAction(event->{
+            ventana.close();
+        });
+
+        HBox barraBotones = new HBox(10, btnBuscar, btnCerrar);
+        barraBotones.setAlignment(Pos.CENTER);
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(titulo, inputDatoBusqueda, barraBotones);
+
+        Scene escena = new Scene(layout, 350, 150);
+        ventana.setScene(escena);
+        ventana.showAndWait();
     }
 
     //GETTERS AND SETTERS

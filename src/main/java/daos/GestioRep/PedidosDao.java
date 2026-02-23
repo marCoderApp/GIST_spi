@@ -2,6 +2,8 @@ package daos.GestioRep;
 
 import controladores.GestionRepControl;
 import dtos.PedidosDto;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import modelos.GestionRep.PedidoModelo;
 import modelos.GestionRep.RepuestoModelo;
 
@@ -140,5 +142,39 @@ public class PedidosDao {
 
     }
 
+    //TRAER RESULTADO BUSQUEDA DE PEDIDOS
+    public static ObservableList<ObservableList<String>> buscarPedidoPorCriterioDB(String criterio, String dato){
+        ObservableList<ObservableList<String>> resultado = FXCollections.observableArrayList();
 
+        String consultaSQL = " SELECT P.ID, P.FECHA, P.ADMIN_ID, P.ESTADO, R.REPUESTO_ID, " +
+                "R.NOMBRE_REPUESTO, R.CANTIDAD, R.PRECIO AS PRECIO_UNITARIO, R.DESTINATARIO FROM PEDIDOS P " +
+                "JOIN REPUESTOS R ON P.ID = R.PEDIDO_ID " +
+                " WHERE " + criterio + " LIKE ? ";
+
+        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(consultaSQL)){
+            ps.setString(1, "%" + dato + "%");
+
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                ObservableList<String> fila = FXCollections.observableArrayList();
+                fila.add(rs.getString("ID"));
+                fila.add(rs.getString("FECHA").substring(0, 10));
+                fila.add(rs.getString("ADMIN_ID"));
+                fila.add(rs.getString("ESTADO"));
+                fila.add(rs.getString("REPUESTO_ID"));
+                fila.add(rs.getString("NOMBRE_REPUESTO"));
+                fila.add(rs.getString("CANTIDAD"));
+                fila.add(rs.getString("PRECIO_UNITARIO"));
+                fila.add(rs.getString("DESTINATARIO"));
+
+                resultado.add(fila);
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+        return resultado;
+    }
 }

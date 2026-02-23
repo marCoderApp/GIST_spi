@@ -724,7 +724,28 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
     //OBTENER LISTA ORDENES
 	public static void obtenerListaOrdenes() {
-	}	
+	}
+
+    //BUSCAR PEDIDO POR CRITERIO
+    public static ObservableList<ObservableList<String>> buscarPedidoPorCriterio(String criterio,
+                                                                                 String dato){
+
+        ObservableList<ObservableList<String>> resultado = null;
+
+        if (dato == null){
+            OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un criterio de busqueda!");
+            return null;
+        }else{
+            resultado = PedidosDao.buscarPedidoPorCriterioDB(criterio, dato);
+
+            if(resultado == null || resultado.isEmpty()){
+                return null;
+            }
+        }
+        return resultado;
+
+
+    }
 	
 	//Getters and Setters
 	public boolean isOrdenCreada() {
