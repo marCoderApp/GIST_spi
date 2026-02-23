@@ -1,10 +1,10 @@
 package vistas.GestionRep;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import controladores.GestionRepControl;
 import daos.GestioRep.PedidosDao;
 import daos.Personal.AdminDao;
 import dtos.PedidosDto;
@@ -144,7 +144,77 @@ public class PedidosVista {
         Label titulo = new Label("Lista de pedidos");
         titulo.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
-        
+        // Obtener pedidos de la base de datos
+        List<PedidosDto> pedidos = PedidosDao.listarTodosPedidos();
+        ObservableList<PedidosDto> datosPedidos = FXCollections.observableArrayList(pedidos);
+
+        // Crear tabla
+        TableView<PedidosDto> tablaPedidos = new TableView<>();
+        tablaPedidos.setItems(datosPedidos);
+        tablaPedidos.setPrefHeight(400);
+
+        // Columna ID
+        TableColumn<PedidosDto, String> colId = new TableColumn<>("ID Pedido");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colId.setPrefWidth(150);
+
+        // Columna Fecha
+        TableColumn<PedidosDto, String> colFecha = new TableColumn<>("Fecha");
+        colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        colFecha.setPrefWidth(120);
+
+        // Columna Admin
+        TableColumn<PedidosDto, String> colAdmin = new TableColumn<>("Admin ID");
+        colAdmin.setCellValueFactory(new PropertyValueFactory<>("adminId"));
+        colAdmin.setPrefWidth(120);
+
+        // Columna Estado
+        TableColumn<PedidosDto, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        colEstado.setPrefWidth(120);
+
+        // Columna Acciones con botón Ver
+        TableColumn<PedidosDto, Void> colAcciones = new TableColumn<>("Acciones");
+        colAcciones.setPrefWidth(100);
+
+        colAcciones.setCellFactory(param -> new TableCell<>() {
+            private final Button btnVer = new Button("Ver");
+
+            {
+                btnVer.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+                btnVer.setOnAction(event -> {
+                    PedidosDto pedido = getTableView().getItems().get(getIndex());
+                    mostrarDetallesPedido(pedido);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btnVer);
+                }
+            }
+        });
+
+        tablaPedidos.getColumns().addAll(colId, colFecha, colAdmin, colEstado, colAcciones);
+
+        // Botón cerrar
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setPrefWidth(150);
+        btnCerrar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCerrar.setOnAction(e -> ventana.close());
+
+        VBox layout = new VBox(15);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+        layout.getChildren().addAll(titulo, tablaPedidos, btnCerrar);
+
+        Scene scene = new Scene(layout, 700, 550);
+        ventana.setScene(scene);
+        ventana.showAndWait();
     }
 
 	//MOSTRAR FORM CREAR PEDIDOS
@@ -208,11 +278,10 @@ public class PedidosVista {
         PedidosDto pedidoDto = new PedidosDto(null,
                 null,
                 null,
-                null,
-                null);
-        pedidoDto.setPedidoId(pedidoIdCreado);
-        pedidoDto.setFecha(LocalDate.now().toString());
-        pedidoDto.setRepuestos("");
+                null
+        );
+        pedidoDto.setId(pedidoIdCreado);
+        pedidoDto.setFecha(LocalDateTime.now());
         pedidoDto.setAdminId(AdminDao.adminActualId);
         pedidoDto.setEstado("Pendiente");
 
@@ -253,7 +322,7 @@ public class PedidosVista {
             pedidosDao.agregarItemManualAPedido(pedidoIdCreado, repuestoId, nombre, cantidad, precio, destinatario);
 
 
-            items.add(new RepuestoModelo(null, nombre, cantidad, precio, destinatario));
+            items.add(new RepuestoModelo(null, nombre, cantidad, precio, destinatario, false));
 
             txtNombreRepuesto.clear();
             txtCantidad.clear();
@@ -290,6 +359,129 @@ public class PedidosVista {
         ventana.setScene(escena);
         ventana.showAndWait();
 	}
+
+    //MOSTRAR DETALLES DEL PEDIDO
+    private void mostrarDetallesPedido(PedidosDto pedido) {
+        Stage ventanaDetalle = new Stage();
+        ventanaDetalle.setTitle("Detalles del Pedido");
+        ventanaDetalle.initModality(Modality.APPLICATION_MODAL);
+
+        Label titulo = new Label("Detalles del Pedido: " + pedido.getId());
+        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+
+        // Información del pedido
+        Label lblFecha = new Label("Fecha: " + pedido.getFecha());
+        lblFecha.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+
+        Label lblAdmin = new Label("Admin ID: " + pedido.getAdminId());
+        lblAdmin.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+
+        Label lblEstado = new Label("Estado: " + pedido.getEstado());
+        lblEstado.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+        Label lblRepuestos = new Label("Repuestos:");
+        lblRepuestos.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        lblRepuestos.setPadding(new Insets(10, 0, 5, 0));
+
+        // Obtener repuestos del pedido
+        List<RepuestoModelo> repuestos = PedidosDao.obtenerRepuestosDePedido(pedido.getId());
+        ObservableList<RepuestoModelo> datosRepuestos = FXCollections.observableArrayList(repuestos);
+
+        // Tabla de repuestos
+        TableView<RepuestoModelo> tablaRepuestos = new TableView<>();
+        tablaRepuestos.setItems(datosRepuestos);
+        tablaRepuestos.setPrefHeight(300);
+
+        TableColumn<RepuestoModelo, String> colNombre = new TableColumn<>("Repuesto");
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colNombre.setPrefWidth(200);
+
+        TableColumn<RepuestoModelo, Integer> colCantidad = new TableColumn<>("Cantidad");
+        colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+        colCantidad.setPrefWidth(100);
+
+        TableColumn<RepuestoModelo, Double> colPrecio = new TableColumn<>("Precio Unit.");
+        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precioUnitario"));
+        colPrecio.setPrefWidth(110);
+
+        TableColumn<RepuestoModelo, String> colDestinatario = new TableColumn<>("Destinatario");
+        colDestinatario.setCellValueFactory(new PropertyValueFactory<>("destinatario"));
+        colDestinatario.setPrefWidth(150);
+
+        TableColumn<RepuestoModelo, String> colRecibido = new TableColumn<>("Recibido");
+        colRecibido.setCellValueFactory(new PropertyValueFactory<>("recibido"));
+        colRecibido.setPrefWidth(100);
+
+        TableColumn<RepuestoModelo, Void> colAccion = new TableColumn<>("Accion");
+        colAccion.setPrefWidth(100);
+        colAccion.setCellFactory(param -> new TableCell<>() {
+            private final Button btnRecibir = new Button("Recibir");
+
+            {
+                btnRecibir.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+                btnRecibir.setOnAction(event -> {
+                    modelos.GestionRep.RepuestoModelo repuesto = getTableView().getItems().get(getIndex());
+                    Boolean esActualizado = PedidosDao.marcarRepuestoComoRecibido(repuesto);
+
+                    if (esActualizado){
+                        OrdenTrabajoVista.mostrarAlertaExito("Actualizado",
+                                "El repuesto se ha marcado como recibido.");
+                    }
+
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btnRecibir);
+                }
+            }
+        });
+
+        tablaRepuestos.getColumns().addAll(colNombre,
+                colCantidad,
+                colPrecio,
+                colDestinatario,
+                colRecibido,
+                colAccion);
+
+        // Calcular total
+        double total = repuestos.stream()
+                .mapToDouble(r -> r.getCantidad() * r.getPrecioUnitario())
+                .sum();
+
+        Label lblTotal = new Label(String.format("Total: $%.2f", total));
+        lblTotal.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        lblTotal.setStyle("-fx-text-fill: #2E7D32;");
+
+        // Botónes
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setPrefWidth(120);
+        btnCerrar.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnCerrar.setOnAction(e -> ventanaDetalle.close());
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+        layout.getChildren().addAll(
+                titulo,
+                lblFecha,
+                lblAdmin,
+                lblEstado,
+                lblRepuestos,
+                tablaRepuestos,
+                lblTotal,
+                btnCerrar
+        );
+
+        Scene scene = new Scene(layout, 600, 550);
+        ventanaDetalle.setScene(scene);
+        ventanaDetalle.showAndWait();
+    }
 
     //GETTERS AND SETTERS
     public String getPedidoId() {
@@ -331,6 +523,7 @@ public class PedidosVista {
     public void setCantidadTotal(int cantidadTotal) {
         this.cantidadTotal = cantidadTotal;
     }
+
 
 
 }

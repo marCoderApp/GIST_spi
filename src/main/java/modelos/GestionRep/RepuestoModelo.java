@@ -7,6 +7,7 @@ public class RepuestoModelo {
 	private int cantidad;
 	private double precioUnitario;
 	private String destinatario;
+	private Boolean recibido;
 	
 	//Constructor
 	public RepuestoModelo(String repuestoId, String nombre, int cantidad, double precioUnitario) {
@@ -20,12 +21,14 @@ public class RepuestoModelo {
 						  String nombre,
 						  int cantidad,
 						  double precioUnitario,
-						  String destinatario) {
+						  String destinatario,
+						  Boolean recibido) {
 		this.repuestoId = repuestoId;
 		this.nombre = nombre;
 		this.cantidad = cantidad;
 		this.precioUnitario = precioUnitario;
 		this.destinatario = destinatario;
+		this.recibido = recibido;
 	}
 
 
@@ -39,6 +42,10 @@ public class RepuestoModelo {
 
 	public String getDestinatario() {
 		return destinatario;
+	}
+
+	public Boolean getRecibido() {
+		return recibido;
 	}
 	
 	public String getRepuestoId() {
@@ -73,5 +80,9 @@ public class RepuestoModelo {
 	public void setPrecioUnitario(double precioUnitario) {
 		this.precioUnitario = precioUnitario;
 	}
-	
+
+	public void setRecibido(Boolean recibido) {
+		this.recibido = recibido;
+	}
+
 }
