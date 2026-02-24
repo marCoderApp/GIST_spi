@@ -12,6 +12,7 @@ import java.util.List;
 import Enums.MaquinaEstado;
 import conexion.ConexionDB;
 import daos.GestioRep.*;
+import dtos.PresupuestosDTO;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -746,7 +747,26 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
 
     }
-	
+
+    //LISTAR PRESUPUESTOS
+	public static List<PresupuestosDTO> listarPresupuestos() {
+        List<PresupuestosDTO> presupuestosDTOS = new ArrayList<>();
+
+        try{
+            presupuestosDTOS = PresupuestosDao.listarPresupuestosDB();
+
+            if (presupuestosDTOS.isEmpty()){
+                throw new RuntimeException("No hay presupuestos registrados");
+            }
+
+            return presupuestosDTOS;
+
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+
+    }
+
 	//Getters and Setters
 	public boolean isOrdenCreada() {
 		return ordenCreada;

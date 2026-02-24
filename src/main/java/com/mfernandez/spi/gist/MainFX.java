@@ -152,7 +152,7 @@ public class MainFX extends Application {
 	        root.setAlignment(Pos.TOP_CENTER);
 	        root.setPadding(new Insets(30));
 	        root.getChildren().addAll(titulo, grid);
-	        root.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+	        root.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #eca162);");
 
 	        //ESCENA
 	        Scene scene = new Scene(root, 650, 520);
