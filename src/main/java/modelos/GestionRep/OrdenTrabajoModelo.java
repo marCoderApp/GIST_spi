@@ -102,7 +102,7 @@ public class OrdenTrabajoModelo {
     }
 
     //OBTENER DATOS DE ORDEN BD, REALIZANDO UNA CONSULTA PERSONALIZADA
-    public static List<Map<String, Object>> obtenerDatosOrdenBD(String ordenId) {
+       public static List<Map<String, Object>> obtenerDatosOrdenBD(String ordenId) {
         List<Map<String,Object>> resultados = new ArrayList<>();
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, "

@@ -3,6 +3,7 @@ package vistas.GestionRep;
 import java.time.LocalDateTime;
 
 import controladores.PersonalControl;
+import daos.Personal.AdminDao;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -29,7 +30,7 @@ public class FormPresupVista {
 	}
 
     //INGRESAR PRESUPUESTO. FORMULARIO PARA INGRESAR DATOS DE PRESUPUESTO.
-	public static void ingresarPresupuesto(String maquinaId, Runnable callback) {
+	public static void ingresarPresupuesto(String orden_id, String maquinaId, Runnable callback) {
         Stage ventana = new Stage();
         ventana.setTitle("Crear Presupuesto");
 
@@ -52,14 +53,15 @@ public class FormPresupVista {
                 String adminId = PersonalControl.adminIdPersonalControl != null ? PersonalControl.adminIdPersonalControl :
                         PersonalControl.tecnicoIdPersonalControl;
 
-                PresupuestoModelo nuevo = new PresupuestoModelo(adminId, maquinaId, totalMonto, conFactura);
+                PresupuestoModelo nuevo = new PresupuestoModelo(orden_id, AdminDao.adminActualId, maquinaId, totalMonto, conFactura);
                 boolean exito = PresupuestoModelo.ingresarPresupuestoBD(nuevo);
 
                 if (exito) {
                     Alert alerta = new Alert(Alert.AlertType.INFORMATION);
                     alerta.setTitle("Éxito");
                     alerta.setHeaderText("Presupuesto creado");
-                    alerta.setContentText("El presupuesto fue guardado correctamente.");
+                    alerta.setContentText("El presupuesto de $" + nuevo.getTotal() + " fue guardado " +
+							"correctamente para la máquina " + nuevo.getMaquinaId() + ", orden: " + nuevo.getOrdenId());
                     alerta.showAndWait();
                     ventana.close();
 

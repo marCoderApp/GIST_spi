@@ -2,6 +2,7 @@ package vistas.GestionRep;
 
 import controladores.GestionRepControl;
 import dtos.PresupuestosDTO;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -17,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import modelos.GestionRep.PresupuestoModelo;
 import java.util.*;
+
 
 public class PresupuestosVista {
 	
@@ -34,8 +36,8 @@ public class PresupuestosVista {
 	}
 
     //MUESTRA FORMULARIO PARA CREAR PRESUPUESTO
-    public static void mostrarFormCrearPresupuesto(String maquinaId, Runnable callback) {
-            FormPresupVista.ingresarPresupuesto(maquinaId, callback);
+    public static void mostrarFormCrearPresupuesto(String ordenId, String maquinaId, Runnable callback) {
+            FormPresupVista.ingresarPresupuesto(ordenId, maquinaId, callback);
     }
 
     //MOSTRA MENU EN PRESPUESTO
@@ -63,7 +65,7 @@ public class PresupuestosVista {
 		});
 
 		btnCrearPresupuestos.setOnAction(e->{
-			System.out.println("Crear presupuesto");
+            mostrarListaOrdenes();
 		});
 
 		btnBuscarPresupuestos.setOnAction(e->{
@@ -114,6 +116,88 @@ public class PresupuestosVista {
 		ventanaPresupuestos.show();
 
     }
+
+    //MOSTRAR LISTA DE ORDENES
+    public static void mostrarListaOrdenes() {
+        // VENTANA DE LISTAR ORDENES DE TRABAJO
+        Stage ventana = new Stage();
+        ventana.setTitle("Lista de Órdenes de Trabajo");
+
+        //TABLA DE FILAS DE STRING
+        TableView<ObservableList<String>> tabla = new TableView<>();
+
+        //LISTA DE FILAS, CADA FILA ES UNA LISTA DE STRINGS
+        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
+
+        String[] nombresCampos = {
+                "Orden_trabajo_id", "Fecha_ingreso", "Estado",
+                "Cliente", "Maquina_id",
+                "Tipo", "Marca", "Modelo", "Descripcion_Falla",
+                "Observaciones", "Activo"
+        };
+
+        //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
+        for(String nombreCampo : nombresCampos){
+            final int colIndex = tabla.getColumns().size();
+            TableColumn<ObservableList<String>, String> columna =
+                    new TableColumn<>(nombreCampo);
+
+            columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
+                    (param.getValue().size() > colIndex) ?
+                            param.getValue().get(colIndex) : ""));
+            columna.setPrefWidth(switch(nombreCampo) {
+                case "Orden_trabajo_id" -> 100;
+                case "Fecha_ingreso" -> 120;
+                case "Cliente" -> 150;
+                case "Estado" -> 150;
+                case "Maquina_id" -> 100;
+                case "Tipo" -> 150;
+                case "Marca" -> 120;
+                case "Modelo" -> 150;
+                case "Descripcion_Falla" -> 200;
+                case "Observaciones" -> 200;
+                case "Activo" -> 100;
+                default -> 120;
+            });
+            tabla.getColumns().add(columna);
+        }
+
+        //CARGAR DATOS DE ORDENES
+        OrdenTrabajoVista.cargarDatosDeOrdenes(tabla, datos);
+
+        //BOTONES
+        Button btnAgregarPresupuesto = new Button("Agregar Presupuesto");
+        btnAgregarPresupuesto.setPrefWidth(150);
+        btnAgregarPresupuesto.setOnAction(e -> {
+            String ordenId = tabla.getSelectionModel().getSelectedItem().getFirst();
+            String maquinaId = tabla.getSelectionModel().getSelectedItem().get(4);
+
+            System.out.println("Orden seleccionada: " + ordenId);
+            System.out.println("Maquina seleccionada: "+ maquinaId);
+
+            FormPresupVista.ingresarPresupuesto(ordenId, maquinaId,()->{});
+
+        });
+
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setPrefWidth(150);
+        btnCerrar.setOnAction(e -> ventana.close());
+
+        //LAYOUT
+        HBox botonesBox = new HBox(10, btnAgregarPresupuesto,
+                btnCerrar
+               );
+
+        botonesBox.setAlignment(Pos.CENTER);
+        botonesBox.setPadding(new Insets(10));
+
+        VBox layout = new VBox(10, tabla, botonesBox);
+        layout.setPadding(new Insets(10));
+
+        Scene escena = new Scene(layout);
+        ventana.setScene(escena);
+        ventana.show();
+    }
 	
 	public void mostrarMensaje(String mensaje) {
 		System.out.println("Mensaje: " + mensaje);
@@ -152,6 +236,18 @@ public class PresupuestosVista {
 		colConFactura.setCellValueFactory(new PropertyValueFactory<>("conFactura"));
 		colConFactura.setPrefWidth(150);
 
+        TableColumn<PresupuestosDTO, String> colNombreCliente = new TableColumn<>("Nombre Cliente");
+        colNombreCliente.setCellValueFactory(new PropertyValueFactory<>("nombreCliente"));
+        colNombreCliente.setPrefWidth(150);
+
+        TableColumn<PresupuestosDTO, String> colApellidoCliente = new TableColumn<>("Apellido Cliente");
+        colApellidoCliente.setCellValueFactory(new PropertyValueFactory<>("apellidoCliente"));
+        colApellidoCliente.setPrefWidth(150);
+
+        TableColumn<PresupuestosDTO, String> colNombreMaquina = new TableColumn<>("Nombre Maquina");
+        colNombreMaquina.setCellValueFactory(new PropertyValueFactory<>("nombreMaquina"));
+        colNombreMaquina.setPrefWidth(150);
+
 		TableColumn<PresupuestosDTO, String> colMaquinaId = new TableColumn<>("Maquina ID");
 		colMaquinaId.setCellValueFactory(new PropertyValueFactory<>("maquinaId"));
 		colMaquinaId.setPrefWidth(150);
@@ -164,7 +260,20 @@ public class PresupuestosVista {
 		colAdminId.setCellValueFactory(new PropertyValueFactory<>("adminId"));
 		colAdminId.setPrefWidth(150);
 
-		tabla.getColumns().addAll(colPresupuestoId, colTotal, colConFactura, colMaquinaId, colFechaCreacion, colAdminId);
+        TableColumn<PresupuestosDTO, String> colOrdenId = new TableColumn<>("Orden ID");
+        colOrdenId.setCellValueFactory(new PropertyValueFactory<>("ordenId"));
+        colOrdenId.setPrefWidth(150);
+
+		tabla.getColumns().addAll(colPresupuestoId,
+                colTotal,
+                colConFactura,
+                colNombreCliente,
+                colApellidoCliente,
+                colNombreMaquina,
+                colMaquinaId,
+                colFechaCreacion,
+                colAdminId,
+                colOrdenId);
 
 		Button btnCerrar = new Button("Cerrar");
 		btnCerrar.setPrefWidth(150);

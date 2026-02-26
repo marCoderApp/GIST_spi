@@ -232,7 +232,6 @@ public class OrdenTrabajoVista {
 	
 	//MOSTRAR LISTA DE ORDENES.
 	public void mostrarLista() {
-//====================================================================================================
         // VENTANA DE LISTAR ORDENES DE TRABAJO
         Stage ventana = new Stage();
         ventana.setTitle("Lista de Órdenes de Trabajo");
@@ -374,7 +373,7 @@ public class OrdenTrabajoVista {
 	}
 
     //OBTENER ORDEN SELECCIONADA
-    private String obtenerOrdenSeleccionada(TableView<ObservableList<String>> tabla){
+public static String obtenerOrdenSeleccionada(TableView<ObservableList<String>> tabla){
         ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
 
         if (seleccionado != null){
@@ -386,7 +385,7 @@ public class OrdenTrabajoVista {
     }
 
     //CARGAR DATOS DE ORDENES
-    private static void cargarDatosDeOrdenes(TableView<ObservableList<String>> tabla,
+    public static void cargarDatosDeOrdenes(TableView<ObservableList<String>> tabla,
                                              ObservableList<ObservableList<String>> datos){
 
         datos.clear();
@@ -849,9 +848,10 @@ public class OrdenTrabajoVista {
             //BOTON DE AGREGAR PRESUPUESTO
             Button btnAgregarPresupuesto = new Button("Agregar Presupuesto");
             btnAgregarPresupuesto.setOnAction(e -> {
+                String orden_id = fila.get("ORDEN_TRABAJO_ID") != null ? fila.get("ORDEN_TRABAJO_ID").toString() : null;
                 String maquinaId = fila.get("MAQUINA_ID") != null ? fila.get("MAQUINA_ID").toString() : null;
                 if (maquinaId != null) {
-                    PresupuestosVista.mostrarFormCrearPresupuesto(maquinaId,()->
+                    PresupuestosVista.mostrarFormCrearPresupuesto(orden_id, maquinaId,()->
                     {
                         List<Map<String, Object>> nuevosDatos = GestionRepControl.obtenerDatosOrdenPorId(ordenId);
                         construirVistaOrden(contenedor, nuevosDatos, ordenId);

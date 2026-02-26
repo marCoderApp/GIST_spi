@@ -20,14 +20,17 @@ public class PresupuestoModelo {
 	private String estado;
     private String maquinaId;
     private boolean conFactura;
+    private String ordenId;
 
 	public PresupuestoModelo(
+            String ordenId,
 			String adminId,
             String maquinaId,
 			float total,
             boolean conFactura
 			) {
-		
+
+        this.ordenId = ordenId;
 		this.presupuestoId = generarPresupuestoId();
 		this.adminId = adminId;
 		this.fechaCreacion = LocalDateTime.now();
@@ -41,16 +44,20 @@ public class PresupuestoModelo {
     {
 
         String sqlDelete = "DELETE FROM PRESUPUESTO WHERE MAQUINA_ID = ?";
-        String sql = "INSERT INTO presupuesto " +
-                "(presupuesto_id, maquina_id, total, con_factura, fecha_creacion, admin_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PRESUPUESTO " +
+                "(presupuesto_id, maquina_id, total, con_factura, fecha_creacion, admin_id, orden_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)" +
+                "ON DUPLICATE KEY UPDATE " +
+                "total = VALUES(total), " +
+                "con_factura = VALUES(con_factura), " +
+                "fecha_creacion = VALUES(fecha_creacion), " +
+                "admin_id = VALUES(admin_id);";
 
-        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
-            PreparedStatement psDelete = GestionRepControl.conexion.prepareStatement(sqlDelete);) {
+        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
 
             //ELIMINAR PRESUPUESTO ANTERIOR
-            psDelete.setString(1, presupuesto.getMaquinaId());
-            psDelete.executeUpdate();
+            //psDelete.setString(1, presupuesto.getMaquinaId());
+            //psDelete.executeUpdate();
             //AGREGAR UN PRESUPUESTO
             ps.setString(1, presupuesto.getPresupuestoId());
             ps.setString(2, presupuesto.getMaquinaId());
@@ -58,6 +65,7 @@ public class PresupuestoModelo {
             ps.setBoolean(4, presupuesto.conFactura());
             ps.setTimestamp(5, Timestamp.valueOf(presupuesto.getFechaCreacion())); // LocalDateTime → Timestamp
             ps.setString(6, presupuesto.getAdminId());
+            ps.setString(7, presupuesto.getOrdenId());
 
             int filasAfectadas = ps.executeUpdate();
             return filasAfectadas > 0;
@@ -131,5 +139,12 @@ public class PresupuestoModelo {
 
     public void setConFactura(Boolean conFactura) {
         this.conFactura = conFactura;
+    }
+    public String getOrdenId() {
+        return ordenId;
+    }
+
+    public void setOrdenId(String ordenId) {
+        this.ordenId = ordenId;
     }
 }

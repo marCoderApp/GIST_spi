@@ -17,7 +17,14 @@ public class PresupuestosDao {
     public static List<PresupuestosDTO> listarPresupuestosDB(){
         List<PresupuestosDTO> presupuestosDTOS = new ArrayList<>();
 
-        String sql = "SELECT * FROM presupuesto";
+        String sql = "SELECT P.PRESUPUESTO_ID, P.TOTAL, P.CON_FACTURA, " +
+                "M.TIPO AS NOMBREMAQUINA, M.ID AS MAQUINA_ID, C.NOMBRE AS NOMBRECLIENTE," +
+                " C.APELLIDO AS APELLIDOCLIENTE, P.FECHA_CREACION, P.ADMIN_ID, P.ORDEN_ID" +
+                " FROM PRESUPUESTO P " +
+                "LEFT JOIN ORDEN_DE_TRABAJO O ON O.ORDEN_TRABAJO_ID = P.ORDEN_ID" +
+                " LEFT JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID" +
+                " LEFT JOIN MAQUINAS M ON M.ID = P.MAQUINA_ID" +
+                " ORDER BY P.FECHA_CREACION DESC";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.executeQuery();
@@ -29,9 +36,13 @@ public class PresupuestosDao {
                        rs.getString("presupuesto_id"),
                        rs.getFloat("total"),
                        rs.getBoolean("con_factura"),
+                       rs.getString("nombreMaquina"),
                        rs.getString("maquina_id"),
+                       rs.getString("nombreCliente"),
+                       rs.getString("apellidoCliente"),
                        rs.getTimestamp("fecha_creacion").toLocalDateTime(),
-                       rs.getString("admin_id")
+                       rs.getString("admin_id"),
+                       rs.getString("orden_id")
                );
                presupuestosDTOS.add(presupuesto);
             }
@@ -41,5 +52,8 @@ public class PresupuestosDao {
         }
         return presupuestosDTOS;
     }
+
+    //LISTAR PRESUPUESTOS DATOS COMPLETOS DB
+
 
 }
