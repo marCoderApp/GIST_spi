@@ -69,7 +69,7 @@ public class PresupuestosVista {
 		});
 
 		btnBuscarPresupuestos.setOnAction(e->{
-			System.out.println("Buscar presupuesto");
+			buscarPresupuestos();
 		});
 
 		btnCerrar.setOnAction(e->{
@@ -116,6 +116,217 @@ public class PresupuestosVista {
 		ventanaPresupuestos.show();
 
     }
+
+	//BUSCAR PRESUPUESTOS
+	public void buscarPresupuestos() {
+		Stage ventana = new Stage();
+		ventana.setTitle("Buscar Presupuestos");
+		ventana.initModality(Modality.APPLICATION_MODAL);
+
+		Label titulo = new Label("Elija criterio de busqueda");
+		titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+		titulo.setAlignment(Pos.CENTER);
+
+		ComboBox<String> criterioOpciones = new ComboBox<>();
+		criterioOpciones.getItems().addAll("Tipo de máquina",
+				"Nombre_cliente",
+				"Apellido_cliente",
+				"Fecha_creacion",
+				"Orden_id",
+				"Maquina_id",
+				"Total"
+				);
+		criterioOpciones.setPromptText("Seleccione un criterio");
+		criterioOpciones.setPrefWidth(200);
+
+		Button btnBuscar = new Button("Buscar");
+		btnBuscar.setPrefWidth(100);
+		btnBuscar.setStyle("-fx-background-color: #22ab17; -fx-text-fill: white;");
+		btnBuscar.setOnAction(e -> {
+			String criterioSeleccionado = criterioOpciones.getValue();
+
+			if(criterioSeleccionado == null){
+				OrdenTrabajoVista.mostrarAdvertencia("Debe seleccionar un criterio de busqueda");
+				return;
+			}
+
+			String criterio = switch (criterioSeleccionado){
+				case "Tipo de máquina" -> "tipo";
+					case "Nombre_cliente" -> "nombre";
+					case "Apellido_cliente" -> "apellido";
+					case "Fecha_creacion" -> "fecha_creacion";
+					case "Orden_id" -> "orden_id";
+					case "Maquina_id" -> "maquina_id";
+					case "Total" -> "total";
+					default -> null;
+			};
+
+			if (criterio == null){
+				OrdenTrabajoVista.mostrarAdvertencia("Criterio no reconocido!");
+				return;
+			}
+
+			mostrarFormBusquedaPresupuestos(criterio);
+
+
+		});
+
+		Button btnCancelar = new Button("Cancelar");
+		btnCancelar.setPrefWidth(100);
+		btnCancelar.setStyle("-fx-background-color: #ff0000; -fx-text-fill: white;");
+		btnCancelar.setOnAction(e -> ventana.close());
+
+		HBox barra = new HBox(10, btnBuscar, btnCancelar);
+		barra.setAlignment(Pos.CENTER);
+		barra.setPadding(new Insets(10));
+
+		VBox layout = new VBox(15);
+		layout.setAlignment(Pos.CENTER);
+		layout.setPadding(new Insets(30));
+		layout.getChildren().addAll(titulo, criterioOpciones, barra);
+		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #84b6ef);");
+
+		Scene escena = new Scene(layout, 400, 200);
+		ventana.setScene(escena);
+		ventana.show();
+	}
+
+	//MOSTRAR FORM DE BUSQUEDA DE PRESUPUESTOS
+	public static void mostrarFormBusquedaPresupuestos(String criterio){
+		Stage ventana = new Stage();
+			ventana.setTitle("Buscar Presupuestos");
+			ventana.initModality(Modality.APPLICATION_MODAL);
+
+			Label titulo = new Label("Elija criterio de busqueda");
+				titulo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+				titulo.setAlignment(Pos.CENTER);
+
+				TextField campoBusqueda = new TextField();
+				campoBusqueda.setPromptText("Ingrese el valor a buscar");
+				campoBusqueda.setPrefWidth(200);
+
+				Button btnBuscar = new Button("Buscar");
+				btnBuscar.setPrefWidth(100);
+				btnBuscar.setStyle("-fx-background-color: #22ab17; -fx-text-fill: white;");
+				btnBuscar.setOnAction(e->{
+
+					if(campoBusqueda.getText().isEmpty()){
+						OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un valor a buscar");
+							return;
+					}
+
+					Stage ventanaPresupuestos = new Stage();
+					ventanaPresupuestos.setTitle("Resultados de busqueda");
+					ventanaPresupuestos.initModality(Modality.APPLICATION_MODAL);
+					ventanaPresupuestos.setMinWidth(800);
+
+					Label tituloResultados = new Label("Resultados de busqueda");
+					tituloResultados.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+					List<PresupuestosDTO> listaPresupuestosBuscados = GestionRepControl
+							.buscarPresupuestoPorCriterio(criterio, campoBusqueda.getText());
+					ObservableList<PresupuestosDTO> items = FXCollections
+							.observableArrayList(listaPresupuestosBuscados);
+
+					TableView<PresupuestosDTO> tabla = new TableView<>(items);
+					tabla.setEditable(false);
+					tabla.setPrefWidth(400);
+					tabla.setPrefHeight(300);
+
+					TableColumn<PresupuestosDTO, String> colPresupuestoId = new TableColumn<>("Presupuesto ID");
+					colPresupuestoId.setCellValueFactory(new PropertyValueFactory<>("id"));
+						colPresupuestoId.setPrefWidth(150);
+
+					TableColumn<PresupuestosDTO, Float> colTotal = new TableColumn<>("Total");
+						colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+						colTotal.setPrefWidth(150);
+
+					TableColumn<PresupuestosDTO, Boolean> colConFactura = new TableColumn<>("Factura");
+						colConFactura.setCellValueFactory(new PropertyValueFactory<>("conFactura"));
+						colConFactura.setPrefWidth(150);
+
+						TableColumn<PresupuestosDTO, String> colNombreCliente = new TableColumn<>("Nombre Cliente");
+							colNombreCliente.setCellValueFactory(new PropertyValueFactory<>("nombreCliente"));
+							colNombreCliente.setPrefWidth(150);
+
+						TableColumn<PresupuestosDTO, String> colApellidoCliente = new TableColumn<>("Apellido Cliente");
+							colApellidoCliente.setCellValueFactory(new PropertyValueFactory<>("apellidoCliente"));
+							colApellidoCliente.setPrefWidth(150);
+
+						TableColumn<PresupuestosDTO, String> colNombreMaquina = new TableColumn<>("Nombre Maquina");
+							colNombreMaquina.setCellValueFactory(new PropertyValueFactory<>("nombreMaquina"));
+							colNombreMaquina.setPrefWidth(150);
+
+							TableColumn<PresupuestosDTO, String> colMaquinaId = new TableColumn<>("Maquina ID");
+							colMaquinaId.setCellValueFactory(new PropertyValueFactory<>("maquinaId"));
+							colMaquinaId.setPrefWidth(150);
+
+							TableColumn<PresupuestosDTO, String> colOrdenId = new TableColumn<>("Orden ID");
+							colOrdenId.setCellValueFactory(new PropertyValueFactory<>("ordenId"));
+							colOrdenId.setPrefWidth(150);
+
+					TableColumn<PresupuestosDTO, String> colFechaCreacion = new TableColumn<>("Fecha Creacion");
+					colFechaCreacion.setCellValueFactory(new PropertyValueFactory<>("fecha_creacion"));
+					colFechaCreacion.setPrefWidth(150);
+
+						tabla.getColumns().addAll(colPresupuestoId,
+								colTotal,
+								colConFactura,
+								colNombreMaquina,
+								colNombreCliente,
+								colApellidoCliente,
+								colMaquinaId,
+								colFechaCreacion,
+								colOrdenId);
+
+						tabla.setItems(items);
+						tabla.setPrefHeight(300);
+
+						Button btnAgregarPresupuesto = new Button("Agregar Presupuesto");
+						btnAgregarPresupuesto.setPrefWidth(150);
+						btnAgregarPresupuesto.setOnAction(event -> {});
+
+						Button btnCerrar = new Button("Cerrar");
+						btnCerrar.setPrefWidth(150);
+						btnCerrar.setOnAction(event -> ventanaPresupuestos.close());
+
+							HBox barraResultados = new HBox(10, btnAgregarPresupuesto, btnCerrar);
+							barraResultados.setAlignment(Pos.CENTER);
+							barraResultados.setPadding(new Insets(10));
+
+							VBox layout = new VBox(15);
+								layout.setAlignment(Pos.CENTER);
+								layout.setPadding(new Insets(30));
+								layout.getChildren().addAll(tituloResultados, tabla, barraResultados);
+								layout.setStyle("-fx-background-color: linear-gradient(to bottom, #82b5ec, #E4E9F0);");
+
+								Scene escena = new Scene(layout, 800, 450);
+								ventanaPresupuestos.setScene(escena);
+									ventanaPresupuestos.showAndWait();
+
+				});
+
+				Button btnCancelar = new Button("Cancelar");
+				btnCancelar.setPrefWidth(100);
+				btnCancelar.setStyle("-fx-background-color: #ff0000; -fx-text-fill: white;");
+				btnCancelar.setOnAction(e->{
+					ventana.close();});
+
+				HBox barra = new HBox(10, btnBuscar, btnCancelar);
+				barra.setAlignment(Pos.CENTER);
+				barra.setPadding(new Insets(10));
+
+				VBox layout = new VBox(15);
+					layout.setAlignment(Pos.CENTER);
+					layout.setPadding(new Insets(30));
+					layout.getChildren().addAll(titulo, campoBusqueda, barra);
+					layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #84b6ef);");
+
+					Scene escena = new Scene(layout, 400, 200);
+					ventana.setScene(escena);
+					ventana.show();
+
+	}
 
     //MOSTRAR LISTA DE ORDENES
     public static void mostrarListaOrdenes() {
@@ -171,12 +382,7 @@ public class PresupuestosVista {
         btnAgregarPresupuesto.setOnAction(e -> {
             String ordenId = tabla.getSelectionModel().getSelectedItem().getFirst();
             String maquinaId = tabla.getSelectionModel().getSelectedItem().get(4);
-
-            System.out.println("Orden seleccionada: " + ordenId);
-            System.out.println("Maquina seleccionada: "+ maquinaId);
-
             FormPresupVista.ingresarPresupuesto(ordenId, maquinaId,()->{});
-
         });
 
         Button btnCerrar = new Button("Cerrar");
@@ -301,7 +507,7 @@ public class PresupuestosVista {
 	public List<PresupuestoModelo> getListaPresupuestos() {
 		return listaPresupuestos;
 	}
-	
+
 	public void setListaPresupuestos(List<PresupuestoModelo> listaPresupuestos) {
 		this.listaPresupuestos = listaPresupuestos;
 	}

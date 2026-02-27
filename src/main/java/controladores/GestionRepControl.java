@@ -767,6 +767,30 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 
     }
 
+    //BUSCAR PRESUPUESTO POR CRITERIO
+    public static List<PresupuestosDTO> buscarPresupuestoPorCriterio(String criterio,
+                                                                                     String dato){
+        List<PresupuestosDTO> resultado = null;
+
+        try{
+            if(criterio == null || dato == null){
+                OrdenTrabajoVista.mostrarAdvertencia("Debe ingresar un criterio de busqueda!");
+                return null;
+            }else{
+                resultado = PresupuestosDao.buscarPresupuestoPorCriterioDB(criterio, dato);
+
+                if(resultado == null || resultado.isEmpty()){
+                    return null;
+                }
+
+                return resultado;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 	//Getters and Setters
 	public boolean isOrdenCreada() {
 		return ordenCreada;
