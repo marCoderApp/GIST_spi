@@ -101,7 +101,7 @@ public class ClientesVista {
      				botonListarClientes,
      				botonBuscarCliente,
      				botonSalir);
-     		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+     		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
      		
      		Scene escena = new Scene(layout, 400, 450);
      		gestionClientesVentana.setScene(escena);
@@ -230,6 +230,7 @@ public class ClientesVista {
         grid.setHgap(10);
         grid.setVgap(15);
         grid.setPadding(new javafx.geometry.Insets(20));
+        grid.setStyle("-fx-background-color: #84b6ef;");
 
         grid.add(lblTitulo, 0, 0, 2, 1);
         grid.add(lblNombre, 0, 1);
@@ -439,6 +440,7 @@ public class ClientesVista {
         VBox layout = new VBox(10, titulo, inputDato, layoutBotones);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(10));
+        layout.setStyle("-fx-background-color: #84b6ef;");
 
         Scene escena = new Scene(layout, 300, 150);
         ventana.setScene(escena);
@@ -568,6 +570,7 @@ public class ClientesVista {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
         layout.getChildren().addAll(tabla, botonesBox);
+        layout.setStyle("-fx-background-color: #84b6ef;");
 
         Scene escena = new Scene(layout, 900, 500);
         ventana.setScene(escena);

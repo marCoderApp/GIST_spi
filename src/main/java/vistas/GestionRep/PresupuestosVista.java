@@ -107,7 +107,7 @@ public class PresupuestosVista {
 				btnCrearPresupuestos,
 				btnBuscarPresupuestos,
 				btnCerrar);
-		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
 
 		//Escena

@@ -114,7 +114,7 @@ public class NovedadesVista {
           btnCrearNovedad,
           btnVolver
         );
-        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene escena = new Scene(layout, 400, 450);
         ventanaMenuNovedades.setScene(escena);
@@ -277,6 +277,7 @@ public class NovedadesVista {
         layout.setPadding(new Insets(15));
         layout.setPrefWidth(600);
         layout.setAlignment(Pos.CENTER);
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene escena = new Scene(layout);
         ventanaFormNovedades.setScene(escena);
@@ -388,6 +389,8 @@ public class NovedadesVista {
 
         VBox layout = new VBox(10, table, botonesBox);
         layout.setPadding(new Insets(10, 10, 10, 0));
+        layout.setAlignment(Pos.CENTER);
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene scene = new Scene(layout);
         ventana.setScene(scene);

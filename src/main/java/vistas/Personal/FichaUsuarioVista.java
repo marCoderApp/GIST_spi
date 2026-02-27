@@ -128,7 +128,7 @@ public class FichaUsuarioVista {
                 botonListarAdmins,
                 botonBuscarAdmin,
                 botonVolver);
-        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #82b5ec, #dfe4ea);");
 
         javafx.scene.Scene escena = new javafx.scene.Scene(layout, 400, 450);
         gestionAdministradorVentana.setScene(escena);
@@ -203,7 +203,7 @@ public class FichaUsuarioVista {
         layout.setAlignment(javafx.geometry.Pos.CENTER);
         layout.setPadding(new javafx.geometry.Insets(30));
         layout.getChildren().addAll(titulo, botonCrearTecnico, botonListarTecnicos, botonBuscarTecnico, botonVolver);
-        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         javafx.scene.Scene escena = new javafx.scene.Scene(layout, 400, 450);
         gestionTecnicosVentana.setScene(escena);

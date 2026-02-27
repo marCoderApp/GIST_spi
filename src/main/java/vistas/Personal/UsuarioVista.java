@@ -92,7 +92,7 @@ public class UsuarioVista {
                 botonGestionAdministradores,
                 botonGestionTecnicos,
                 botonVolver);
-        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #82b5ec, #E4E9F0);");
 
         Scene escena = new Scene(layout, 400, 450);
         gestionUsuariosVentana.setScene(escena);

@@ -130,7 +130,7 @@ public class PedidosVista {
 				btnCrearPedido,
 				btnBuscarPedidos,
 				btnCerrar);
-		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #F7F9FB, #E4E9F0);");
+		layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
 		Scene scene = new Scene(layout, 400, 450);
 		ventanaPedidos.setScene(scene);
@@ -213,6 +213,7 @@ public class PedidosVista {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
         layout.getChildren().addAll(titulo, tablaPedidos, btnCerrar);
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene scene = new Scene(layout, 700, 550);
         ventana.setScene(scene);
@@ -356,6 +357,7 @@ public class PedidosVista {
         );
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene escena = new Scene(layout, 650, 520);
         ventana.setScene(escena);
@@ -479,6 +481,7 @@ public class PedidosVista {
                 lblTotal,
                 btnCerrar
         );
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene scene = new Scene(layout, 600, 550);
         ventanaDetalle.setScene(scene);
@@ -540,6 +543,7 @@ public class PedidosVista {
         VBox layout = new VBox(10, titulo, cbCriterio, barraBotones);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: linear-gradient(to bottom, #84b6ef, #E4E9F0);");
 
         Scene scene = new Scene(layout, 350, 150);
         ventana.setScene(scene);

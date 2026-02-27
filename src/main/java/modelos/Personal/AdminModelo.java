@@ -72,10 +72,6 @@ public class AdminModelo extends PersonalBase {
 		return null;
 	}
 	
-	public Boolean verificarContraseña(String contraseña) {
-		return null;
-	}
-	
 	public String getId() {
 		return id;
 	}

@@ -365,6 +365,8 @@ public class OrdenTrabajoVista {
 
             VBox layout = new VBox(10, tabla, botonesBox);
             layout.setPadding(new Insets(10));
+            layout.setSpacing(10);
+            layout.setStyle("-fx-background-color: #84b6ef;");
 
             Scene escena = new Scene(layout);
             ventana.setScene(escena);
@@ -529,6 +531,8 @@ public static String obtenerOrdenSeleccionada(TableView<ObservableList<String>> 
         //LAYOUT
         VBox layout = new VBox(10, titulo, criterioOpciones, botonLayout);
         layout.setPadding(new Insets(10));
+        layout.setSpacing(10);
+        layout.setStyle("-fx-background-color: #84b6ef;");
 
         Scene escena = new Scene(layout);
         ventana.setScene(escena);
