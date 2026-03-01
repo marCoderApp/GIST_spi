@@ -50,7 +50,14 @@ public class MainFX extends Application {
 			  String id = "ADM000";
 			  String email = "superadmin@sistema.local"; // ideal: tomar de config
 			  String pwd = System.getenv().get("SUPER_ADMIN_KEY");
+
+			  if (pwd == null) {
+				  System.err.println("SUPER_ADMIN_KEY no definida. Usando contraseña por defecto.");
+				  pwd = "Admin123";
+			  }
+
 			  String hash = PasswordHasher.hash(pwd.toCharArray());
+
 
 			  adminDao.crearSuperAdmin(id, "Super", "Admin", email, hash);
 			  System.out.println("[BOOT] SUPER_ADMIN creado: " + email);
