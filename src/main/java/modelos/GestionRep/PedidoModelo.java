@@ -25,17 +25,8 @@ public class PedidoModelo {
 	public String generarPedidoId() {
 		return "PED" + System.currentTimeMillis();
 	}
-	
-	public void eliminarPedido(String pedidoId) {
 
-	}
-	
-	public void modificarPedido(String pedidoId) {
-
-	}
-	
 	// Getters
-	
 	public String getPedidoId() {
 		return pedidoId;
 	}

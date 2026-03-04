@@ -10,11 +10,6 @@ import java.sql.SQLException;
 
 public class ClientesDao {
 
-    public static Boolean traerOrdenesRelacionadasAClienteDB(String clienteId){
-
-        return false;
-    }
-
     public static ObservableList<ObservableList<String>> traerResultadoBusquedaClienteDB(String criterio, String dato){
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
         String consultaSQL = "SELECT * "

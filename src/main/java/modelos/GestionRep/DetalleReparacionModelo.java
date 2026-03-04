@@ -14,7 +14,6 @@ public class DetalleReparacionModelo {
 	private String tecnicoId;
 	private LocalDateTime fecha;
 	private String ordenId;
-	private boolean ordenAsociada;
     private GestionRepControl gestionRepControl = new GestionRepControl();
 	private int nivelService = 0;
 
@@ -111,9 +110,6 @@ public class DetalleReparacionModelo {
 	    return ordenId;
 	}
 
-	public boolean isOrdenAsociada() {
-	    return ordenAsociada;
-	}
 
 	// Setters
 	public void setDetalleRepId(String detalleRepId) {
@@ -134,10 +130,6 @@ public class DetalleReparacionModelo {
 
 	public void setOrdenId(String ordenId) {
 	    this.ordenId = ordenId;
-	}
-
-	public void setOrdenAsociada(boolean ordenAsociada) {
-	    this.ordenAsociada = ordenAsociada;
 	}
 
 	public String getDescripcion() {

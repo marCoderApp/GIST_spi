@@ -447,11 +447,6 @@ public class ClientesVista {
         ventana.show();
     }
 
-    //MOSTRAR MENSAJE
-	public void mostrarMensaje(String mensaje) {
-        System.out.println(mensaje);
-    }
-
     //MOSTRAR LISTA DE CLIENTES
 	@SuppressWarnings("unchecked")
 	public static void mostrarListaClientes() {
@@ -788,8 +783,7 @@ public class ClientesVista {
 			Stage ventanaPadre, String cliente_id) {
 		
 	}
-	
-	
+
 
 	//Getters
 	
