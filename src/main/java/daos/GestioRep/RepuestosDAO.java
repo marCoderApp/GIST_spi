@@ -34,8 +34,4 @@ public class RepuestosDAO {
 
         return null;
     }
-
-    //CREAR REPUESTO
-
-
 }

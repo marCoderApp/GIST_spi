@@ -89,11 +89,6 @@ public class DetalleReparacionModelo {
         }
 		return false;
 	}
-	
-	public void eliminarDetalle(String detalleRepId) {}
-	
-	public void modificarDetalle(String detalleRepId) {}
-	
 
 	// Getters
 	public String getDetalleRepId() {

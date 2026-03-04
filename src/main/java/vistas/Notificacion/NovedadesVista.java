@@ -406,10 +406,6 @@ public class NovedadesVista {
         alerta.showAndWait();
     }
 
-    //CREAR TAREA A PARTIR DE NOVEDAD
-	public void crearTareaAPartirDeNovedad(NovedadModelo novedad) {
-	}
-
     //VER UNA NOVEDAD
     public void verNovedad(String nov_id){
         List<Map<String, Object>> datos = NotificacionesControlador.obtenerNovedadPorId(nov_id);
@@ -732,5 +728,4 @@ public class NovedadesVista {
 	public void setOrdenesAsociadas(List<OrdenTrabajoModelo> ordenesAsociadas) {
 		this.ordenesAsociadas = ordenesAsociadas;
 	}
-	
 }

@@ -36,13 +36,6 @@ public class GestionRepControl {
 		this.setOrdenCreada(false);
 	}
 
-	//ORDENES DE TRABAJO
-	public boolean registrarOrden(OrdenTrabajoModelo orden) {
-        this.ordenesTrabajo.add(orden);
-        this.setOrdenCreada(true);
-        return true;
-    }
-
     //OBTENER DATOS DE ORDEN
 
     public static List<Map<String, Object>> obtenerDatosOrdenPorId(String ordenId){
@@ -350,135 +343,6 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
 		 return agregarMaquinasNuevas(orden.getOrdenId());
 	}
 
-    //AGREGAR MAQUINAS EXISTENTES
-	public List<MaquinaModelo> agregarMaquinasExistentes() {
-		List<MaquinaModelo> listaMaquinas = MaquinaModelo.listarMaquinas();
-	    List<MaquinaModelo> maquinasSeleccionadas = new ArrayList<>();
-
-	    if (listaMaquinas.isEmpty()) {
-	        Alert alertaVacio = new Alert(Alert.AlertType.WARNING);
-	        alertaVacio.setHeaderText("No hay máquinas cargadas");
-	        alertaVacio.setContentText("Debe agregar nuevas máquinas primero.");
-	        alertaVacio.show();
-	        return maquinasSeleccionadas;
-	    }
-
-	    boolean continuar = true;
-
-	    while (continuar) {
-
-	        // Preparar lista de opciones
-	        List<String> opciones = listaMaquinas.stream()
-	                .map(m -> m.getMaquinaId() + " | " + m.getTipo() + " | " + m.getMarca() + " | " + m.getModelo())
-	                .toList();
-
-	        ChoiceDialog<String> dialogo = new ChoiceDialog<>(opciones.get(0), opciones);
-	        dialogo.setTitle("Seleccionar Máquina");
-	        dialogo.setHeaderText("Seleccione una máquina existente:");
-	        dialogo.setContentText("Máquina:");
-
-	        Optional<String> resultado = dialogo.showAndWait();
-
-	        if (resultado.isPresent()) {
-	            String seleccionado = resultado.get();
-	            String idSeleccionado = seleccionado.split(" \\| ")[0];
-
-	            // Agregar máquina seleccionada a la lista
-	            listaMaquinas.stream()
-	                    .filter(m -> m.getMaquinaId().equals(idSeleccionado))
-	                    .findFirst()
-	                    .ifPresent(maquinasSeleccionadas::add);
-
-	            // Preguntar si quiere seleccionar otra máquina
-	            Alert pregunta = new Alert(Alert.AlertType.CONFIRMATION);
-	            pregunta.setTitle("Seleccionar más máquinas");
-	            pregunta.setHeaderText("¿Desea agregar otra máquina?");
-	            pregunta.getButtonTypes().setAll(
-	                    new ButtonType("Sí", ButtonData.YES),
-	                    new ButtonType("No", ButtonData.NO)
-	            );
-
-	            Optional<ButtonType> respuesta = pregunta.showAndWait();
-	            continuar = respuesta.isPresent() &&
-	                        respuesta.get().getButtonData() == ButtonData.YES;
-
-	        } else {
-	            continuar = false;
-	        }
-	    }
-
-	    return maquinasSeleccionadas;
-		
-	}
-
-    //INSERTAR EN ORDEN MAQUINAS
-	private void insertarEnOrdenMaquinas(List <MaquinaModelo> maquinasSeleccionadas) {
-		
-		String sqlInsertarEnOrdenMaquinas = "INSERT INTO orden_maquinas"
-				+ "(orden_id, maquina_id) VALUES (?, ?)";
-		
-		try(PreparedStatement ps = conexion.prepareStatement(sqlInsertarEnOrdenMaquinas)){
-			
-			for(MaquinaModelo m : maquinasSeleccionadas) {
-				ps.setString(1, ordenId);
-				ps.setString(2, m.getMaquinaId());
-				ps.addBatch();
-			}
-			
-			ps.executeBatch();
-			
-		}catch(Exception e) {
-			System.out.println("Error al buscar la máquina: " + e.getMessage());
-		}
-		
-	}
-
-    //BUSCAR MAQUINA POR ID
-	private MaquinaModelo buscarMaquinaPorId(String id) {
-		
-		String sqlConsulta = "SELECT * FROM MAQUINAS WHERE id = ?";
-		
-		try(PreparedStatement ps = conexion.prepareStatement(sqlConsulta)) {
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-
-                // Mapeo correcto de DATETIME a LocalDateTime
-                LocalDateTime createdAt = null;
-                if (rs.getTimestamp("CREATED_AT") != null) {
-                    createdAt = rs.getTimestamp("CREATED_AT").toLocalDateTime();
-                }
-
-                LocalDateTime updatedAt = null;
-                if (rs.getTimestamp("UPDATED_AT") != null) {
-                    updatedAt = rs.getTimestamp("UPDATED_AT").toLocalDateTime();
-                }
-
-
-                MaquinaModelo maquina = new MaquinaModelo(
-                        rs.getString("tipo"),
-                        rs.getString("marca"),
-                        rs.getString("modelo"),
-                        rs.getString("color"),
-						rs.getString("estado"),
-                        rs.getBoolean("REINGRESO"),
-                        createdAt,
-                        updatedAt,
-                        rs.getString("DESCRIPCION_FALLA"),
-                        rs.getString("OBSERVACIONES"),
-                        rs.getBoolean("ACTIVO"));
-                maquina.setMaquinaId(rs.getString("id"));
-                return maquina;
-            }
-            
-        } catch (Exception e) {
-            System.out.println("Error al buscar la máquina: " + e.getMessage());
-        }
-		
-		return null;
-	}
-
     //AGREGAR MÁQUINAS NUEVAS
     private List<MaquinaModelo> agregarMaquinasNuevas(String ordenId) {
         List<MaquinaModelo> nuevasMaquinas = new ArrayList<>();
@@ -677,12 +541,6 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         return resultado[0];
     }
 
-    //DEMAS MÉTODOS
-	public DetalleReparacionModelo registrarDetalle(DetalleReparacionModelo detalle) {
-
-		return detalle; 
-	}
-
     //DAR DE BAJA MAQUINA
     public static Boolean darBajaMaquina(String idMaquina) {
         return MaquinaDao.darDeBajaMaquinaBD(idMaquina);
@@ -704,28 +562,6 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
         }
         return resultado;
     }
-
-    //CREAR PRESUPUESTO
-	public void crearPresupuesto(PresupuestoModelo presupuesto) {
-		// Lógica para crear un presupuesto
-	}
-
-    //LISTAR ITEMS DE PEDIDO
-    public static List<RepuestoModelo> listarItemsDePedido(String pedidoId) {
-        // Implementar consulta JOIN como en mi respuesta anterior
-        // ...
-
-        return null;
-    }
-
-    //OBTENER LISTA DE ORDENES
-	public void obtenerListaOrdenes(PedidoModelo pedido) {
-		// Lógica para obtener la lista de órdenes de trabajo
-	}
-
-    //OBTENER LISTA ORDENES
-	public static void obtenerListaOrdenes() {
-	}
 
     //BUSCAR PEDIDO POR CRITERIO
     public static ObservableList<ObservableList<String>> buscarPedidoPorCriterio(String criterio,
@@ -792,21 +628,10 @@ String sqlSentencia = "INSERT INTO cliente (cliente_id, nombre, apellido, empres
     }
 
 	//Getters and Setters
-	public boolean isOrdenCreada() {
-		return ordenCreada;
-	}
 
 	public void setOrdenCreada(boolean ordenCreada) {
 		this.ordenCreada = ordenCreada;
 	}
 
-	public List<OrdenTrabajoModelo> getOrdenesTrabajo() {
-		return ordenesTrabajo;
-	}
-
-	public void setOrdenesTrabajo(List<OrdenTrabajoModelo> ordenesTrabajo) {
-		this.ordenesTrabajo = ordenesTrabajo;
-	}
-	
 	
 }

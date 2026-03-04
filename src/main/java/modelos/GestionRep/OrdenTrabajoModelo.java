@@ -159,10 +159,6 @@ public class OrdenTrabajoModelo {
         return resultados;
     }
 
-    public Boolean agregarMaquinaAlista(MaquinaModelo maquina) {
-    	return true;
-    }
-
 	public EstadoOrden getEstado() {
 		return estado;
 	}
@@ -267,26 +263,6 @@ public class OrdenTrabajoModelo {
     public void setPresupuesto_id(String presupuesto_id) {
         this.presupuesto_id = presupuesto_id;
     }
-
-    public Boolean crearOrden(OrdenTrabajoModelo orden) {
-        return true;
-    }
-
-    public List<OrdenTrabajoModelo> filtrarPorCriterio(String criterio){
-
-        List<OrdenTrabajoModelo> listaDeOrdenes = new ArrayList<>();
-        return listaDeOrdenes;
-    }
-
-    public Boolean asociarOrden(String ordenId) {
-        return true;
-    }
-
-    public List<OrdenTrabajoModelo> listarOrdenes(){
-        List<OrdenTrabajoModelo> listarOrdenes = new ArrayList<>();
-        return listarOrdenes;
-    }
-
 
 
 }

@@ -119,39 +119,7 @@ public class OrdenTrabajoVista {
 	        error.showAndWait();
 	    }
 	}
-	
 
-	//GUARDAR CAMBIOS DE OBSERVACIONES EN ORDEN
-	public void guardarCambios(OrdenTrabajoModelo orden, String observaciones) {
-		String sqlGuardarCambios = "UPDATE orden_de_trabajo SET observaciones = ? WHERE "
-				+ "orden_trabajo_id = ? ";
-		
-		try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlGuardarCambios)){
-			ps.setString(1, observaciones);
-			ps.setString(2, orden.getOrdenId());
-			
-			ps.executeUpdate();
-		}catch(Exception e) {
-			 System.out.println("Error al insertar observaciones: " + e.getMessage());
-		}
-	}
-	
-	
-	public void mostrarMensaje(String mensaje, boolean exito) {
-
-	}
-	
-	public void ingresarCriterioBusqueda() {
-
-	}
-	
-	public void mostrarResultado(List<OrdenTrabajoModelo> listaOrdenes) {
-
-	}
-
-	public void agregarDetalleReparacion() {
-
-	}
 	
 	public void navegar() {
 		seleccionarOrden();
@@ -224,10 +192,6 @@ public class OrdenTrabajoVista {
 		        alerta.setHeaderText("Error");
 		        alerta.showAndWait();
 		    }
-	}   
-	
-	
-	public void mostrarConfirmacion(String mensaje) {
 	}
 	
 	//MOSTRAR LISTA DE ORDENES.
@@ -1016,158 +980,6 @@ public static String obtenerOrdenSeleccionada(TableView<ObservableList<String>> 
         });
 
 	}
-
-    //OBTENER ORDENES DISPONIBLES PARA VINCULAR UNA ORDEN
-    public static String obtenerOrdenesDisponibles(Consumer<String> callback) {
-        String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, M.DESCRIPCION_FALLA, O.ESTADO, "
-                + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO "
-                + "FROM ORDEN_DE_TRABAJO O "
-                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
-                + "ORDER BY O.ORDEN_TRABAJO_ID";
-
-        final String[] ordenId = {""};
-
-        // VENTANA DE LISTAR ORDENES DE TRABAJO
-        Stage ventana = new Stage();
-        ventana.setTitle("SELECCIONE UNA ORDEN DE TRABAJO");
-
-        //BOTONES
-        Button btnSeleccionarOrden = new Button("Seleccionar");
-        btnSeleccionarOrden.setStyle("-fx-background-color: #15bb15; -fx-text-fill: white; -fx-font-weight: bold;");
-
-        //TABLA DE FILAS DE STRING
-        TableView<ObservableList<String>> tabla = new TableView<>();
-
-        //LISTA DE FILAS, CADA FILA ES UNA LISTA DE STRINGS
-        ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
-
-        String[] nombresCampos = {
-                "Orden_trabajo_id", "Fecha_ingreso",
-                "Descripcion_falla", "Estado",
-                "Cliente", "Maquina_id",
-                "Tipo", "Marca", "Modelo"
-        };
-
-        //AGREGAR NOMBRES DE COLUMNAS DINÁMICAMENTE
-        for(String nombreCampo : nombresCampos){
-            final int colIndex = tabla.getColumns().size();
-            TableColumn<ObservableList<String>, String> columna =
-                    new TableColumn<>(nombreCampo);
-
-            columna.setCellValueFactory(param -> new ReadOnlyStringWrapper(
-                    (param.getValue().size() > colIndex) ?
-                            param.getValue().get(colIndex) : ""));
-            columna.setPrefWidth(switch(nombreCampo) {
-                case "Orden_trabajo_id" -> 100;
-                case "Fecha_ingreso" -> 120;
-                case "Descripcion_falla" -> 200;
-                case "Cliente" -> 150;
-                case "Estado" -> 150;
-                case "Maquina_id" -> 100;
-                case "Tipo" -> 150;
-                case "Marca" -> 120;
-                case "Modelo" -> 150;
-                default -> 120;
-            });
-            tabla.getColumns().add(columna);
-        }
-
-        //HACER CONSULTA Y CARGAR LAS FILAS
-        try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {
-            ResultSet resultado = consultaPreparada.executeQuery();
-
-            while (resultado.next()) {
-                ObservableList<String> fila =
-                        FXCollections.observableArrayList();
-
-                String orden_trabajo_id = resultado.getString("orden_trabajo_"
-                        + "id");
-                String fecha_ingreso = resultado.getString("fecha_ingreso");
-                String descripcion_falla = resultado.getString("descripcion_falla");
-                String estado = resultado.getString("estado");
-                String cliente = resultado.getString("nombre") + " " +
-                        resultado.getString("apellido");
-                String maquina_id = resultado.getString("maquina_id");
-                String tipo = resultado.getString("tipo");
-                String marca = resultado.getString("marca");
-                String modelo = resultado.getString("modelo");
-
-                if(maquina_id == null) {
-                    maquina_id = "X";
-                    tipo = "Sin";
-                    marca = "Máquina";
-                    modelo = "Asociada";
-                }
-
-                //INSERTAR VARIABLES EN FILA
-                fila.addAll(orden_trabajo_id, fecha_ingreso,
-                        descripcion_falla, estado,
-                        cliente, maquina_id, tipo,
-                        marca, modelo);
-
-                //INSERTAR CADA FILA EN DATOS
-                datos.add(fila);
-            }
-
-            //INSERTAR TODAS LAS FILAS EN LA TABLA DE FILAS DE STRING
-            tabla.setItems(datos);
-
-            //BOTONES
-            Button botonEditar = new Button("✏️ Editar");
-            Button botonEliminar = new Button("Eliminar");
-            Button botonCerrar = new Button("Cerrar");
-            Button botonVer = new Button("Ver");
-            Button botonCambiarEstado = new Button("Cambiar Estado");
-            Button botonBuscarOrden = new Button("Buscar Orden");
-            Button botonIngresarDetalleRep = new Button("Ingresar Detalle de Reparación");
-
-            //BOTON CERRAR
-            botonCerrar.setOnAction(e ->
-                    ventana.close());
-
-            //LAYOUT
-            HBox botonesBox = new HBox(10,
-                    botonCerrar);
-
-            botonesBox.setAlignment(Pos.CENTER);
-            botonesBox.setPadding(new Insets(10));
-
-            VBox layout = new VBox(10, tabla, botonesBox);
-            layout.setPadding(new Insets(10));
-
-
-            Scene escena = new Scene(layout);
-            ventana.setScene(escena);
-            ventana.show();
-        } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR, "Error al mostrar lista: " + e.getMessage());
-            alerta.showAndWait();
-        }
-
-        btnSeleccionarOrden.setOnAction(event -> {
-            ObservableList<String> seleccionado = tabla.getSelectionModel().getSelectedItem();
-
-            if(seleccionado != null){
-                String idSeleccionado = seleccionado.get(0);
-                callback.accept(idSeleccionado);
-                ventana.close();
-            }else{
-                mostrarAdvertencia("Debe seleccionar una orden de la tabla.");
-            }
-        });
-
-        VBox layout = new VBox(15, tabla, btnSeleccionarOrden);
-        layout.setPadding(new Insets(15));
-        layout.setAlignment(Pos.CENTER);
-
-        Scene escena = new Scene(layout);
-        ventana.setScene(escena);
-        ventana.show();
-
-        return ordenId[0];
-    }
 
     //MOSTRAR ORDENES INACTIVAS
     public static void listarOrdenesInactivasVista(){;

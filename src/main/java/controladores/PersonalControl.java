@@ -104,18 +104,6 @@ public class PersonalControl {
     }
         return null;
     }
-	
-	public String obtenerTecnicoId(String usuarioId) {
-
-		return usuarioId;
-
-	}
-	
-	public String obtenerAdminId(String usuarioId) {
-		
-		return usuarioId;
-		
-	}
 
 	//GUARDAR ADMIN
 	public static Boolean guardarNuevoAdmin(AdminModelo nuevoAdmin,
@@ -185,12 +173,7 @@ public class PersonalControl {
 
         return tecnico;
     }
-	
-	public void eliminarTecnico() {
-        this.setDatosAdministrador(null);
-        this.tecnicoGuardado = false;
-    }
-	
+
 	public static Boolean modificarTecnico(TecnicoModelo tecnico, String tecnicoId) {
 
 		try{
@@ -207,10 +190,6 @@ public class PersonalControl {
 		}
 		return false;
 	}
-	
-	public void registrarAdministrador(String nombre, String especialidad, String turno) {
-        this.setDatosAdministrador(new AdminModelo(nombre, especialidad, turno));
-    }
 
     //MOSTRAR DATOS DE ADMINS
     public static List<AdminModeloDTO> obtenerListaAdmins(){

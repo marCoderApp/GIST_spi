@@ -538,14 +538,6 @@ public class FichaUsuarioVista {
         ventana.setScene(escena);
         ventana.show();
     }
-	
-	public void abrirFicha() {
-                // Lógica para abrir la ficha del técnico
-    }
-	
-	public void mostrarFichaDatos(TecnicoModelo tecnico) {
-		// Lógica para mostrar los datos del técnico
-	}
 
     //MOSTRAR LISTA DE TECNICOS
 	public void mostrarListaTecnicos() {

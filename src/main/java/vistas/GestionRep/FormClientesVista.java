@@ -24,26 +24,7 @@ public class FormClientesVista {
 		this.dni = dni;
 		this.listaOrdenesCliente = listaOrdenesCliente;
     }
-	
-	public PedidoModelo ingresarPedido() {
-		return null;
-	}
-	
-	public void abrirForm() {
-		System.out.println("Abriendo formulario para el cliente: " + nombre);
-		System.out.println("Empresa: " + empresa);
-		System.out.println("DNI: " + dni);
-		System.out.println("Cantidad de órdenes: " + cantidadOrdenesCliente);
-		System.out.println("Lista de órdenes:");
-		for (OrdenTrabajoModelo orden : listaOrdenesCliente) {
-			System.out.println("- Orden ID: " + orden.getOrdenId() + ", Descripción: " + orden.getDescripcion_falla());
-		}
-	}	
-	
-	public List<OrdenTrabajoModelo> obtenerOrdenesCliente(String clienteId) {
-		return listaOrdenesCliente;
-	}
-	
+
 	//GETTERS Y SETTERS
 	
 	public String getClienteId() {

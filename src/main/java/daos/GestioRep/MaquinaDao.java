@@ -29,9 +29,4 @@ public class MaquinaDao {
         }
     }
 
-    //MODIFICAR MAQUINA EN DATABASE
-    public static Boolean modificarMaquinaDB(String idMaquina){
-        return false;
-    }
-
 }

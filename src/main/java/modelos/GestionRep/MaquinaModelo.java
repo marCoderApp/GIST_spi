@@ -58,63 +58,6 @@ public class MaquinaModelo {
 
     }
 
-    //LISTAR MAQUINAS DESDE LA BASE DE DATOS
-	public static List<MaquinaModelo> listarMaquinas(){
-		List<MaquinaModelo> listaMaquinas = new ArrayList<>();
-		
-		String sqlConsulta = "SELECT * FROM MAQUINAS";
-		
-		try (PreparedStatement ps = conexion.prepareStatement(sqlConsulta); ResultSet rs = ps.executeQuery()) {
-
-			while (rs.next()) {
-
-				// Mapeo correcto de DATETIME a LocalDateTime
-				LocalDateTime createdAt = null;
-				if (rs.getTimestamp("CREATED_AT") != null) {
-					createdAt = rs.getTimestamp("CREATED_AT").toLocalDateTime();
-				}
-
-				LocalDateTime updatedAt = null;
-				if (rs.getTimestamp("UPDATED_AT") != null) {
-					updatedAt = rs.getTimestamp("UPDATED_AT").toLocalDateTime();
-				}
-
-
-				MaquinaModelo maquina = new MaquinaModelo(rs.getString("tipo"),
-						rs.getString("marca"),
-						rs.getString("modelo"),
-						rs.getString("color"),
-						rs.getString("estado"),
-						rs.getBoolean("REINGRESO"),
-						createdAt,
-					    updatedAt,
-						rs.getString("DESCRIPCION_FALLA"),
-						rs.getString("OBSERVACIONES"),
-						rs.getBoolean("ACTIVO"));
-				maquina.setMaquinaId(rs.getString("id"));
-				listaMaquinas.add(maquina);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return listaMaquinas;
-	}
-
-    //MOSTRAR LISTA DE MAQUINAS
-	public static void mostrarListaMaquinas(List<MaquinaModelo> maquinas) {
-		for (MaquinaModelo maquina : maquinas) {
-			System.out.println("ID: " + maquina.getMaquinaId() +
-					", Tipo: " + maquina.getTipo() +
-					", Marca: "
-					+ maquina.getMarca() +
-					", Modelo: " + maquina.getModelo() +
-					", Color: " + maquina.getColor()
-					+ ", Orden ID: ");
-		}
-	}
-
     //GUARDAR NUEVA MAQUINA EN LA BASE DE DATOS
 	public static boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
 		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id," +

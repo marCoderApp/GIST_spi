@@ -21,14 +21,6 @@ import conexion.ConexionDB;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-//JAVA SECURITY IMPORTS
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
-import java.sql.Connection;
-import java.util.Base64;
-
 public class MainFX extends Application {
 	
 	  @Override

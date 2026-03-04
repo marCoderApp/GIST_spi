@@ -82,18 +82,6 @@ public class ClienteModelo {
 		
 	}
 	
-	public void eliminarCliente(String clienteId) {
-
-	}
-	
-	public void actualizarDatos(ClienteModelo datos) {
-		
-	}
-	
-	public ClienteModelo obtenerCliente(String clienteId) {
-		return new ClienteModelo(clienteId, clienteId, clienteId, clienteId, clienteId, clienteId);
-	}
-	
 	public static List<ClienteModelo> listarClientes() {
 		
 		String sqlConsulta = "SELECT * FROM cliente";

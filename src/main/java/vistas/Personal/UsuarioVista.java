@@ -25,14 +25,6 @@ public class UsuarioVista {
         this.listaTecnicos = new ArrayList<>();
     }
 
-    public void navegar() {
-
-    }
-
-    public void mostrarLista(List<TecnicoModelo> tecnicos) {
-
-    }
-
     public void mostrarMenuUsuarios() {
 
         //VENTANA

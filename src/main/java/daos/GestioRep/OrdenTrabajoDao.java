@@ -122,11 +122,6 @@ public class OrdenTrabajoDao {
         }
     }
 
-    //MODIFICAR ORDEN DE TRABAJO
-    public static Boolean modificarOrdenTrabajoDB(String ordenId){
-        return true;
-    }
-
     //DAR DE BAJA ORDEN
     public static Boolean darDeBajaOrdenDB(String ordenId){
 

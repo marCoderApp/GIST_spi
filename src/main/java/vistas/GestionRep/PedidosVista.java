@@ -702,6 +702,4 @@ public class PedidosVista {
         this.cantidadTotal = cantidadTotal;
     }
 
-
-
 }

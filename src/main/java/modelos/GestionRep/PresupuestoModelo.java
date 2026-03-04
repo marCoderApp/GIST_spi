@@ -55,9 +55,6 @@ public class PresupuestoModelo {
 
         try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
 
-            //ELIMINAR PRESUPUESTO ANTERIOR
-            //psDelete.setString(1, presupuesto.getMaquinaId());
-            //psDelete.executeUpdate();
             //AGREGAR UN PRESUPUESTO
             ps.setString(1, presupuesto.getPresupuestoId());
             ps.setString(2, presupuesto.getMaquinaId());

@@ -26,19 +26,11 @@ public class PedidoModelo {
 		return "PED" + System.currentTimeMillis();
 	}
 	
-	public Boolean guardarPedido(PedidoModelo datos) {
-		return true;
-	}
-	
 	public void eliminarPedido(String pedidoId) {
 
 	}
 	
 	public void modificarPedido(String pedidoId) {
-
-	}
-	
-	public void verpedido(String pedidoId) {
 
 	}
 	
