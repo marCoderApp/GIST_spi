@@ -24,6 +24,9 @@ Thumbs.db
 # Runtime files
 runtime/
 
+#DB
+src/main/resources/db.properties
+
 # Remove target folder and exe files from Git tracking
 git rm -r --cached target/
 git rm --cached *.exe
