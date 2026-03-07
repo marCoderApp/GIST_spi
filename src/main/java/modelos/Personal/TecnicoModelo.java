@@ -32,7 +32,7 @@ public class TecnicoModelo extends PersonalBase {
 	
 	public String generarId() {
 
-        String sql = "SELECT tecnico_id FROM TECNICO ORDER BY tecnico_id DESC LIMIT 1";
+        String sql = "SELECT tecnico_id FROM tecnico ORDER BY tecnico_id DESC LIMIT 1";
         String ultimoId = null;
         try (PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -85,8 +85,8 @@ public class TecnicoModelo extends PersonalBase {
     public static List<TecnicoModeloDTO> obtenerListaTecnicosBD(){
         String sql = "SELECT T.TECNICO_ID, T.NOMBRE, T.APELLIDO, T.ESPECIALIDAD," +
                 " T.CANTIDADTAREAS, T.CANTIDAD_TAREAS_ASIGNADAS," +
-                " T.CANTIDAD_TAREAS_PENDIENTES, C.USUARIO FROM TECNICO T " +
-                "LEFT JOIN CREDENCIALES C ON T.TECNICO_ID = C.TECNICO_ID" +
+                " T.CANTIDAD_TAREAS_PENDIENTES, C.USUARIO from tecnico T " +
+                "LEFT JOIN credenciales C ON T.TECNICO_ID = C.TECNICO_ID" +
                 " WHERE T.ACTIVO = TRUE" +
                 " ORDER BY T.TECNICO_ID";
         List<TecnicoModeloDTO> listaTecnicos = new ArrayList<TecnicoModeloDTO>();
@@ -125,7 +125,7 @@ public class TecnicoModelo extends PersonalBase {
 
     //BUSCAR TECNICO POR ID
     public static TecnicoModelo obtenerTecnicoPorId(String tecnicoId){
-        String sql = "SELECT * FROM TECNICO WHERE tecnico_id = ?";
+        String sql = "SELECT * from tecnico WHERE tecnico_id = ?";
        try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
            ps.setString(1, tecnicoId);
 
@@ -145,7 +145,7 @@ public class TecnicoModelo extends PersonalBase {
 
     //EDITAR TECNICO
     public static Boolean editarTecnicoDB(TecnicoModelo tecnico, String idTecnico){
-        String sql = "UPDATE TECNICO SET NOMBRE = ?, APELLIDO = ?, ESPECIALIDAD = ? WHERE tecnico_id = ?";
+        String sql = "UPDATE tecnico SET NOMBRE = ?, APELLIDO = ?, ESPECIALIDAD = ? WHERE tecnico_id = ?";
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.setString(1, tecnico.getNombre());
             ps.setString(2, tecnico.getApellido());

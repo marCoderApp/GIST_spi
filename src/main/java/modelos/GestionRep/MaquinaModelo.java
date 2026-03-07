@@ -60,7 +60,7 @@ public class MaquinaModelo {
 
     //GUARDAR NUEVA MAQUINA EN LA BASE DE DATOS
 	public static boolean guardarNuevaMaquina(List<MaquinaModelo> maquinas, String ordenId) {
-		String sqlInsertarMaquina = "INSERT INTO MAQUINAS (id," +
+		String sqlInsertarMaquina = "INSERT INTO maquinas (id," +
 				" tipo," +
 				" marca," +
 				" modelo," +
@@ -72,7 +72,7 @@ public class MaquinaModelo {
 				"descripcion_falla," +
 				"observaciones," +
 				"activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		String sqlOrdenMaquina = "INSERT INTO ORDEN_MAQUINAS (orden_id, maquina_id) VALUES (?, ?)";
+		String sqlOrdenMaquina = "INSERT INTO orden_maquinas (orden_id, maquina_id) VALUES (?, ?)";
 	    
 	    try (Connection conexion = ConexionDB.conectar();
 	         PreparedStatement ps = conexion.prepareStatement(sqlInsertarMaquina);

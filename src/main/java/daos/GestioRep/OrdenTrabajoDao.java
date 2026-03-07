@@ -25,10 +25,10 @@ public class OrdenTrabajoDao {
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO," +
                 " M.DESCRIPCION_FALLA "
-                + "FROM ORDEN_DE_TRABAJO O "
-                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "FROM orden_de_trabajo O "
+                + "JOIN cliente C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN orden_maquinas OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN maquinas M ON M.ID = OM.MAQUINA_ID "
                 + "WHERE " + criterio + " LIKE ? "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 
@@ -69,10 +69,10 @@ public class OrdenTrabajoDao {
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, C.EMPRESA, C.TELEFONO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO," +
                 " M.DESCRIPCION_FALLA, O.ACTIVO "
-                + "FROM ORDEN_DE_TRABAJO O "
-                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "FROM orden_de_trabajo O "
+                + "JOIN cliente C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN orden_maquinas OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN maquinas M ON M.ID = OM.MAQUINA_ID "
                 + "WHERE O.ACTIVO = FALSE "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 
@@ -106,7 +106,7 @@ public class OrdenTrabajoDao {
 
     //RESTAURAR ORDEN A ACTIVA
     public static Boolean restaurarOrdenInactivaDB(String ordenId){
-        String sql = "UPDATE ORDEN_DE_TRABAJO SET ACTIVO = TRUE " +
+        String sql = "UPDATE orden_de_trabajo SET ACTIVO = TRUE " +
                 "WHERE ORDEN_TRABAJO_ID = '" + ordenId + "'";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
@@ -125,7 +125,7 @@ public class OrdenTrabajoDao {
     //DAR DE BAJA ORDEN
     public static Boolean darDeBajaOrdenDB(String ordenId){
 
-        String sql = "UPDATE ORDEN_DE_TRABAJO" +
+        String sql = "UPDATE orden_de_trabajo" +
                 " SET ACTIVO = FALSE WHERE ORDEN_TRABAJO_ID = ?";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
@@ -146,7 +146,7 @@ public class OrdenTrabajoDao {
 
     //ENCONTRAR ORDEN POR ID
     public static Boolean encontrarOrdenPorId(String ordenId){
-        String sql = "SELECT * FROM ORDEN_DE_TRABAJO" +
+        String sql = "SELECT * FROM orden_de_trabajo" +
                 " WHERE orden_trabajo_id = ?";
         try(
                 PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
@@ -167,7 +167,7 @@ public class OrdenTrabajoDao {
 
     //CAMBIAR ESTADO DE ORDEN
     public static Boolean cambiarEstadoOrdenDB(String ordenId, String estado){
-        String sql = "UPDATE ORDEN_DE_TRABAJO " +
+        String sql = "UPDATE orden_de_trabajo " +
                 "SET ESTADO = ? " +
                 "WHERE ORDEN_TRABAJO_ID = ?";
 

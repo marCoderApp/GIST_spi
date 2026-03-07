@@ -321,8 +321,8 @@ public class NovedadesVista {
         }
 
         String consultaSQL = "SELECT N.ID, I.ORDENID, I.COMENTARIOITEM, " +
-                "N.FECHA, N.ADMIN_ID FROM NOVEDADES N" +
-                " LEFT JOIN NOVEDAD_ITEM I ON N.ID = I.NOVEDADID" +
+                "N.FECHA, N.ADMIN_ID FROM novedades N" +
+                " LEFT JOIN novedad_item I ON N.ID = I.NOVEDADID" +
                 " ORDER BY FECHA ASC";
 
         try (PreparedStatement consultaPreparada = GestionRepControl.conexion.prepareStatement(consultaSQL)) {

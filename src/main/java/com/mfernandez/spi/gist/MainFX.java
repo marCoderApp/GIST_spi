@@ -40,7 +40,7 @@ public class MainFX extends Application {
 
 		  if (!adminDao.existeSuperAdmin()) {
 			  String id = "ADM000";
-			  String email = "superadmin@sistema.local"; // ideal: tomar de config
+			  String email = "superadmin@sistema.local";
 			  String pwd = System.getenv().get("SUPER_ADMIN_KEY");
 
 			  if (pwd == null) {

@@ -945,7 +945,7 @@ public class FichaUsuarioVista {
     private void buscarTecnicoPorNombre(String criterio) {
         java.util.List<modelos.Personal.TecnicoModelo> resultados = new java.util.ArrayList<>();
 
-        String sqlBusqueda = "SELECT * FROM TECNICO WHERE " +
+        String sqlBusqueda = "SELECT * from tecnico WHERE " +
                 "LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ?";
 
         try (java.sql.PreparedStatement ps = conexion.ConexionDB.conectar().prepareStatement(sqlBusqueda)) {
@@ -995,7 +995,7 @@ public class FichaUsuarioVista {
     private void buscarAdminPorNombre(String criterio) {
         java.util.List<modelos.Personal.AdminModelo> resultados = new java.util.ArrayList<>();
 
-        String sqlBusqueda = "SELECT * FROM ADMINISTRADOR WHERE " +
+        String sqlBusqueda = "SELECT * FROM administrador WHERE " +
                 "LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ?";
 
         try (java.sql.PreparedStatement ps = conexion.ConexionDB.conectar().prepareStatement(sqlBusqueda)) {

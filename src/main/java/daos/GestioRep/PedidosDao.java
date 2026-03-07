@@ -147,8 +147,8 @@ public class PedidosDao {
         ObservableList<ObservableList<String>> resultado = FXCollections.observableArrayList();
 
         String consultaSQL = " SELECT P.ID, P.FECHA, P.ADMIN_ID, P.ESTADO, R.REPUESTO_ID, " +
-                "R.NOMBRE_REPUESTO, R.CANTIDAD, R.PRECIO AS PRECIO_UNITARIO, R.DESTINATARIO FROM PEDIDOS P " +
-                "JOIN REPUESTOS R ON P.ID = R.PEDIDO_ID " +
+                "R.NOMBRE_REPUESTO, R.CANTIDAD, R.PRECIO AS PRECIO_UNITARIO, R.DESTINATARIO FROM pedidos P " +
+                "JOIN repuestos R ON P.ID = R.PEDIDO_ID " +
                 " WHERE " + criterio + " LIKE ? ";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(consultaSQL)){

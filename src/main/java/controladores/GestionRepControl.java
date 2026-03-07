@@ -113,7 +113,7 @@ public class GestionRepControl {
         ordenId = orden.getOrdenId();
 
         String sqlInsertarOrdenBase = "INSERT INTO "
-                + "ORDEN_DE_TRABAJO (orden_trabajo_id, cliente_id, fecha_ingreso, estado, admin_id, tecnico_id) "
+                + "orden_de_trabajo (orden_trabajo_id, cliente_id, fecha_ingreso, estado, admin_id, tecnico_id) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try(PreparedStatement psInsertarOrdenBase = conexion.prepareStatement(sqlInsertarOrdenBase)){
@@ -157,7 +157,7 @@ public class GestionRepControl {
     //REGISTRAR ENTREGA
     public boolean registrarEntrega(String ordenIdParam, String adminId) {
 
-        String sqlRetirarEntrega = "UPDATE ORDEN_DE_TRABAJO SET despacho = ?, "
+        String sqlRetirarEntrega = "UPDATE orden_de_trabajo SET despacho = ?, "
                 + "fecha_retiro = ? WHERE ORDEN_TRABAJO_ID = ?";
 
         try(PreparedStatement ps = conexion.prepareStatement(sqlRetirarEntrega)){

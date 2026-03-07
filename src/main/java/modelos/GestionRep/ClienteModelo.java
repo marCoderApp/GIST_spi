@@ -34,7 +34,7 @@ public class ClienteModelo {
 	}
 	
 	public String generarClienteId() {
-		String sql = "SELECT cliente_id FROM CLIENTE ORDER BY cliente_id DESC LIMIT 1";
+		String sql = "SELECT cliente_id FROM cliente ORDER BY cliente_id DESC LIMIT 1";
 	    String ultimoId = null;
 	    try (PreparedStatement ps = conexion.prepareStatement(sql);
 	         ResultSet rs = ps.executeQuery()) {

@@ -13,7 +13,7 @@ public class ClientesDao {
     public static ObservableList<ObservableList<String>> traerResultadoBusquedaClienteDB(String criterio, String dato){
         ObservableList<ObservableList<String>> datos = FXCollections.observableArrayList();
         String consultaSQL = "SELECT * "
-                + "FROM CLIENTE "
+                + "FROM cliente "
                 + "WHERE " + criterio + " LIKE ? "
                 + "ORDER BY CLIENTE_ID";
 

@@ -17,8 +17,8 @@ public static List<Map<String, Object>> obtenerDatosNovedadBD(String nov_id){
     List<Map<String, Object>> resultados = new ArrayList<>();
 
     String sql = "SELECT N.ID, N.FECHA, N.ADMIN_ID, " +
-            "NI.ITEMID, NI.ORDENID, NI.COMENTARIOITEM FROM NOVEDADES N" +
-            " JOIN NOVEDAD_ITEM NI ON N.ID = NI.NOVEDADID" +
+            "NI.ITEMID, NI.ORDENID, NI.COMENTARIOITEM FROM novedades N" +
+            " JOIN novedad_item NI ON N.ID = NI.NOVEDADID" +
             " WHERE N.ID = ? " +
             "ORDER BY N.ID";
 

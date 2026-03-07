@@ -34,7 +34,7 @@ public class NovedadModelo {
 
     //GUARDAR NOVEDAD EN LA BD
     public boolean guardarNovedadBD(NovedadModelo nuevaNovedad){
-        String sqlConsulta = "INSERT INTO NOVEDADES (id, fecha, admin_id)" +
+        String sqlConsulta = "INSERT INTO novedades (id, fecha, admin_id)" +
                 " VALUES (?, ?, ?)";
 
         try(PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sqlConsulta)) {
@@ -44,7 +44,7 @@ public class NovedadModelo {
             ps.setString(3, filtrarPorRol());
             ps.executeUpdate();
 
-            String sql= "INSERT INTO NOVEDAD_ITEM (comentarioItem, itemId, novedadId, ordenId)" +
+            String sql= "INSERT INTO novedad_item (comentarioItem, itemId, novedadId, ordenId)" +
                     " VALUES (?, ?, ?, ?)";
 
 

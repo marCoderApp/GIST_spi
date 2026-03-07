@@ -43,8 +43,8 @@ public class PresupuestoModelo {
     public static boolean ingresarPresupuestoBD(PresupuestoModelo presupuesto)
     {
 
-        String sqlDelete = "DELETE FROM PRESUPUESTO WHERE MAQUINA_ID = ?";
-        String sql = "INSERT INTO PRESUPUESTO " +
+        String sqlDelete = "DELETE FROM presupuesto WHERE MAQUINA_ID = ?";
+        String sql = "INSERT INTO presupuesto " +
                 "(presupuesto_id, maquina_id, total, con_factura, fecha_creacion, admin_id, orden_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)" +
                 "ON DUPLICATE KEY UPDATE " +

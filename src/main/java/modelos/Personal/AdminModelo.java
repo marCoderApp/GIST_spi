@@ -20,7 +20,7 @@ public class AdminModelo extends PersonalBase {
 
     //GENERAR ID DE ADMINISTRADOR REALIZANDO CONSULTA A BASE DE DATOS.
 	public String generarId() {
-		String sql = "SELECT administrador_id FROM ADMINISTRADOR ORDER BY administrador_id DESC LIMIT 1";
+		String sql = "SELECT administrador_id FROM administrador ORDER BY administrador_id DESC LIMIT 1";
 	    String ultimoId = null;
 	    try (PreparedStatement ps = conexion.prepareStatement(sql);
 	         ResultSet rs = ps.executeQuery()) {

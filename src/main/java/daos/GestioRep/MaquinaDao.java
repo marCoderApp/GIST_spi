@@ -14,7 +14,7 @@ public class MaquinaDao {
     //DAR DE BAJA MAQUINA DE DATABASE
     public static Boolean darDeBajaMaquinaBD(String idMaquina) {
 
-        String sqlSentencia = "UPDATE MAQUINAS SET activo = FALSE WHERE id = ?";
+        String sqlSentencia = "UPDATE maquinas SET activo = FALSE WHERE id = ?";
 
         try(PreparedStatement ps = conexion.prepareStatement(sqlSentencia)){
             ps.setString(1, idMaquina);

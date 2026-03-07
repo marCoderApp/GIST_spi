@@ -20,10 +20,10 @@ public class PresupuestosDao {
         String sql = "SELECT P.PRESUPUESTO_ID, P.TOTAL, P.CON_FACTURA, " +
                 "M.TIPO AS NOMBREMAQUINA, M.ID AS MAQUINA_ID, C.NOMBRE AS NOMBRECLIENTE," +
                 " C.APELLIDO AS APELLIDOCLIENTE, P.FECHA_CREACION, P.ADMIN_ID, P.ORDEN_ID" +
-                " FROM PRESUPUESTO P " +
-                "LEFT JOIN ORDEN_DE_TRABAJO O ON O.ORDEN_TRABAJO_ID = P.ORDEN_ID" +
-                " LEFT JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID" +
-                " LEFT JOIN MAQUINAS M ON M.ID = P.MAQUINA_ID" +
+                " FROM presupuesto P " +
+                "LEFT JOIN orden_de_trabajo O ON O.ORDEN_TRABAJO_ID = P.ORDEN_ID" +
+                " LEFT JOIN cliente C ON C.CLIENTE_ID = O.CLIENTE_ID" +
+                " LEFT JOIN maquinas M ON M.ID = P.MAQUINA_ID" +
                 " ORDER BY P.FECHA_CREACION DESC";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
@@ -60,10 +60,10 @@ public class PresupuestosDao {
         String sql = "SELECT P.PRESUPUESTO_ID, P.TOTAL, P.CON_FACTURA, " +
                 "M.TIPO AS NOMBREMAQUINA, M.ID AS MAQUINA_ID, C.NOMBRE AS NOMBRECLIENTE," +
                 " C.APELLIDO AS APELLIDOCLIENTE, P.FECHA_CREACION, P.ADMIN_ID, P.ORDEN_ID" +
-                " FROM PRESUPUESTO P " +
-                "LEFT JOIN ORDEN_DE_TRABAJO O ON O.ORDEN_TRABAJO_ID = P.ORDEN_ID" +
-                " LEFT JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID" +
-                " LEFT JOIN MAQUINAS M ON M.ID = P.MAQUINA_ID " +
+                " FROM presupuesto P " +
+                "LEFT JOIN orden_de_trabajo O ON O.ORDEN_TRABAJO_ID = P.ORDEN_ID" +
+                " LEFT JOIN cliente C ON C.CLIENTE_ID = O.CLIENTE_ID" +
+                " LEFT JOIN maquinas M ON M.ID = P.MAQUINA_ID " +
                 " WHERE " + criterio + " LIKE ?" +
                 " ORDER BY P.FECHA_CREACION DESC";
 

@@ -19,7 +19,7 @@ public class LoginVista {
 	        this.stage = stage;
 	    }
 
-	    //FORM PARA INGRESAR CREDENCIALES.
+	    //FORM PARA INGRESAR credenciales.
 	    public boolean ingresarCredenciales(Credenciales credenciales) {
 	        Stage loginStage = new Stage();
 	        loginStage.setTitle("Inicio de Sesión - GIST");

@@ -22,7 +22,7 @@ public class AdminDao {
     //GUARDAR NUEVO ADMIN DB
     public static Boolean guardarNuevoAdminDB(AdminModelo nuevoAdmin,
                                               Credenciales credencialIngresada){
-      String sql = "INSERT INTO ADMINISTRADOR (ADMINISTRADOR_ID, " +
+      String sql = "INSERT INTO administrador (administrador_ID, " +
               "NOMBRE, APELLIDO, TURNO) VALUES (?, ?, ?, ?)";
 
       try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
@@ -50,7 +50,7 @@ public class AdminDao {
 
     //COMPRAR EXISTENCIA DE ADMIN BY USER
     public static Boolean comprobarExistenciaAdmin(String usuario){
-        String sql = "SELECT * FROM CREDENCIALES WHERE USUARIO = ?";
+        String sql = "SELECT * FROM credenciales WHERE USUARIO = ?";
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.setString(1, usuario);
             ps.executeQuery();
@@ -69,7 +69,7 @@ public class AdminDao {
 
     //CONTAR NUMERO DE ADMINS
     public static int contarAdmins(){
-        String sql = "SELECT COUNT(*) AS c FROM ADMINISTRADOR";
+        String sql = "SELECT COUNT(*) AS c FROM administrador";
         try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             java.sql.ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt("c");
@@ -82,8 +82,8 @@ public class AdminDao {
     //OBTENER LISTA DE ADMINS
     public static List<AdminModeloDTO> obtenerListaAdminsDB(){
         String sql = "SELECT AD.ADMINISTRADOR_ID, AD.NOMBRE, AD.APELLIDO, AD.TURNO," +
-                " C.USUARIO AS USUARIO FROM ADMINISTRADOR AD " +
-                "JOIN CREDENCIALES C ON AD.ADMINISTRADOR_ID = C.ADMIN_ID" +
+                " C.USUARIO AS USUARIO FROM administrador AD " +
+                "JOIN credenciales C ON AD.ADMINISTRADOR_ID = C.ADMIN_ID" +
                 " WHERE AD.ACTIVO = TRUE" +
                 " ORDER BY AD.ADMINISTRADOR_ID";
         List<AdminModeloDTO> listaAdmins = new ArrayList<>();
@@ -111,17 +111,34 @@ public class AdminDao {
 
     //COMPROBAR SI EXISTE EL SUPER ADMIN
     public boolean existeSuperAdmin() throws SQLException {
-        String sql = "SELECT 1 FROM CREDENCIALES WHERE rol = ? LIMIT 1";
+        String sql = "SELECT EXISTS(SELECT 1 FROM credenciales WHERE rol = ?)";
         try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
             ps.setString(1, "SUPER_ADMIN");
-            try (ResultSet rs = ps.executeQuery()) { return rs.next(); }
+            try (ResultSet rs = ps.executeQuery()) {
+                if(rs.next()){
+                    return rs.getBoolean(1);
+                }
+                return false;
+            }
+        }
+    }
+
+    //COMPROBAR SI EXISTE ADMINISTRADOR POR ID
+    public boolean existeAdministradorPorId(String adminId) throws SQLException {
+        String sql = "SELECT 1 FROM administrador WHERE ADMINISTRADOR_ID = ? LIMIT 1";
+        try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
+            ps.setString(1, adminId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         }
     }
 
     //CREAR SUPER ADMIN
     public void crearSuperAdmin(String id, String nombre, String apellido, String email, String hashPwd) throws SQLException {
-        String sql = "INSERT INTO ADMINISTRADOR (ADMINISTRADOR_ID, " +
-                "NOMBRE, APELLIDO, TURNO) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO administrador (ADMINISTRADOR_ID, NOMBRE, APELLIDO, TURNO) " +
+                "VALUES (?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE NOMBRE = VALUES(NOMBRE), APELLIDO = VALUES(APELLIDO), TURNO = VALUES(TURNO)";
 
         Credenciales credencialIngresada = new Credenciales(
                 "admin_base",
@@ -153,7 +170,7 @@ public class AdminDao {
 
     //DAR DE BAJA ADMIN
     public static Boolean darDeBajaAdminDB(String adminId){
-        String sql = "UPDATE ADMINISTRADOR SET ACTIVO = FALSE WHERE ADMINISTRADOR_ID = ?";
+        String sql = "UPDATE administrador SET ACTIVO = FALSE WHERE ADMINISTRADOR_ID = ?";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.setString(1, adminId);
@@ -172,7 +189,7 @@ public class AdminDao {
     //EDITAR ADMIN
     public static Boolean editarAdminDB(String adminId, AdminModelo newAdmin){
 
-        String sql = "UPDATE ADMINISTRADOR SET NOMBRE = ?, APELLIDO = ?, TURNO = ? WHERE ADMINISTRADOR_ID = ?";
+        String sql = "UPDATE administrador SET NOMBRE = ?, APELLIDO = ?, TURNO = ? WHERE ADMINISTRADOR_ID = ?";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)){
             ps.setString(1, newAdmin.getNombre());

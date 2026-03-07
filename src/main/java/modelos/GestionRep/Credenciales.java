@@ -31,7 +31,7 @@ public class Credenciales {
 
         public static boolean crearCredenciales(Credenciales credenciales) {
 
-            String sqlSentencia = "INSERT INTO CREDENCIALES" +
+            String sqlSentencia = "INSERT INTO credenciales" +
                     " (usuario, contraseña, fechaCreacion, rol, admin_id, tecnico_id)" +
                     " VALUES (?, ?, ?, ?, ?, ?);";
 
@@ -58,7 +58,7 @@ public class Credenciales {
 
 		//ACTUALIZAR CONTRASEñA POR USUARIO
 	public static boolean actualizarContraPorUsuario(String usuario, String nuevaContrasena){
-		String sql = "UPDATE CREDENCIALES SET contraseña = ? WHERE usuario = ?";
+		String sql = "UPDATE credenciales SET contraseña = ? WHERE usuario = ?";
 		try (PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql)) {
 			ps.setString(1, nuevaContrasena);
 			ps.setString(2, usuario);

@@ -79,7 +79,7 @@ public class OrdenTrabajoModelo {
 
     //ACTUALIZA EL ESTADO DE UNA ORDEN DE TRABAJO, RECIBE ESTADO Y ORDEN ID POR PARÁMETRO
     public static Boolean actualizarEstado(String ordenIdParam, EstadoOrden estado) {
-    	String sqlActualizar = "UPDATE ORDEN_DE_TRABAJO SET estado = ?"
+    	String sqlActualizar = "UPDATE orden_de_trabajo SET estado = ?"
     			+ " WHERE ORDEN_TRABAJO_ID = ? AND ESTADO = 'Lista'";
     	
     	try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sqlActualizar)){
@@ -111,14 +111,14 @@ public class OrdenTrabajoModelo {
                 "AS PRESUPUESTO_FECHA, P.PRESUPUESTO_ID, P.CON_FACTURA, M.ESTADO_MAQUINA, "
                 + "DR.DESCRIPCION, DR.FECHA, M.DESCRIPCION_FALLA, M.OBSERVACIONES" +
                 ", M.ACTIVO "
-                + "FROM ORDEN_DE_TRABAJO O "
-                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
-                + "LEFT JOIN NOVEDAD_ITEM NI ON NI.ORDENID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN NOVEDADES N ON N.ID = NI.NOVEDADID "
-                + "LEFT JOIN PRESUPUESTO P ON P.MAQUINA_ID = M.ID "
-                + "LEFT JOIN DETALLEREPARACION DR ON DR.MAQUINA_ID= M.ID "
+                + "FROM orden_de_trabajo O "
+                + "JOIN cliente C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN orden_maquinas OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN maquinas M ON M.ID = OM.MAQUINA_ID "
+                + "LEFT JOIN novedad_item NI ON NI.ORDENID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN novedades N ON N.ID = NI.NOVEDADID "
+                + "LEFT JOIN presupuesto P ON P.MAQUINA_ID = M.ID "
+                + "LEFT JOIN detallereparacion DR ON DR.MAQUINA_ID= M.ID "
                 + "WHERE O.ORDEN_TRABAJO_ID = ? "
                 + "ORDER BY O.ORDEN_TRABAJO_ID";
 

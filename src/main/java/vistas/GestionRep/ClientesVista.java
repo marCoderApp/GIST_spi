@@ -577,10 +577,10 @@ public class ClientesVista {
         String consultaSQL = "SELECT O.ORDEN_TRABAJO_ID, O.FECHA_INGRESO, O.ESTADO, "
                 + "C.NOMBRE, C.APELLIDO, OM.MAQUINA_ID, M.TIPO, M.MARCA, M.MODELO, " +
                 "M.DESCRIPCION_FALLA, M.OBSERVACIONES, O.ACTIVO "
-                + "FROM ORDEN_DE_TRABAJO O "
-                + "JOIN CLIENTE C ON C.CLIENTE_ID = O.CLIENTE_ID "
-                + "LEFT JOIN ORDEN_MAQUINAS OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
-                + "LEFT JOIN MAQUINAS M ON M.ID = OM.MAQUINA_ID "
+                + "FROM orden_de_trabajo O "
+                + "JOIN cliente C ON C.CLIENTE_ID = O.CLIENTE_ID "
+                + "LEFT JOIN orden_maquinas OM ON OM.ORDEN_ID = O.ORDEN_TRABAJO_ID "
+                + "LEFT JOIN maquinas M ON M.ID = OM.MAQUINA_ID "
                 + "WHERE O.ACTIVO = TRUE AND C.CLIENTE_ID = ? "
                 + "ORDER BY FECHA_INGRESO ASC";
 

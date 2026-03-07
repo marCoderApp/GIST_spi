@@ -32,7 +32,7 @@ public class DetalleReparacionModelo {
 	}
 	
 	public String generarDetalleRepId() {
-        String sql = "SELECT id FROM DETALLEREPARACION ORDER BY id DESC LIMIT 1";
+        String sql = "SELECT id FROM detallereparacion ORDER BY id DESC LIMIT 1";
         String ultimoId = null;
         try (PreparedStatement ps = gestionRepControl.conexion.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -61,8 +61,8 @@ public class DetalleReparacionModelo {
 	
 	public static Boolean guardarDetalleBD(DetalleReparacionModelo nuevoDetalleRep, String maquinaId) {
 
-		String sqlDelete = "DELETE FROM DETALLEREPARACION WHERE MAQUINA_ID = ?";
-        String sql = "INSERT INTO DETALLEREPARACION VALUES (?,?,?,?,?,?)";
+		String sqlDelete = "DELETE FROM detallereparacion WHERE MAQUINA_ID = ?";
+        String sql = "INSERT INTO detallereparacion VALUES (?,?,?,?,?,?)";
 
         try(PreparedStatement ps = GestionRepControl.conexion.prepareStatement(sql);
 			PreparedStatement psDelete = GestionRepControl.conexion.prepareStatement(sqlDelete);){
